@@ -1,0 +1,40 @@
+.direction-bar {
+    width: 100%;
+    background: #efefef;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    &>div {
+        width: 50%;
+        height: 3vh;
+    }
+
+    &>span {
+        position: absolute;
+    }
+}
+
+
+
+.center {
+    width: 2px;
+    height: 3vh;
+    background-color: black;
+    left: 50%;
+}
+
+.right {
+    right: 0;
+}
+
+.left-direction-force,
+.right-direction-force {
+    background-color: #0d6efd;
+    height: 3vh;
+    width: 0%;
+}
+
+.reverse {
+    transform: rotate(180deg);
+}
