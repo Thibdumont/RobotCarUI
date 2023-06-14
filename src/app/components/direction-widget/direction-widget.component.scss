@@ -1,13 +1,16 @@
+:host {
+    --control-bar-thickness: 10px;
+}
+
 .direction-bar {
     width: 100%;
-    background: #efefef;
     display: flex;
     justify-content: space-between;
     position: relative;
 
     &>div {
         width: 50%;
-        height: 3vh;
+        height: var(--control-bar-thickness);
     }
 
     &>span {
@@ -15,23 +18,18 @@
     }
 }
 
-
-
 .center {
     width: 2px;
-    height: 3vh;
+    margin-left: -1px;
+    height: var(--control-bar-thickness);
     background-color: black;
     left: 50%;
-}
-
-.right {
-    right: 0;
 }
 
 .left-direction-force,
 .right-direction-force {
     background-color: #0d6efd;
-    height: 3vh;
+    height: var(--control-bar-thickness);
     width: 0%;
 }
 

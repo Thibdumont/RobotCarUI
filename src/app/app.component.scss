@@ -1,6 +1,7 @@
 :host {
     width: 100%;
-    position: relative;
+    height: 100%;
+    position: fixed;
 }
 
 robotcarui-stream-window {
@@ -9,9 +10,23 @@ robotcarui-stream-window {
 
 robotcarui-direction-widget {
     position: absolute;
+    bottom: 0;
     background-color: #fff;
-    top: 0;
-    left: 0;
     width: 100%;
+    z-index: 100;
+}
+
+robotcarui-head-position-widget {
+    position: absolute;
+    background-color: #fff;
+    width: 100%;
+    z-index: 100;
+}
+
+robotcarui-throttle-widget {
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    height: 100%;
     z-index: 100;
 }

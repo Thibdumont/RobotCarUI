@@ -1,0 +1,27 @@
+:host {
+    --control-bar-thickness: 10px;
+}
+
+.head-bar {
+    width: 100%;
+    height: var(--control-bar-thickness);
+    background: #fff;
+}
+
+.center {
+    position: absolute;
+    width: 2px;
+    margin-left: -1px;
+    height: var(--control-bar-thickness);
+    background-color: black;
+    left: 50%;
+}
+
+.head {
+    position: absolute;
+    left: calc(50% - var(--control-bar-thickness)/2);
+    background: #0d6efd;
+    border-radius: 50%;
+    width: var(--control-bar-thickness);
+    height: var(--control-bar-thickness);
+}
