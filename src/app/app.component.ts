@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { GamepadService } from './services/gamepad.service';
+import { RobotCommunicationService } from './services/robot-communication.service';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +10,10 @@ import { GamepadService } from './services/gamepad.service';
 })
 export class AppComponent {
   constructor(
-    private gamepadService: GamepadService
+    private gamepadService: GamepadService,
+    private robotCommunicationService: RobotCommunicationService
   ) {
     this.gamepadService.initGamepad();
+    this.robotCommunicationService.autoConnectLoop();
   }
 }

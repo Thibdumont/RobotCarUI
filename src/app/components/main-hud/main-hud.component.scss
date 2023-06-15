@@ -1,0 +1,12 @@
+div {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    &>div {
+        background: #fff2;
+        margin: 0 20px;
+        border-radius: 8px;
+    }
+}

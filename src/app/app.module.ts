@@ -6,6 +6,7 @@ import { StreamWindowComponent } from './components/stream-window/stream-window.
 import { DirectionWidgetComponent } from './components/direction-widget/direction-widget.component';
 import { ThrottleWidgetComponent } from './components/throttle-widget/throttle-widget.component';
 import { HeadPositionWidgetComponent } from './components/head-position-widget/head-position-widget.component';
+import { MainHudComponent } from './components/main-hud/main-hud.component';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { HeadPositionWidgetComponent } from './components/head-position-widget/h
     StreamWindowComponent,
     DirectionWidgetComponent,
     ThrottleWidgetComponent,
-    HeadPositionWidgetComponent
+    HeadPositionWidgetComponent,
+    MainHudComponent
   ],
   imports: [
     BrowserModule

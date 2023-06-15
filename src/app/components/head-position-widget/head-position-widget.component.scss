@@ -5,7 +5,10 @@
 .head-bar {
     width: 100%;
     height: var(--control-bar-thickness);
-    background: #fff;
+    background: #fff2;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
 }
 
 .center {

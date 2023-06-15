@@ -14,13 +14,13 @@ export class DirectionWidgetComponent {
   constructor(
     private gamepadService: GamepadService
   ) {
-    this.gamepadService.getDirectionChange().subscribe(direction => {
-      if (direction < 0) {
-        this.leftDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(direction) * 100))}%`;
+    this.gamepadService.leftStickXChange.subscribe(leftStick => {
+      if (leftStick < 0) {
+        this.leftDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(leftStick) * 100))}%`;
         this.rightDirectionForce.nativeElement.style.width = '0%';
       } else {
         this.leftDirectionForce.nativeElement.style.width = '0%';
-        this.rightDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(direction) * 100))}%`;
+        this.rightDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(leftStick) * 100))}%`;
       }
     });
 

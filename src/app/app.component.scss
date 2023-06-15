@@ -8,25 +8,47 @@ robotcarui-stream-window {
     position: absolute;
 }
 
-robotcarui-direction-widget {
-    position: absolute;
-    bottom: 0;
-    background-color: #fff;
+.overlay {
+    display: grid;
+    height: 100%;
     width: 100%;
-    z-index: 100;
+    grid-template-columns: 1fr 10fr 20px;
+    grid-template-rows: 20px 10fr 1fr 20px;
+    grid-template-areas:
+        "robotcarui-head-position-widget robotcarui-head-position-widget robotcarui-head-position-widget"
+        ". . robotcarui-throttle-widget"
+        ". robotcarui-main-hud robotcarui-throttle-widget"
+        "robotcarui-direction-widget robotcarui-direction-widget robotcarui-direction-widget";
+
+
+    &>* {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 }
 
+
 robotcarui-head-position-widget {
-    position: absolute;
-    background-color: #fff;
-    width: 100%;
+    margin: 5px 5px 0 5px;
+    grid-area: robotcarui-head-position-widget;
     z-index: 100;
 }
 
 robotcarui-throttle-widget {
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    height: 100%;
+    margin: 5px 5px 5px 0;
+    grid-area: robotcarui-throttle-widget;
+    z-index: 100;
+}
+
+robotcarui-main-hud {
+    margin: 5px 5px 0 5px;
+    grid-area: robotcarui-main-hud;
+    z-index: 100;
+}
+
+robotcarui-direction-widget {
+    margin: 0 5px 5px 5px;
+    grid-area: robotcarui-direction-widget;
     z-index: 100;
 }

@@ -18,15 +18,15 @@ export class HeadPositionWidgetComponent {
   constructor(
     private gamepadService: GamepadService
   ) {
-    this.gamepadService.getHeadPositionChange().subscribe(newHeadPosition => {
-      let headChangeIncrement = Math.abs(newHeadPosition * headChangeBaseIncrement);
-      if (newHeadPosition < -deadZone) {
+    this.gamepadService.rightStickXChange.subscribe(rightStickX => {
+      let headChangeIncrement = Math.abs(rightStickX * headChangeBaseIncrement);
+      if (rightStickX < -deadZone) {
         if (this.headPosition - headChangeIncrement > -1) {
           this.headPosition -= headChangeIncrement;
         } else {
           this.headPosition = -1;
         }
-      } else if (newHeadPosition > deadZone) {
+      } else if (rightStickX > deadZone) {
         if (this.headPosition + headChangeIncrement < 1) {
           this.headPosition += headChangeIncrement;
         } else {

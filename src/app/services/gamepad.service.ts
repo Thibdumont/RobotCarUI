@@ -7,12 +7,15 @@ import { Injectable } from '@angular/core';
 })
 export class GamepadService {
 
-  pollingLoop: any;
   gamepadPollingRate: number = 30; //Every 30 ms
   gamepadSub: any;
-  directionChange: Subject<number> = new Subject();
-  throttleChange: Subject<number> = new Subject();
-  headPositionChange: Subject<number> = new Subject();
+
+  public leftStickXChange: Subject<number> = new Subject();
+  public rightStickXChange: Subject<number> = new Subject();
+  public rightTriggerChange: Subject<number> = new Subject();
+  public leftTriggerChange: Subject<number> = new Subject();
+  public leftShoulderChange: Subject<number> = new Subject();
+  public rightShoulderChange: Subject<number> = new Subject();
 
   constructor() {
   }
@@ -31,44 +34,54 @@ export class GamepadService {
   private gamepadPollingLoop() {
     this.gamepadSub = interval(this.gamepadPollingRate)
       .pipe()
-      .subscribe(data => {
+      .subscribe(() => {
         var gamepads = navigator.getGamepads().filter(gamepad => gamepad !== null);
 
         for (const gamepad of gamepads) {
-          this.directionChange.next(this.getDirection(gamepad));
-          this.throttleChange.next(this.getThrottle(gamepad));
-          this.headPositionChange.next(this.getHeadPosition(gamepad));
+          this.leftTriggerChange.next(this.getLeftTrigger(gamepad));
+          this.rightTriggerChange.next(this.getRightTrigger(gamepad));
+          this.leftStickXChange.next(this.getLeftStickX(gamepad));
+          this.rightStickXChange.next(this.getRightStickX(gamepad));
+          this.leftShoulderChange.next(this.getLeftShoulder(gamepad));
+          this.rightShoulderChange.next(this.getRightShoulder(gamepad));
         }
       });
   }
 
-  public getThrottle(gamepad: Gamepad | null): number {
+  private getLeftTrigger(gamepad: Gamepad | null): number {
     return gamepad === null ?
       0 :
-      gamepad.buttons[6].value > 0 ? -gamepad.buttons[6].value : gamepad.buttons[7].value;
+      gamepad.buttons[6].value;
   }
 
-  public getDirection(gamepad: Gamepad | null): number {
+  private getRightTrigger(gamepad: Gamepad | null): number {
+    return gamepad === null ?
+      0 :
+      gamepad.buttons[7].value;
+  }
+
+  private getLeftStickX(gamepad: Gamepad | null): number {
     return gamepad === null ?
       0 :
       gamepad?.axes[0];
   }
 
-  public getHeadPosition(gamepad: Gamepad | null): number {
+  private getRightStickX(gamepad: Gamepad | null): number {
     return gamepad === null ?
       0 :
       gamepad?.axes[2];
   }
 
-  public getDirectionChange(): Subject<number> {
-    return this.directionChange;
+  private getLeftShoulder(gamepad: Gamepad | null): number {
+    return gamepad === null ?
+      0 :
+      gamepad?.buttons[4].value;
   }
 
-  public getThrottleChange(): Subject<number> {
-    return this.throttleChange;
+  private getRightShoulder(gamepad: Gamepad | null): number {
+    return gamepad === null ?
+      0 :
+      gamepad?.buttons[5].value;
   }
 
-  public getHeadPositionChange(): Subject<number> {
-    return this.headPositionChange;
-  }
 }

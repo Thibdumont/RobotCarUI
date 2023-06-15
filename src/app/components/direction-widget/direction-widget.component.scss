@@ -7,6 +7,9 @@
     display: flex;
     justify-content: space-between;
     position: relative;
+    background: #fff2;
+    border-radius: 4px;
+    overflow: hidden;
 
     &>div {
         width: 50%;
