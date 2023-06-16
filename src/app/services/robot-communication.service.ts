@@ -55,7 +55,7 @@ export class RobotCommunicationService {
       try {
         const json = JSON.parse(lastJsonObject);
         console.log(json);
-        this.robotState = new RobotState(json.speed, json.distance);
+        this.robotState = new RobotState(json.speed, json.distance, json.loopDuration);
         this.robotStateChange.next(this.robotState);
       } catch (e) {
         console.log(e);

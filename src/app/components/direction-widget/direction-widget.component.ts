@@ -1,4 +1,5 @@
 import { GamepadService } from 'src/app/services/gamepad.service';
+import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
@@ -12,7 +13,8 @@ export class DirectionWidgetComponent {
   @ViewChild('rightDirectionForce') rightDirectionForce!: ElementRef;
 
   constructor(
-    private gamepadService: GamepadService
+    private gamepadService: GamepadService,
+    private robotCommunicationService: RobotCommunicationService
   ) {
     this.gamepadService.leftStickXChange.subscribe(leftStick => {
       if (leftStick < 0) {
@@ -22,6 +24,7 @@ export class DirectionWidgetComponent {
         this.leftDirectionForce.nativeElement.style.width = '0%';
         this.rightDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(leftStick) * 100))}%`;
       }
+      this.robotCommunicationService.sendCommand({ directionX: leftStick });
     });
 
   }

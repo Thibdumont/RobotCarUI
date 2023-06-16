@@ -29,16 +29,20 @@ export class ThrottleWidgetComponent {
 
   handleThrottle() {
     this.gamepadService.leftTriggerChange.subscribe(leftTrigger => {
-      this.leftTrigger = leftTrigger;
       if (!this.rightTrigger) {
+        this.leftTrigger = leftTrigger;
         this.backwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(leftTrigger) * 100))}%`;
+        this.robotCommunicationService.sendCommand({ speedThrottle: -leftTrigger });
       } else {
         this.backwardThrottleForce.nativeElement.style.height = '0%';
       }
     });
     this.gamepadService.rightTriggerChange.subscribe(rightTrigger => {
-      this.rightTrigger = rightTrigger;
-      this.forwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(rightTrigger) * 100))}%`;
+      if (!this.leftTrigger) {
+        this.rightTrigger = rightTrigger;
+        this.forwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(rightTrigger) * 100))}%`;
+        this.robotCommunicationService.sendCommand({ speedThrottle: rightTrigger });
+      }
     });
   }
 
@@ -49,11 +53,7 @@ export class ThrottleWidgetComponent {
           this.robotCommunicationService.robotState.maxSpeed - maxSpeedChangeIncrement < minRobotSpeed ?
             minRobotSpeed :
             this.robotCommunicationService.robotState.maxSpeed - maxSpeedChangeIncrement;
-        this.robotCommunicationService.sendCommand(
-          {
-            speed: newSpeed
-          }
-        );
+        this.robotCommunicationService.sendCommand({ speed: newSpeed });
       }
     });
 
@@ -63,11 +63,7 @@ export class ThrottleWidgetComponent {
           this.robotCommunicationService.robotState.maxSpeed + maxSpeedChangeIncrement > maxRobotSpeed ?
             maxRobotSpeed :
             this.robotCommunicationService.robotState.maxSpeed + maxSpeedChangeIncrement;
-        this.robotCommunicationService.sendCommand(
-          {
-            speed: newSpeed
-          }
-        );
+        this.robotCommunicationService.sendCommand({ speed: newSpeed });
       }
     });
   }

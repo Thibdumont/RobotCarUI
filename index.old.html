@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot controller</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@6.5.95/css/materialdesignicons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+        integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+
+        class Vector2 {
+            x = 0;
+            y = 0;
+        }
+
+        const hostPath = '192.168.1.32';
+        // const hostPath = window.location.host;
+
+        const wsPath = `ws://${hostPath}/ws`;
+        const streamPath = `http://${hostPath}/stream`;
+        const cameraServerPath = `http://${hostPath}`;
+
+        const batteryEmptyThreshold = 4;
+        const batteryMaxVoltage = 8.4;
+        const batteryVoltageRange = batteryMaxVoltage - batteryEmptyThreshold;
+        const maxRealisticMinCountForBatteryDuration = 60000;
+        const maxVoltageFifoLength = 1000;
+
+        const heartbeatMaxInterval = 3000;
+        const minDelayBetweenDirectionCommand = 20;
+        const directionSendTimeInterval = 30;
+
+        const gamepadPollingRate = 30;
+
+        directionSendInterval = undefined;
+
+        batteryLifeMeasureDelay = 5000;
+        voltageOneCycleAgo = 0;
+        voltage = 0;
+        voltageFifo = new Array();
+
+        socketOpened = false;
+        lastHeartbeatTime = moment();
+        lastDirectionCommandTime = moment();
+
+        dpadActive = false;
+
+        streamOpened = false;
+
+        commandCounter = 0;
+
+        const direction = new Vector2();
+        let speedThrottle = 0;
+
+        initGamepad();
+
+        function initGamepad() {
+            window.addEventListener("gamepadconnected", (event) => {
+                console.log("A gamepad connected:");
+                console.log(event.gamepad);
+            });
+
+            window.addEventListener("gamepaddisconnected", (event) => {
+                console.log("A gamepad disconnected:");
+                console.log(event.gamepad);
+            });
+
+            gamepadPollingLoop();
+        }
+
+        function gamepadPollingLoop() {
+            var gamepads = navigator.getGamepads();
+
+            if (gamepads.find(gamepad => gamepad != null)) {
+                console.log(gamepads);
+                speedThrottle = gamepads[0]?.buttons[7]?.value;
+
+                direction.x = gamepads[0]?.axes[0];
+                if (direction.x < 0) {
+                    document.querySelector('#right-direction-force').style.width = '0%';
+                    document.querySelector('#left-direction-force').style.width = Math.round((Math.abs(direction.x) * 100)) + '%';
+                } else {
+                    document.querySelector('#left-direction-force').style.width = '0%';
+                    document.querySelector('#right-direction-force').style.width = Math.round((Math.abs(direction.x) * 100)) + '%';
+                }
+
+                speedThrottle = gamepads[0].buttons[6].value > 0 ? -gamepads[0].buttons[6].value : gamepads[0].buttons[7].value;
+                direction.y = speedThrottle;
+                if (speedThrottle < 0) {
+                    document.querySelector('#forward-throttle-force').style.width = '0%';
+                    document.querySelector('#backward-throttle-force').style.width = Math.round((Math.abs(speedThrottle) * 100)) + '%';
+                } else {
+                    document.querySelector('#backward-throttle-force').style.width = '0%';
+                    document.querySelector('#forward-throttle-force').style.width = Math.round((Math.abs(speedThrottle) * 100)) + '%';
+                }
+            }
+            setTimeout(gamepadPollingLoop, gamepadPollingRate);
+        }
+
+        function sendCommand(paramName, value) {
+            if (socketOpened) {
+                const json = {};
+                json[paramName] = value;
+                json.commandCounter = ++commandCounter;
+                socket.send(JSON.stringify(json));
+            }
+        }
+
+        function sendJsonCommand(json) {
+            if (socketOpened) {
+                json.commandCounter = ++commandCounter;
+                socket.send(JSON.stringify(json));
+            }
+        }
+
+        function enableDpad(event) {
+            event.stopPropagation();
+            dpadActive = true;
+            document.querySelector('#direction-dpad-container').classList.add('active');
+        }
+
+        function sendDirection(byPassDelay = true) {
+            if (byPassDelay || moment.duration(moment().diff(lastDirectionCommandTime)).as('milliseconds') > minDelayBetweenDirectionCommand) {
+                sendJsonCommand({ directionX: direction.x, directionY: direction.y, speedThrottle: speedThrottle });
+                lastDirectionCommandTime = moment();
+            }
+        }
+
+        function rotateServo(angle) {
+            sendCommand('servoAngle', getServoAngle(angle));
+            isServoAngleStable(angle);
+        }
+
+        function changeSpeed(speed) {
+            sendCommand('speed', speed);
+        }
+
+        function toggleSpeedMode(speedMode) {
+            sendCommand('speedAuto', speedMode);
+        }
+
+        function changeCarMode(carMode) {
+            // Si mode auto, on désactive la caméra qui devient inutile
+            carMode == 1 ? stopStream() : startStream();
+            sendCommand('carMode', carMode);
+        }
+
+        function toggleCollisionAvoidance(collisionAvoidance) {
+            sendCommand('collisionAvoidance', collisionAvoidance);
+        }
+
+        function toggleJoystickController(joystickModeEnabled) {
+            if (joystickModeEnabled) {
+                document.querySelector('#direction-dpad-container').className = 'd-none';
+                document.querySelector('#joystick-controller-container').classList.remove('d-none');
+            } else {
+                document.querySelector('#direction-dpad-container').classList.remove('d-none');
+                document.querySelector('#joystick-controller-container').className = 'd-none';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+
+            window.onclick = () => {
+                dpadActive = false;
+                document.querySelector('#direction-dpad-container').classList.remove('active');
+            };
+
+            window.onkeydown = (event) => {
+                if (!event.repeat && dpadActive) {
+                    switch (event.code) {
+                        case 'ArrowUp':
+                        case 'KeyW':
+                            direction.y = 1;
+                            document.querySelector('#forward').classList.add('active');
+                            break;
+                        case 'ArrowDown':
+                        case 'KeyS':
+                            direction.y = -1;
+                            document.querySelector('#backward').classList.add('active');
+                            break;
+                        case 'ArrowLeft':
+                        case 'KeyA':
+                            direction.x = -1;
+                            document.querySelector('#left').classList.add('active');
+                            break;
+                        case 'ArrowRight':
+                        case 'KeyD':
+                            direction.x = 1;
+                            document.querySelector('#right').classList.add('active');
+                            break;
+                        case 'Space':
+                            takePhoto();
+                            break;
+                    }
+                    sendDirection();
+                }
+            };
+
+            window.onkeyup = (event) => {
+                if (!event.repeat) {
+                    switch (event.code) {
+                        case 'ArrowUp':
+                        case 'KeyW':
+                            if (direction.y == 1) {
+                                direction.y = 0;
+                            }
+                            document.querySelector('#forward').classList.remove('active');
+                            break;
+                        case 'ArrowDown':
+                        case 'KeyS':
+                            if (direction.y == -1) {
+                                direction.y = 0;
+                            }
+                            document.querySelector('#backward').classList.remove('active');
+                            break;
+                        case 'ArrowLeft':
+                        case 'KeyA':
+                            if (direction.x == -1) {
+                                direction.x = 0;
+                            }
+                            document.querySelector('#left').classList.remove('active');
+                            break;
+                        case 'ArrowRight':
+                        case 'KeyD':
+                            if (direction.x == 1) {
+                                direction.x = 0;
+                            }
+                            document.querySelector('#right').classList.remove('active');
+                            break;
+                    }
+                    sendDirection();
+                }
+            };
+
+            const servoControlRange = document.querySelector('#servo-control-range');
+            servoControlRange.addEventListener('change', (event) => {
+                document.querySelector('#servo-control-value').innerHTML = servoControlRange.value;
+                rotateServo(servoControlRange.value);
+            });
+
+            const speedControlRange = document.querySelector('#speed-control-range');
+            speedControlRange.addEventListener('change', (event) => {
+                document.querySelector('#speed-control-value').innerHTML = speedControlRange.value;
+                if (!speedControlRange.disabled) {
+                    changeSpeed(speedControlRange.value);
+                }
+            });
+
+            const speedModeSwitch = document.querySelector('#speed-mode-switch');
+            speedModeSwitch.addEventListener('change', (event) => {
+                speedControlRange.disabled = speedModeSwitch.checked;
+                toggleSpeedMode(speedModeSwitch.checked);
+                if (!speedModeSwitch.checked) {
+                    changeSpeed(speedControlRange.value);
+                }
+            });
+
+            const collisionAvoidanceSwitch = document.querySelector('#collision-avoidance-switch');
+            collisionAvoidanceSwitch.addEventListener('change', (event) => {
+                toggleCollisionAvoidance(collisionAvoidanceSwitch.checked);
+            });
+
+
+            const joystickControllerSwitch = document.querySelector('#joystick-controller-switch');
+            joystickControllerSwitch.addEventListener('change', (event) => {
+                toggleJoystickController(joystickControllerSwitch.checked);
+            });
+
+        });
+
+        function average(array) {
+            return array.length > 1 ? array.reduce((a, b) => a + b) / array.length : 0;
+        }
+
+
+        // Socket
+        let socket;
+        function connect() {
+            socket = new WebSocket(wsPath);
+            socket.onmessage = (event) => {
+                lastHeartbeatTime = moment();
+                let lastJsonObject = event.data.split('}');
+                lastJsonObject = lastJsonObject[lastJsonObject.length - 2] + '}';
+                if (lastJsonObject.substring(0, 1) === '{') {
+                    try {
+                        const json = JSON.parse(lastJsonObject);
+                        // On ne met à jour les données modifiables que si la commande est passée et qu'on a un message plus récent
+                        if (json.commandCounter >= commandCounter) {
+                            if (json.hasOwnProperty('speed')) {
+                                document.querySelector('#speed-control-value').innerHTML = json.speed;
+                                document.querySelector('#speed-control-range').value = json.speed;
+                            }
+                            if (json.hasOwnProperty('servoAngle')) {
+                                document.querySelector('#servo-control-value').innerHTML = getServoAngle(json.servoAngle);
+                                document.querySelector('#servo-control-range').value = getServoAngle(json.servoAngle);
+                            }
+                            if (json.hasOwnProperty('carMode')) {
+                                json.carMode == 0 ? document.querySelector('#car-mode-manual').setAttribute('checked', '') : document.querySelector('#car-mode-manual').removeAttribute('checked');
+                                json.carMode == 1 ? document.querySelector('#car-mode-roaming').setAttribute('checked', '') : document.querySelector('#car-mode-roaming').removeAttribute('checked');
+                            }
+                            if (json.hasOwnProperty('speedMode')) {
+                                json.speedMode == 1 ? document.querySelector('#speed-mode-switch').setAttribute('checked', '') : document.querySelector('#speed-mode-switch').removeAttribute('checked');
+                            }
+                            if (json.hasOwnProperty('collisionAvoidance')) {
+                                json.collisionAvoidance ? document.querySelector('#collision-avoidance-switch').setAttribute('checked', '') : document.querySelector('#collision-avoidance-switch').removeAttribute('checked');
+                            }
+                        } else {
+                            //Si on est trop désynchro, on se réaligne avec l'ESP
+                            commandCounter = json.commandCounter;
+                        }
+                        if (json.hasOwnProperty('distance')) {
+                            document.querySelector('#distance-value').innerHTML = Math.min(parseInt(json.distance), 150);
+                        }
+                        if (json.hasOwnProperty('isPickedUp')) {
+                            document.querySelector('#is-picked-up').innerHTML = json.isPickedUp ? "Non" : "Oui";
+                        }
+                        if (json.hasOwnProperty('batteryVoltage')) {
+                            voltage = getMaxVoltageFromFifo(json.batteryVoltage);
+                            document.querySelector('#battery-value').innerHTML = json.batteryVoltage.toFixed(2);
+                            const batteryPercent = Math.round(Math.min(100, Math.max(0, ((voltage - batteryEmptyThreshold) / batteryVoltageRange) * 100)));
+                            document.querySelector('#battery-percent').innerHTML = batteryPercent;
+                            const batteryLevel = document.querySelector('#battery-level');
+                            if (batteryPercent < 20) {
+                                batteryLevel.className = 'low';
+                            } else if (batteryPercent < 60) {
+                                batteryLevel.className = 'mid';
+                            } else {
+                                batteryLevel.className = '';
+                            }
+                        }
+                    } catch (e) {
+                        console.log(e);
+                    }
+                }
+            };
+
+            socket.onopen = () => {
+                sendCommand("ping", 0);
+                fetch(`${cameraServerPath}/status`).then(response => response.json())
+                    .then(cameraStatus => {
+                        document.querySelector('#framesize-select').value = cameraStatus.framesize;
+                        if (cameraStatus.hmirror == 1) {
+                            document.querySelector('#flip-hori').setAttribute('checked', 'checked');
+                        } else {
+                            document.querySelector('#flip-hori').removeAttribute('checked');
+                        }
+                        if (cameraStatus.vflip == 1) {
+                            document.querySelector('#flip-vert').setAttribute('checked', 'checked');
+                        } else {
+                            document.querySelector('#flip-vert').removeAttribute('checked');
+                        }
+                    });
+                setTimeout(() => {
+                    startStream();
+                }, 1000);
+                directionSendInterval = setInterval(() => { sendDirection() }, directionSendTimeInterval);
+                document.querySelector('#web-socket-status').className = 'connected';
+                socketOpened = true;
+            };
+
+            socket.onclose = () => {
+                clearInterval(directionSendInterval);
+                document.querySelector('#web-socket-status').className = '';
+                socketOpened = false;
+            };
+        }
+
+        // Gère la connexion auto/déconnexion
+        setInterval(() => {
+            if (!socketOpened) {
+                connect();
+            }
+            if (moment.duration(moment().diff(lastHeartbeatTime)).as('milliseconds') > heartbeatMaxInterval) {
+                document.querySelector('#web-socket-status').className = '';
+                socketOpened = false;
+                stopStream();
+            }
+        }, heartbeatMaxInterval / 2);
+
+        function getMaxVoltageFromFifo(voltage) {
+            voltageFifo.push(voltage);
+            if (voltageFifo.length > maxVoltageFifoLength) {
+                voltageFifo.shift();
+            }
+            return Math.max(...voltageFifo);
+        }
+
+        // Mesure de la durée de la batterie
+        function updateBatteryDuration() {
+            setTimeout(() => {
+                const voltage = average(voltageFifo);
+                if (voltage > 0 && voltageOneCycleAgo > voltage) {
+                    let voltageConsumedInOneCycle = (voltageOneCycleAgo - voltage) / batteryLifeMeasureDelay;
+                    minCountBeforeBatteryEmpty = (batteryVoltageRange / (voltageConsumedInOneCycle * 1000 * 60));
+                    batteryDuration = '';
+
+                    if (minCountBeforeBatteryEmpty < maxRealisticMinCountForBatteryDuration) {
+                        if (minCountBeforeBatteryEmpty > 60) {
+                            batteryDuration += `${Math.round(minCountBeforeBatteryEmpty / 60)}h${Math.round(minCountBeforeBatteryEmpty % 60)}m`;
+                        } else {
+                            batteryDuration += `${Math.round(minCountBeforeBatteryEmpty)}m`;
+                        }
+                        document.querySelector('#battery-duration').innerHTML = batteryDuration;
+                    }
+                }
+                voltageOneCycleAgo = voltage;
+                // On augmente d'une seconde à chaque mesure, jusqu'à un max de 60sec
+                if (batteryLifeMeasureDelay < 60000) {
+                    batteryLifeMeasureDelay += 1000;
+                }
+                //Appel récursif
+                updateBatteryDuration();
+            }, batteryLifeMeasureDelay);
+        }
+        updateBatteryDuration();
+
+        // Camera
+        function toggleStream() {
+            streamOpened ?
+                stopStream() :
+                startStream();
+        }
+
+        function startStream() {
+            if (!streamOpened) {
+                const stream = document.querySelector('#stream');
+                const recLogo = document.querySelector('#rec-logo');
+                const streamPlaceholder = document.querySelector('#stream-placeholder');
+                stream.src = streamPath;
+                stream.className = '';
+                streamPlaceholder.className = 'd-none';
+                recLogo.className = '';
+                streamOpened = true;
+                document.querySelector('#toggle-stream').setAttribute('checked', 'checked');
+            }
+        }
+
+        function stopStream() {
+            if (streamOpened) {
+                const stream = document.querySelector('#stream');
+                const recLogo = document.querySelector('#rec-logo');
+                const streamPlaceholder = document.querySelector('#stream-placeholder');
+                window.stop();
+                stream.src = '';
+                streamPlaceholder.className = '';
+                stream.className = 'd-none';
+                recLogo.className = 'd-none';
+                streamOpened = false;
+                document.querySelector('#toggle-stream').removeAttribute('checked');
+            }
+        }
+
+        function changeCameraFrameSize() {
+            const value = document.querySelector('#framesize-select').value;
+            const query = `${cameraServerPath}/control?var=framesize&val=${value}`;
+            fetch(query);
+        }
+
+        function changeCameraQuality() {
+            const value = document.querySelector('#camera-quality').value;
+            const query = `${cameraServerPath}/control?var=quality&val=${value}`;
+            fetch(query);
+        }
+
+        function flipHori() {
+            const value = document.querySelector('#flip-hori').checked;
+            const query = `${cameraServerPath}/control?var=hmirror&val=${value ? 0 : 1}`;
+            fetch(query);
+        }
+
+        function flipVert() {
+            const value = document.querySelector('#flip-vert').checked;
+            const query = `${cameraServerPath}/control?var=vflip&val=${value ? 1 : 0}`;
+            fetch(query);
+        }
+
+        function takePhoto() {
+            const img = document.createElement('img');
+            img.src = `${cameraServerPath}/capture?_cb=${Date.now()}`;
+            img.onclick = () => { img.remove(); displayPhoto(img, false) };
+            img.onmouseover = () => { displayPhoto(img, true) };
+            img.onmouseout = () => { displayPhoto(img, false) };
+            document.querySelector('#img-container').appendChild(img);
+        }
+
+        function displayPhoto(img, display) {
+            const stream = document.querySelector('#stream');
+            const recLogo = document.querySelector('#rec-logo');
+            const streamPlaceholder = document.querySelector('#stream-placeholder');
+
+            if (display) {
+                if (streamOpened) {
+                    recLogo.className = 'd-none';
+                } else {
+                    streamPlaceholder.className = 'd-none';
+                    stream.className = '';
+                }
+                stream.src = img.src;
+            } else {
+                if (streamOpened) {
+                    recLogo.className = '';
+                } else {
+                    streamPlaceholder.className = '';
+                    stream.className = 'd-none';
+                }
+                stream.src = streamPath;
+            }
+        }
+
+        function getServoAngle(servoAngle) {
+            return -(parseInt(servoAngle) - 90);
+        }
+
+        connect();
+
+    </script>
+    <style>
+        html,
+        body {
+            background-color: #efefef;
+            color: #333;
+            height: 100%;
+            max-height: 100%;
+        }
+
+        .container-fluid {
+            height: 100%;
+            max-height: 100%;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr 1fr;
+            grid-template-rows: 3fr 2fr;
+            grid-template-areas:
+                "system-data-container camera-container camera-control-container capture-container"
+                "system-data-container common-control-container common-control-container capture-container";
+
+            gap: 16px;
+        }
+
+        .card,
+        .sub-card {
+            padding: 8px;
+        }
+
+        .col {
+            margin-bottom: 16px;
+        }
+
+        #system-data-container {
+            grid-area: system-data-container;
+        }
+
+        #camera-container {
+            grid-area: camera-container;
+        }
+
+        #camera-control-container {
+            grid-area: camera-control-container;
+        }
+
+        #common-control-container {
+            grid-area: common-control-container;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 1fr;
+            height: 100%;
+            padding: 8px;
+            grid-template-areas:
+                "motor-control-container direction-control-container behaviour-control-container";
+        }
+
+        #motor-control-container {
+            grid-area: motor-control-container;
+        }
+
+        #direction-control-container {
+            grid-area: direction-control-container;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #direction-dpad-container {
+            width: 100%;
+        }
+
+        #direction-dpad-container.active {
+            outline: 3px solid #0d6efd;
+        }
+
+        #behaviour-control-container {
+            grid-area: behaviour-control-container;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #capture-container {
+            grid-area: capture-container;
+        }
+
+        h3 {
+            font-size: 1.4vw;
+            color: #0d6efd;
+            margin: 8px 0 16px 0;
+            text-align: center;
+        }
+
+        h3>i {
+            margin-left: 4px;
+        }
+
+        .row {
+            margin-top: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 1vw;
+        }
+
+        .widget-container {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .widget {
+            flex: 1 10vh;
+            height: 10vh;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #efefef;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .value-group {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        label,
+        .form-check,
+        .btn-group label,
+        .range-container,
+        .value,
+        .unit,
+        .capture-button,
+        #battery-percent {
+            font-size: 1vw;
+        }
+
+        label {
+            color: #0d6efd;
+        }
+
+        label .mdi {
+            margin-left: 4px;
+        }
+
+        .value {
+            justify-content: flex-end;
+        }
+
+        .value.single {
+            justify-content: center;
+        }
+
+        .value,
+        .unit {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .value-sep {
+            content: '';
+            display: block;
+            margin: 0 8px;
+            width: 0.6vw;
+            height: 0.6vw;
+            border-radius: 50%;
+            background: #98c1ff;
+        }
+
+        .range-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .limit {
+            display: block;
+            text-align: center;
+            width: 5vw;
+        }
+
+        #web-socket-status {
+            width: 1.5vw;
+            height: 1.5vw;
+            margin: 8px;
+            border-radius: 50%;
+            background: rgb(248, 68, 68);
+        }
+
+        #web-socket-status.connected {
+            background: rgb(113, 189, 113);
+        }
+
+        .battery-logo-wrapper {
+            align-self: center;
+            width: 3vw;
+            height: 1.5vw;
+            display: flex;
+            align-items: center;
+        }
+
+        .battery-body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #333;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .battery-stud {
+            height: 0.75vw;
+            border-left: 0.3vw solid #052c65;
+            border-radius: 0 2px 2px 0;
+        }
+
+        #battery-level {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: rgb(113, 189, 113);
+        }
+
+        #battery-percent {
+            font-weight: bold;
+            color: #fff;
+            text-shadow: rgb(51, 51, 51) 1px 0px 0px, rgb(51, 51, 51) 0.540302px 0.841471px 0px, rgb(51, 51, 51) -0.416147px 0.909297px 0px, rgb(51, 51, 51) -0.989992px 0.14112px 0px, rgb(51, 51, 51) -0.653644px -0.756802px 0px, rgb(51, 51, 51) 0.283662px -0.958924px 0px, rgb(51, 51, 51) 0.96017px -0.279415px 0px;
+            z-index: 2;
+        }
+
+        #battery-percent::after {
+            content: '%'
+        }
+
+        #battery-level.low {
+            background: rgb(248, 68, 68);
+        }
+
+        #battery-level.mid {
+            background: rgb(248, 185, 68);
+        }
+
+        #stream-container {
+            margin: 8px;
+            display: flex;
+            width: calc(100% - 32px);
+            height: calc(100% - 32px);
+            max-height: 100%;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            border-radius: 8px;
+            overflow: hidden;
+            position: absolute;
+        }
+
+        #rec-logo {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: red;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 2;
+        }
+
+        #rec-logo::after {
+            content: 'REC';
+            position: absolute;
+            color: #fff;
+            top: 0;
+            line-height: 20px;
+            right: 30px;
+        }
+
+        #stream-placeholder {
+            width: 100%;
+            height: 100%;
+            background: #efefef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5vw;
+        }
+
+        img#stream {
+            object-fit: contain;
+            width: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background: black;
+        }
+
+        #direction-dpad-container {
+            cursor: pointer;
+            background: #efefef;
+            border-radius: 8px;
+            margin: 8px;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            grid-template-areas: ". forward ."
+                "left . right"
+                ". backward .";
+        }
+
+        #direction-dpad-container>i {
+            font-size: 3vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #forward {
+            grid-area: forward;
+        }
+
+        #backward {
+            grid-area: backward;
+        }
+
+        #left {
+            grid-area: left;
+        }
+
+        #right {
+            grid-area: right;
+        }
+
+        #direction-dpad-container>.active {
+            color: #0d6efd;
+        }
+
+        #joystick-controller-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 100%;
+        }
+
+        #direction-bar,
+        #throttle-bar {
+            width: 100%;
+            background: #efefef;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        #direction-bar>div,
+        #throttle-bar>div {
+            width: 50%;
+            height: 3vh;
+        }
+
+        #direction-bar>span,
+        #throttle-bar>span {
+            position: absolute;
+        }
+
+        #direction-bar>.center,
+        #throttle-bar>.center {
+            width: 2px;
+            height: 3vh;
+            background-color: black;
+            left: 50%;
+        }
+
+        #direction-bar>.right,
+        #throttle-bar>.right {
+            right: 0;
+        }
+
+        #left-direction-force,
+        #right-direction-force,
+        #backward-throttle-force,
+        #forward-throttle-force {
+            background-color: #0d6efd;
+            height: 3vh;
+            width: 0%;
+        }
+
+        .reverse {
+            transform: rotate(180deg);
+        }
+
+        #img-container {
+            flex: 1;
+            margin-top: 8px;
+            overflow: auto;
+        }
+
+        #img-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #img-container::-webkit-scrollbar-thumb {
+            background: #98c1ff;
+            border-left: 4px solid white;
+            background-clip: padding-box;
+        }
+
+        #img-container img {
+            border-radius: 4px;
+            margin-bottom: 8px;
+            max-width: 100%;
+            cursor: pointer;
+        }
+
+        #img-container img:hover {
+            opacity: 0.9;
+        }
+
+        .capture-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <section id="system-data-container" class="card">
+            <h3>Données système</h3>
+            <div class="battery-logo-wrapper value-group">
+                <div class="battery-body">
+                    <div id="battery-level"></div>
+                    <span id="battery-percent">-</span>
+                </div>
+                <div class="battery-stud"></div>
+            </div>
+            <div class="widget-container flex-row">
+                <div class="widget">
+                    <label>Connexion</label>
+                    <div id="web-socket-status"></div>
+                </div>
+                <div class="widget">
+                    <label>Autonomie</label>
+                    <div class="value-group">
+                        <span class="value single" id="battery-duration">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="widget-container">
+                <div class="widget">
+                    <label>Batterie<i class="mdi mdi-battery-charging-100"></i></label>
+                    <div class="value-group">
+                        <span class="value" id="battery-value">-</span>
+                        <span class="value-sep"></span>
+                        <span class="unit">V</span>
+                    </div>
+
+                </div>
+                <div class="widget">
+                    <label>Capteur ultrason<i class="mdi mdi-radar"></i></label>
+                    <div class="value-group">
+                        <span class="value" id="distance-value">-</span>
+                        <span class="value-sep"></span>
+                        <span class="unit">cm</span>
+                    </div>
+                </div>
+                <div class="widget">
+                    <label>Au sol ?<i class="mdi mdi-car-settings"></i></label>
+                    <div class="value-group">
+                        <span class="value single" id="is-picked-up">Non</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="camera-container" class="card">
+            <div id="stream-container">
+                <div id="rec-logo" class="d-none"></div>
+                <img id="stream" src="" class="d-none">
+                <div id="stream-placeholder"><i class="mdi mdi-camera-off"></i></div>
+            </div>
+        </section>
+        <section id="camera-control-container" class="card">
+            <h3>Contrôle caméra</h3>
+            <div class="form-group">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggle-stream" onclick="toggleStream()">
+                    <label class="form-check-label" for="toggle-stream">Démarrer caméra</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flip-hori" onclick="flipHori()">
+                    <label class="form-check-label" for="flip-hori">Miroir horizontal</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flip-vert" onclick="flipVert()">
+                    <label class="form-check-label" for="flip-vert">Miroir vertical</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="quality">Qualité</label>
+                <div class="range-container">
+                    <div class="limit">Basse</div>
+                    <input type="range" class="form-range" id="framesize-select" min="0" max="10" value="0"
+                        onchange="changeCameraFrameSize()">
+                    <div class="limit">Haute</div>
+                </div>
+            </div>
+
+        </section>
+        <section id="common-control-container" class="card">
+            <div id="motor-control-container" class="sub-card">
+                <div id="speed-control-container">
+                    <h3>Vitesse<i class="mdi mdi-car-speed-limiter"></i></h3>
+                    <div class="range-container">
+                        <span class="limit">0</span>
+                        <input type="range" class="form-range" id="speed-control-range" min="0" max="200" value="100"
+                            step="10">
+                        <span class="limit">200</span>
+                    </div>
+                    <div class="value-group">
+                        <span class="value" id="speed-control-value">-</span>
+                        <span class="value-sep"></span>
+                        <span class="unit">rpm</span>
+                    </div>
+                </div>
+                <div id="servo-control-container" class="mt-5">
+                    <h3> Position de la tête<i class="mdi mdi-axis-z-rotate-counterclockwise"></i> </h3>
+                    <div class="range-container">
+                        <span class="limit">Gauche</span>
+                        <input type="range" class="form-range" id="servo-control-range" min="-90" max="90" value="0"
+                            step="10">
+                        <span class="limit">Droite</span>
+                    </div>
+                    <div class="value-group">
+                        <span class="value" id="servo-control-value">-</span>
+                        <span class="value-sep"></span>
+                        <span class="unit">deg</span>
+                    </div>
+                </div>
+            </div>
+            <div id="direction-control-container" class="sub-card">
+                <h3>Direction<i class="mdi mdi-controller-classic"></i></h3>
+                <div class="form-group form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="joystick-controller-switch" checked="checked">
+                    <label class="form-check-label" for="joystick-controller-switch">Joystick</label>
+                </div>
+                <div id="direction-dpad-container" onclick="enableDpad(event)" class="d-none">
+                    <i id="forward" class="mdi mdi-arrow-up-thick"></i>
+                    <i id="backward" class="mdi mdi-arrow-down-thick"></i>
+                    <i id="left" class="mdi mdi-arrow-left-thick"></i>
+                    <i id="right" class="mdi mdi-arrow-right-thick"></i>
+                </div>
+                <div id="joystick-controller-container">
+                    <label>Vitesse</label>
+                    <div id="throttle-bar">
+                        <div class="left-bar reverse">
+                            <div id="backward-throttle-force"></div>
+                        </div>
+                        <div class="right-bar">
+                            <div id="forward-throttle-force"></div>
+                        </div>
+                        <span class="center"></span>
+                        <span class="left">Arrière</span>
+                        <span class="right">Avant</span>
+                    </div>
+                    <label>Direction</label>
+                    <div id="direction-bar">
+                        <div class="left-bar reverse">
+                            <div id="left-direction-force"></div>
+                        </div>
+                        <div class="right-bar">
+                            <div id="right-direction-force"></div>
+                        </div>
+                        <span class="center"></span>
+                        <span class="left">Gauche</span>
+                        <span class="right">Droite</span>
+                    </div>
+                </div>
+            </div>
+            <div id="behaviour-control-container" class="sub-card">
+                <h3>Modes<i class="mdi mdi-car-wireless"></i></h3>
+                <div class="form-group btn-group">
+                    <input type="radio" class="btn-check" name="car-mode" id="car-mode-manual"
+                        onchange="changeCarMode(0)">
+                    <label class="btn btn-outline-primary" for="car-mode-manual">Manuel</label>
+
+                    <input type="radio" class="btn-check" name="car-mode" id="car-mode-roaming"
+                        onchange="changeCarMode(1)">
+                    <label class="btn btn-outline-primary" for="car-mode-roaming">Auto</label>
+                </div>
+                <div class="form-group form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="collision-avoidance-switch">
+                    <label class="form-check-label" for="collision-avoidance-switch">Anti collision</label>
+                </div>
+                <div class="form-group form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="speed-mode-switch">
+                    <label class="form-check-label" for="speed-mode-switch">Vitesse auto</label>
+                </div>
+            </div>
+        </section>
+        <section id="capture-container" class="card">
+            <h3>Photos</h3>
+            <button class="btn btn-primary capture-button" onclick="takePhoto()"><i
+                    class="mdi mdi-camera"></i>Photo</button>
+            <div id="img-container">
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>
