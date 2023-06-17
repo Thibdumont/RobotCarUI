@@ -3,7 +3,7 @@ import { RobotCommunicationService } from 'src/app/services/robot-communication.
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
-const maxRobotSpeed = 250;
+const maxRobotSpeed = 200;
 const minRobotSpeed = 50;
 const maxSpeedChangeIncrement = 10;
 

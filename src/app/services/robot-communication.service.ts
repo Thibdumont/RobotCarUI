@@ -16,6 +16,7 @@ export class RobotCommunicationService {
   private socket!: WebSocket;
   private lastHeartbeatTime: Date = new Date();
   private socketOpened: boolean = false;
+  public connectionStatusChange: Subject<boolean> = new Subject();
   public robotStateChange: Subject<RobotState> = new Subject();
   public robotState!: RobotState;
 
@@ -32,19 +33,16 @@ export class RobotCommunicationService {
     this.socket.onmessage = this.onMessage.bind(this);
     this.socket.onopen = this.onOpen.bind(this);
     this.socket.onclose = this.onClose.bind(this);
-    this.socket.onerror = this.onError.bind(this);
   }
 
   private onOpen() {
     this.socketOpened = true;
+    this.connectionStatusChange.next(true);
   };
 
   private onClose() {
     this.socketOpened = false;
-  }
-
-  private onError() {
-    this.socketOpened = false;
+    this.connectionStatusChange.next(false);
   }
 
   private onMessage(event: any) {
@@ -73,7 +71,7 @@ export class RobotCommunicationService {
       .subscribe(() => {
         if (new Date().getTime() - this.lastHeartbeatTime.getTime() > heartbeatMaxInterval) {
           this.socketOpened = false;
-          console.log('Socket opened : ', this.socketOpened);
+          this.connectionStatusChange.next(false);
         }
         if (!this.socketOpened) {
           console.log('Connecting to robot...');

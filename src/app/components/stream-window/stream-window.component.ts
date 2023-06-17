@@ -1,6 +1,7 @@
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'robotcarui-stream-window',
@@ -8,14 +9,27 @@ import { Component } from '@angular/core';
   styleUrls: ['./stream-window.component.scss']
 })
 export class StreamWindowComponent {
-  constructor(
-    private appConfigService: AppConfigService
-  ) {
+  @ViewChild('stream') stream!: ElementRef;
 
+  constructor(
+    private appConfigService: AppConfigService,
+    private robotCommunicationService: RobotCommunicationService
+  ) {
+    this.autoReconnectStream();
   }
 
   getStreamUrl(): string {
     return `http://${this.appConfigService.hostname}/stream`;
+  }
+
+  autoReconnectStream() {
+    this.robotCommunicationService.connectionStatusChange.subscribe(connectionOpened => {
+      if (!connectionOpened) {
+        this.stream.nativeElement.src = '';
+      } else {
+        this.stream.nativeElement.src = this.getStreamUrl();
+      }
+    });
   }
 
 }
