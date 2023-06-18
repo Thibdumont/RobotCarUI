@@ -1,3 +1,4 @@
+import { distinctUntilChanged } from 'rxjs';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
@@ -37,14 +38,25 @@ export class HeadPositionWidgetComponent {
           this.headPosition = 1;
         }
       }
-      const calc = `calc(${this.headPosition * 50}% + (50% - ${headDiameter / 2}px))`;
-      this.head.nativeElement.style.setProperty('left', calc);
+      this.updateHeadPosition();
+    });
 
-      if (this.headPosition !== this.previousHeadPosition) {
-        const headAngle = (-this.headPosition + 1) * 90;
-        this.robotCommunicationService.sendCommand({ headPosition: headAngle });
+    this.gamepadService.rightStickButtonChange.pipe(distinctUntilChanged()).subscribe(rightStickButton => {
+      if (rightStickButton) {
+        this.headPosition = 0;
+        this.updateHeadPosition();
       }
     });
 
+  }
+
+  updateHeadPosition() {
+    const calc = `calc(${this.headPosition * 50}% + (50% - ${headDiameter / 2}px))`;
+    this.head.nativeElement.style.setProperty('left', calc);
+
+    if (this.headPosition !== this.previousHeadPosition) {
+      const headAngle = (-this.headPosition + 1) * 90;
+      this.robotCommunicationService.sendCommand({ headPosition: headAngle });
+    }
   }
 }

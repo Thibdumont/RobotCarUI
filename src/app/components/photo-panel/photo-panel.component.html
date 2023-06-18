@@ -1,0 +1,9 @@
+<div class="photo-panel-container" [@openClose]="opened ? 'opened':'closed'">
+    <div class="photo-list">
+        <div class="photo-item" *ngFor="let photo of photoList; let i = index" [@slide]="getPhotoState(i)"
+            [ngStyle]="{'z-index':getZIndex(i)}">
+            <label>{{ photo.date.toLocaleString() }}</label>
+            <img src="{{photo.src}}" />
+        </div>
+    </div>
+</div>

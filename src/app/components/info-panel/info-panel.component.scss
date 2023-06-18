@@ -1,0 +1,32 @@
+.info-panel-container {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    transform: translateX(-100%);
+}
+
+.info-list {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px;
+    background: #eee;
+    border-radius: 8px;
+
+    label {
+        font-size: 0.9rem;
+        padding-bottom: 4px;
+    }
+
+    span {
+        font-size: 1.1rem;
+    }
+}

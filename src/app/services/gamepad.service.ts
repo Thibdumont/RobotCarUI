@@ -11,11 +11,23 @@ export class GamepadService {
   gamepadSub: any;
 
   public leftStickXChange: Subject<number> = new Subject();
+  public leftStickYChange: Subject<number> = new Subject();
   public rightStickXChange: Subject<number> = new Subject();
+  public rightStickYChange: Subject<number> = new Subject();
+  public leftStickButtonChange: Subject<number> = new Subject();
+  public rightStickButtonChange: Subject<number> = new Subject();
   public rightTriggerChange: Subject<number> = new Subject();
   public leftTriggerChange: Subject<number> = new Subject();
   public leftShoulderChange: Subject<number> = new Subject();
   public rightShoulderChange: Subject<number> = new Subject();
+  public aButtonChange: Subject<number> = new Subject();
+  public bButtonChange: Subject<number> = new Subject();
+  public xButtonChange: Subject<number> = new Subject();
+  public yButtonChange: Subject<number> = new Subject();
+  public leftPadChange: Subject<number> = new Subject();
+  public rightPadChange: Subject<number> = new Subject();
+  public upPadChange: Subject<number> = new Subject();
+  public downPadChange: Subject<number> = new Subject();
 
   constructor() {
   }
@@ -38,50 +50,37 @@ export class GamepadService {
         var gamepads = navigator.getGamepads().filter(gamepad => gamepad !== null);
 
         for (const gamepad of gamepads) {
-          this.leftTriggerChange.next(this.getLeftTrigger(gamepad));
-          this.rightTriggerChange.next(this.getRightTrigger(gamepad));
-          this.leftStickXChange.next(this.getLeftStickX(gamepad));
-          this.rightStickXChange.next(this.getRightStickX(gamepad));
-          this.leftShoulderChange.next(this.getLeftShoulder(gamepad));
-          this.rightShoulderChange.next(this.getRightShoulder(gamepad));
+          this.leftStickXChange.next(this.getAxisValue(gamepad, 0));
+          this.leftStickYChange.next(this.getAxisValue(gamepad, 1));
+          this.rightStickXChange.next(this.getAxisValue(gamepad, 2));
+          this.rightStickYChange.next(this.getAxisValue(gamepad, 3));
+          this.leftStickButtonChange.next(this.getButtonValue(gamepad, 10));
+          this.rightStickButtonChange.next(this.getButtonValue(gamepad, 11));
+          this.leftTriggerChange.next(this.getButtonValue(gamepad, 6));
+          this.rightTriggerChange.next(this.getButtonValue(gamepad, 7));
+          this.leftShoulderChange.next(this.getButtonValue(gamepad, 4));
+          this.rightShoulderChange.next(this.getButtonValue(gamepad, 5));
+          this.aButtonChange.next(this.getButtonValue(gamepad, 0));
+          this.bButtonChange.next(this.getButtonValue(gamepad, 1));
+          this.xButtonChange.next(this.getButtonValue(gamepad, 2));
+          this.yButtonChange.next(this.getButtonValue(gamepad, 3));
+          this.leftPadChange.next(this.getButtonValue(gamepad, 14));
+          this.rightPadChange.next(this.getButtonValue(gamepad, 15));
+          this.upPadChange.next(this.getButtonValue(gamepad, 12));
+          this.downPadChange.next(this.getButtonValue(gamepad, 13));
         }
       });
   }
 
-  private getLeftTrigger(gamepad: Gamepad | null): number {
+  private getButtonValue(gamepad: Gamepad | null, buttonNumber: number): number {
     return gamepad === null ?
       0 :
-      gamepad.buttons[6].value;
+      gamepad.buttons[buttonNumber].value;
   }
 
-  private getRightTrigger(gamepad: Gamepad | null): number {
+  private getAxisValue(gamepad: Gamepad | null, axisNumber: number): number {
     return gamepad === null ?
       0 :
-      gamepad.buttons[7].value;
+      gamepad.axes[axisNumber];
   }
-
-  private getLeftStickX(gamepad: Gamepad | null): number {
-    return gamepad === null ?
-      0 :
-      gamepad?.axes[0];
-  }
-
-  private getRightStickX(gamepad: Gamepad | null): number {
-    return gamepad === null ?
-      0 :
-      gamepad?.axes[2];
-  }
-
-  private getLeftShoulder(gamepad: Gamepad | null): number {
-    return gamepad === null ?
-      0 :
-      gamepad?.buttons[4].value;
-  }
-
-  private getRightShoulder(gamepad: Gamepad | null): number {
-    return gamepad === null ?
-      0 :
-      gamepad?.buttons[5].value;
-  }
-
 }

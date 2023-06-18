@@ -1,0 +1,8 @@
+<div class="info-panel-container" [@openClose]="opened ? 'opened':'closed'">
+    <div class="info-list">
+        <div class="info-item" *ngFor="let info of getInfoList()">
+            <label>{{ info.label }}</label>
+            <span>{{ info.value }} {{ info.unit }}</span>
+        </div>
+    </div>
+</div>
