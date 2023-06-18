@@ -1,0 +1,32 @@
+.control-panel-container {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    transform: translateY(-100%);
+}
+
+.control-list {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 10px;
+}
+
+.control-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 4px;
+    gap: 10px;
+
+    div {
+        padding: 8px;
+        border-radius: 8px;
+        background: #eee;
+    }
+
+    label {
+        font-size: 0.9rem;
+    }
+}

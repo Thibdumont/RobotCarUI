@@ -1,4 +1,5 @@
 <div class="photo-panel-container" [@openClose]="opened ? 'opened':'closed'">
+    <div *ngIf="photoList.length === 0" class="no-photo">No photo</div>
     <div class="photo-list">
         <div class="photo-item" *ngFor="let photo of photoList; let i = index" [@slide]="getPhotoState(i)"
             [ngStyle]="{'z-index':getZIndex(i)}">

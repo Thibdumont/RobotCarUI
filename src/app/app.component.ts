@@ -1,3 +1,5 @@
+import { distinctUntilChanged } from 'rxjs';
+
 import { Component } from '@angular/core';
 
 import { GamepadService } from './services/gamepad.service';
@@ -15,5 +17,20 @@ export class AppComponent {
   ) {
     this.gamepadService.initGamepad();
     this.robotCommunicationService.autoConnectLoop();
+
+    this.handleControl();
+  }
+
+  handleControl() {
+    this.gamepadService.viewButtonChange.pipe(distinctUntilChanged()).subscribe(viewButton => {
+      if (viewButton) {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        }
+        else {
+          document.body.requestFullscreen();
+        }
+      }
+    });
   }
 }

@@ -52,7 +52,7 @@ export class PhotoPanelComponent {
     });
     this.gamepadService.rightPadChange.pipe(distinctUntilChanged()).subscribe(rightPad => {
       if (rightPad) {
-        if (!this.opened && this.photoList.length > 0) {
+        if (!this.opened) {
           this.opened = true;
           this.activePhotoIndex = 0;
         } else if (this.activePhotoIndex + 1 < this.photoList.length) {

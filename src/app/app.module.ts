@@ -12,6 +12,8 @@ import { MainHudComponent } from './components/main-hud/main-hud.component';
 import { PhotoPanelComponent } from './components/photo-panel/photo-panel.component';
 import { StreamWindowComponent } from './components/stream-window/stream-window.component';
 import { ThrottleWidgetComponent } from './components/throttle-widget/throttle-widget.component';
+import { ControlHelpPanelComponent } from './components/control-help-panel/control-help-panel.component';
+import { BatteryIndicatorComponent } from './components/battery-indicator/battery-indicator.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { ThrottleWidgetComponent } from './components/throttle-widget/throttle-w
     HeadPositionWidgetComponent,
     MainHudComponent,
     InfoPanelComponent,
-    PhotoPanelComponent
+    PhotoPanelComponent,
+    ControlHelpPanelComponent,
+    BatteryIndicatorComponent
   ],
   imports: [
     BrowserModule,

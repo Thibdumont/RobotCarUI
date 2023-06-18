@@ -28,6 +28,9 @@ export class GamepadService {
   public rightPadChange: Subject<number> = new Subject();
   public upPadChange: Subject<number> = new Subject();
   public downPadChange: Subject<number> = new Subject();
+  public viewButtonChange: Subject<number> = new Subject();
+  public menuButtonChange: Subject<number> = new Subject();
+
 
   constructor() {
   }
@@ -68,6 +71,8 @@ export class GamepadService {
           this.rightPadChange.next(this.getButtonValue(gamepad, 15));
           this.upPadChange.next(this.getButtonValue(gamepad, 12));
           this.downPadChange.next(this.getButtonValue(gamepad, 13));
+          this.viewButtonChange.next(this.getButtonValue(gamepad, 8));
+          this.menuButtonChange.next(this.getButtonValue(gamepad, 9));
         }
       });
   }
