@@ -27,7 +27,7 @@ export interface InfoPanelItem {
 export class InfoPanelComponent {
 
   opened: boolean = false;
-  robotState: RobotState = new RobotState(0, 0, 0);
+  robotState!: RobotState;
 
   constructor(
     private gamepadService: GamepadService,
@@ -60,6 +60,11 @@ export class InfoPanelComponent {
         label: 'Loop time',
         value: this.robotState.loopDuration,
         unit: 'ms'
+      },
+      {
+        label: 'Battery voltage',
+        value: this.robotState.batteryVoltage.toPrecision(3),
+        unit: 'V'
       }
     ]
   }

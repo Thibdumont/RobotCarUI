@@ -1,1 +1,7 @@
-<p>battery-indicator works!</p>
+<div class="battery-body">
+    <div class="battery-level" [ngClass]="getBatteryStep()"></div>
+    <span class="battery-percent">{{ batteryPercent }}</span>
+</div>
+<div class="battery-stud"></div>
+
+<div class="battery-duration">{{ batteryDuration }}</div>

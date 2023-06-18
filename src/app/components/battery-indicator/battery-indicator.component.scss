@@ -1,0 +1,42 @@
+.battery-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border: 2px solid #333;
+    border-radius: 4px;
+    position: relative;
+}
+
+.battery-stud {
+    height: 0.75vw;
+    border-left: 0.3vw solid #052c65;
+    border-radius: 0 2px 2px 0;
+}
+
+.battery-level {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: rgb(113, 189, 113);
+}
+
+.battery-percent {
+    font-weight: bold;
+    color: #fff;
+    text-shadow: rgb(51, 51, 51) 1px 0px 0px, rgb(51, 51, 51) 0.540302px 0.841471px 0px, rgb(51, 51, 51) -0.416147px 0.909297px 0px, rgb(51, 51, 51) -0.989992px 0.14112px 0px, rgb(51, 51, 51) -0.653644px -0.756802px 0px, rgb(51, 51, 51) 0.283662px -0.958924px 0px, rgb(51, 51, 51) 0.96017px -0.279415px 0px;
+    z-index: 2;
+}
+
+.battery-percent::after {
+    content: '%'
+}
+
+.battery-level.low {
+    background: rgb(248, 68, 68);
+}
+
+.battery-level.mid {
+    background: rgb(248, 185, 68);
+}
