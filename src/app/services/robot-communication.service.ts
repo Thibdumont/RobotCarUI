@@ -7,6 +7,7 @@ import { RobotState } from '../core/robot-state';
 import { AppConfigService } from './app-config.service';
 
 const heartbeatMaxInterval = 3000;
+const autoReconnectInterval = 2000;
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,9 @@ export class RobotCommunicationService {
   }
 
   private connectToRobot() {
+    if (!this.socketOpened && this.socket) {
+      this.socket.close();
+    }
     this.socket = new WebSocket(`ws://${this.appConfigService.hostname}:${this.appConfigService.port}${this.appConfigService.webSocketPath}`);
 
     this.socket.onmessage = this.onMessage.bind(this);
@@ -36,12 +40,14 @@ export class RobotCommunicationService {
   }
 
   private onOpen() {
+    console.log('Connected');
     this.socketOpened = true;
     this.connectionStatusChange.next(true);
   };
 
   private onClose() {
     this.socketOpened = false;
+    console.log('Disconnected');
     this.connectionStatusChange.next(false);
   }
 
@@ -52,7 +58,7 @@ export class RobotCommunicationService {
     if (lastJsonObject.substring(0, 1) === '{') {
       try {
         const json = JSON.parse(lastJsonObject);
-        console.log(json);
+        // console.log(json);
         this.robotState = new RobotState(json.speed, json.distance, json.loopDuration, json.batteryVoltage);
         this.robotStateChange.next(this.robotState);
       } catch (e) {
@@ -64,14 +70,17 @@ export class RobotCommunicationService {
 
   public sendCommand(command: RobotCommand) {
     if (this.socket.readyState === 1) {
+      if (command.speed == 0) {
+        console.log('0000000000000');
+      }
       this.socket.send(JSON.stringify(command));
     }
   }
 
   public autoConnectLoop() {
-    this.autoConnectLoopSub = interval(1000)
+    this.autoConnectLoopSub = interval(autoReconnectInterval)
       .subscribe(() => {
-        if (new Date().getTime() - this.lastHeartbeatTime.getTime() > heartbeatMaxInterval) {
+        if (this.socketOpened && new Date().getTime() - this.lastHeartbeatTime.getTime() > heartbeatMaxInterval) {
           this.socketOpened = false;
           this.connectionStatusChange.next(false);
         }
