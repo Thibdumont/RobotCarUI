@@ -1,11 +1,16 @@
 :host {
     width: 100%;
     height: 100%;
-    background-color: red;
+    background: #111;
 }
 
 img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: none;
+}
+
+.is-streaming {
+    display: block;
 }

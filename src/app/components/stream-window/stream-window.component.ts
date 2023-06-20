@@ -11,6 +11,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 export class StreamWindowComponent {
   @ViewChild('stream') stream!: ElementRef;
 
+  isStreaming: boolean = false;
+
   constructor(
     private appConfigService: AppConfigService,
     private robotCommunicationService: RobotCommunicationService
@@ -26,8 +28,10 @@ export class StreamWindowComponent {
     this.robotCommunicationService.connectionStatusChange.subscribe(connectionOpened => {
       if (!connectionOpened) {
         this.stream.nativeElement.src = '';
+        this.isStreaming = false;
       } else {
         this.stream.nativeElement.src = this.getStreamUrl();
+        this.isStreaming = true;
       }
     });
   }

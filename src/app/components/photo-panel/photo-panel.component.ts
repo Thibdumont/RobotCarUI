@@ -17,8 +17,8 @@ export interface PhotoItem {
   styleUrls: ['./photo-panel.component.scss'],
   animations: [
     trigger('openClose', [
-      state('closed', style({ transform: 'translateX(100%)' })),
-      state('opened', style({ transform: 'translateX(0)' })),
+      state('closed', style({ left: '0' })),
+      state('opened', style({ left: '-100%' })),
       transition('* => *', animate('300ms 0ms ease'))
     ]),
     trigger('slide', [

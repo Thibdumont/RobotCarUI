@@ -15,8 +15,8 @@ export interface ControlPanelItem {
   styleUrls: ['./control-help-panel.component.scss'],
   animations: [
     trigger('openClose', [
-      state('closed', style({ transform: 'translateY(-100%)' })),
-      state('opened', style({ transform: 'translateY(0)' })),
+      state('closed', style({ top: '0' })),
+      state('opened', style({ top: '100%' })),
       transition('* => *', animate('300ms 0ms ease'))
     ])
   ]

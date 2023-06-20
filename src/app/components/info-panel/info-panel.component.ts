@@ -18,8 +18,8 @@ export interface InfoPanelItem {
   styleUrls: ['./info-panel.component.scss'],
   animations: [
     trigger('openClose', [
-      state('closed', style({ transform: 'translateX(-100%)' })),
-      state('opened', style({ transform: 'translateX(0)' })),
+      state('closed', style({ left: '0' })),
+      state('opened', style({ left: '100%' })),
       transition('* => *', animate('300ms 0ms ease'))
     ])
   ]
@@ -45,28 +45,31 @@ export class InfoPanelComponent {
   }
 
   getInfoList(): Array<InfoPanelItem> {
-    return [
-      {
-        label: 'Radar',
-        value: this.robotState.radarDistance,
-        unit: 'cm'
-      },
-      {
-        label: 'Max speed',
-        value: this.robotState.maxSpeed,
-        unit: 'rpm'
-      },
-      {
-        label: 'Loop time',
-        value: this.robotState.loopDuration,
-        unit: 'ms'
-      },
-      {
-        label: 'Battery voltage',
-        value: this.robotState.batteryVoltage.toPrecision(3),
-        unit: 'V'
-      }
-    ]
+    if (this.robotState) {
+      return [
+        {
+          label: 'Radar',
+          value: this.robotState.radarDistance,
+          unit: 'cm'
+        },
+        {
+          label: 'Max speed',
+          value: this.robotState.maxSpeed,
+          unit: 'rpm'
+        },
+        {
+          label: 'Loop time',
+          value: this.robotState.loopDuration,
+          unit: 'ms'
+        },
+        {
+          label: 'Battery voltage',
+          value: this.robotState.batteryVoltage.toPrecision(3),
+          unit: 'V'
+        }
+      ]
+    }
+    return [];
   }
 
 }

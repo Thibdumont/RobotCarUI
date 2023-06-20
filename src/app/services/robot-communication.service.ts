@@ -63,7 +63,9 @@ export class RobotCommunicationService {
   }
 
   public sendCommand(command: RobotCommand) {
-    this.socket.send(JSON.stringify(command));
+    if (this.socket.readyState === 1) {
+      this.socket.send(JSON.stringify(command));
+    }
   }
 
   public autoConnectLoop() {
