@@ -59,4 +59,5 @@ export class HeadPositionWidgetComponent {
       this.robotCommunicationService.sendCommand({ headPosition: headAngle });
     }
   }
+
 }

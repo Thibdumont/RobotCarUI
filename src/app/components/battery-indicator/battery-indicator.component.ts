@@ -4,10 +4,11 @@ import { Component } from '@angular/core';
 
 import { RobotCommunicationService } from '../../services/robot-communication.service';
 
-const batteryEmptyThreshold = 7;
-const batteryMaxVoltage = 8.4;
-const batteryVoltageRange = batteryMaxVoltage - batteryEmptyThreshold;
-const maxVoltageFifoLength = 1000;
+const batteryEmptyThreshold = 7.5;
+const batteryFullThreshold = 8.3;
+const batteryVoltageRange = batteryFullThreshold - batteryEmptyThreshold;
+const voltageFifoMaxLength = 1000;
+const voltagePerCycleFifoMaxLength = 10;
 const batteryLifeMeasureDelay = 5000;
 
 
@@ -19,12 +20,12 @@ const batteryLifeMeasureDelay = 5000;
 export class BatteryIndicatorComponent {
   batteryDurationUpdateSub: any;
 
-  voltageOneCycleAgo = 0;
-  voltageFifo = new Array();
-
   batteryPercent: number = 0;
   batteryDuration: string = '';
 
+  voltageFifo = new Array();
+  voltagePerCycleFifo = new Array();
+  averageVoltageOneCycleAgo = 0;
   averageVoltage: number = 0;
 
   constructor(
@@ -43,7 +44,7 @@ export class BatteryIndicatorComponent {
 
   addToVoltageFifo(voltage: number) {
     this.voltageFifo.push(voltage);
-    if (this.voltageFifo.length > maxVoltageFifoLength) {
+    if (this.voltageFifo.length > voltageFifoMaxLength) {
       this.voltageFifo.shift();
     }
   }
@@ -66,22 +67,33 @@ export class BatteryIndicatorComponent {
   }
 
   updateBatteryDuration() {
-    if (this.averageVoltage > 0 && this.voltageOneCycleAgo > this.averageVoltage) {
-      let voltageConsumedInOneCycle = (this.voltageOneCycleAgo - this.averageVoltage) / batteryLifeMeasureDelay;
-      let minCountBeforeBatteryEmpty = (batteryVoltageRange / (voltageConsumedInOneCycle * 1000 * 60));
+    if (this.averageVoltage > 0 && this.averageVoltageOneCycleAgo > this.averageVoltage) {
+      this.addToVoltagePerCycleFifo((this.averageVoltageOneCycleAgo - this.averageVoltage) / batteryLifeMeasureDelay);
+      let voltageConsumedInOneCycle = this.average(this.voltagePerCycleFifo);
+
+      let minuteCountBeforeBatteryEmpty = (batteryVoltageRange / (voltageConsumedInOneCycle * 1000 * 60));
       this.batteryDuration = '';
 
-      if (minCountBeforeBatteryEmpty > 60) {
-        this.batteryDuration += `${Math.round(minCountBeforeBatteryEmpty / 60)}h${Math.round(minCountBeforeBatteryEmpty % 60)}m`;
+      if (minuteCountBeforeBatteryEmpty > 60) {
+        this.batteryDuration += `${Math.round(minuteCountBeforeBatteryEmpty / 60)}h${Math.round(minuteCountBeforeBatteryEmpty % 60)}m`;
       } else {
-        this.batteryDuration += `${Math.round(minCountBeforeBatteryEmpty)}m`;
+        this.batteryDuration += `${Math.round(minuteCountBeforeBatteryEmpty)}m`;
       }
     }
-    this.voltageOneCycleAgo = this.averageVoltage;
+    this.averageVoltageOneCycleAgo = this.averageVoltage;
+  }
+
+  addToVoltagePerCycleFifo(voltage: number) {
+    this.voltagePerCycleFifo.push(voltage);
+    if (this.voltagePerCycleFifo.length > voltagePerCycleFifoMaxLength) {
+      this.voltagePerCycleFifo.shift();
+    }
   }
 
   updateBatteryPercentage() {
-    this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.averageVoltage - batteryEmptyThreshold) / batteryVoltageRange) * 100)));
+    if (this.averageVoltageOneCycleAgo > this.averageVoltage) {
+      this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.averageVoltage - batteryEmptyThreshold) / batteryVoltageRange) * 100)));
+    }
   }
 
 }

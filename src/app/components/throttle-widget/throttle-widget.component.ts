@@ -3,7 +3,7 @@ import { RobotCommunicationService } from 'src/app/services/robot-communication.
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
-const maxRobotSpeed = 200;
+const maxRobotSpeed = 250;
 const minRobotSpeed = 50;
 const maxSpeedChangeIncrement = 10;
 
@@ -53,7 +53,7 @@ export class ThrottleWidgetComponent {
           this.robotCommunicationService.robotState.maxSpeed - maxSpeedChangeIncrement < minRobotSpeed ?
             minRobotSpeed :
             this.robotCommunicationService.robotState.maxSpeed - maxSpeedChangeIncrement;
-        this.robotCommunicationService.sendCommand({ speed: newSpeed });
+        this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
       }
     });
 
@@ -63,7 +63,7 @@ export class ThrottleWidgetComponent {
           this.robotCommunicationService.robotState.maxSpeed + maxSpeedChangeIncrement > maxRobotSpeed ?
             maxRobotSpeed :
             this.robotCommunicationService.robotState.maxSpeed + maxSpeedChangeIncrement;
-        this.robotCommunicationService.sendCommand({ speed: newSpeed });
+        this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
       }
     });
   }

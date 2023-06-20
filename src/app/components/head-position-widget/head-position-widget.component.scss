@@ -1,5 +1,6 @@
 :host {
     --control-bar-thickness: 10px;
+    --head-diameter: 10px;
 }
 
 .head-bar {
@@ -8,6 +9,12 @@
     background: #fff2;
     border-radius: 4px;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.navigable-bar {
+    width: calc(100% - var(--head-diameter));
     position: relative;
 }
 
@@ -22,9 +29,9 @@
 
 .head {
     position: absolute;
-    left: calc(50% - var(--control-bar-thickness)/2);
+    left: calc(50% - var(--head-diameter)/2);
     background: #0d6efd;
     border-radius: 50%;
-    width: var(--control-bar-thickness);
-    height: var(--control-bar-thickness);
+    width: var(--head-diameter);
+    height: var(--head-diameter);
 }

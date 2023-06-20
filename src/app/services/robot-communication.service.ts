@@ -58,8 +58,8 @@ export class RobotCommunicationService {
     if (lastJsonObject.substring(0, 1) === '{') {
       try {
         const json = JSON.parse(lastJsonObject);
-        // console.log(json);
-        this.robotState = new RobotState(json.speed, json.distance, json.loopDuration, json.batteryVoltage);
+        console.log(json);
+        this.robotState = new RobotState(json.maxSpeed, json.distance, json.loopDuration, json.batteryVoltage);
         this.robotStateChange.next(this.robotState);
       } catch (e) {
         console.log(e);
@@ -70,9 +70,6 @@ export class RobotCommunicationService {
 
   public sendCommand(command: RobotCommand) {
     if (this.socket.readyState === 1) {
-      if (command.speed == 0) {
-        console.log('0000000000000');
-      }
       this.socket.send(JSON.stringify(command));
     }
   }
