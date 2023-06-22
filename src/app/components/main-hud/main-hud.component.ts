@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./main-hud.component.scss']
 })
 export class MainHudComponent {
-  robotState: RobotState = new RobotState(0, 0, 0, 0);
+  robotState: RobotState = new RobotState(0, 0, 0, 0, 0);
 
   constructor(
     private robotCommunicationService: RobotCommunicationService

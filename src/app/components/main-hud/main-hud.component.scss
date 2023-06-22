@@ -1,13 +1,31 @@
-div {
+.hud-container {
+    display: grid;
+    height: 100%;
+    width: 100%;
+    grid-template-columns: auto;
+    grid-template-rows: 1fr auto;
+}
+
+.left-hud {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.center-hud {
+    padding: 8px 0;
+    box-sizing: border-box;
     color: #fff;
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
+    gap: 16px;
 
     &>div {
+        padding: 0 16px;
+        display: flex;
         background: #fff2;
-        margin: 0 20px;
         border-radius: 8px;
     }
 }

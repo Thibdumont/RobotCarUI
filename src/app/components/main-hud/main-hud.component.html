@@ -1,6 +1,11 @@
-<div>
-    <robotcarui-battery-indicator></robotcarui-battery-indicator>
-    <div>radar : {{ robotState.radarDistance }}</div>
-    <div>maxSpeed : {{ robotState.maxSpeed }}</div>
-    <div>loop : {{ robotState.loopDuration }} ms</div>
+<div class="hud-container">
+    <div class="left-hud">
+        <robotcarui-battery-indicator></robotcarui-battery-indicator>
+        <robotcarui-wifi-signal></robotcarui-wifi-signal>
+    </div>
+    <div class="center-hud">
+        <div>radar : {{ robotState.radarDistance }}</div>
+        <div>maxSpeed : {{ robotState.maxSpeed }}</div>
+        <div>loop : {{ robotState.loopDuration }} ms</div>
+    </div>
 </div>

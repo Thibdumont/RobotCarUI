@@ -1,0 +1,21 @@
+.wifi-container {
+    --wifi-size: 10px;
+    height: calc(var(--wifi-size) * 3);
+    overflow: hidden;
+}
+
+.wifi {
+    padding: calc(var(--wifi-size)/3);
+}
+
+.wifi,
+.wifi:before {
+    display: inline-block;
+    border: var(--wifi-size) double transparent;
+    border-top-color: #fff3;
+    border-radius: 50%;
+}
+
+.wifi:before {
+    content: '';
+}

@@ -12,13 +12,12 @@ robotcarui-stream-window {
     display: grid;
     height: 100%;
     width: 100%;
-    grid-template-columns: 1fr 10fr 20px;
-    grid-template-rows: 20px 10fr 1fr 20px;
+    grid-template-columns: 10fr 20px;
+    grid-template-rows: 20px 1fr 20px;
     grid-template-areas:
-        "robotcarui-head-position-widget robotcarui-head-position-widget robotcarui-head-position-widget"
-        ". . robotcarui-throttle-widget"
-        ". robotcarui-main-hud robotcarui-throttle-widget"
-        "robotcarui-direction-widget robotcarui-direction-widget robotcarui-direction-widget";
+        "robotcarui-head-position-widget robotcarui-head-position-widget"
+        "robotcarui-main-hud robotcarui-throttle-widget"
+        "robotcarui-direction-widget robotcarui-direction-widget";
 
 
     &>* {
