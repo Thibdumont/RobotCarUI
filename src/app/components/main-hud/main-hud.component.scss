@@ -2,14 +2,21 @@
     display: grid;
     height: 100%;
     width: 100%;
-    grid-template-columns: auto;
-    grid-template-rows: 1fr auto;
+    grid-template-columns: 10fr auto;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+        "robotcarui-head-position-widget robotcarui-head-position-widget"
+        "left-hud robotcarui-throttle-widget"
+        "center-hud robotcarui-throttle-widget"
+        "robotcarui-direction-widget robotcarui-direction-widget";
 }
 
 .left-hud {
+    padding: 8px 4px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    grid-area: left-hud;
 }
 
 .center-hud {
@@ -18,9 +25,10 @@
     color: #fff;
     width: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 16px;
+    grid-area: center-hud;
 
     &>div {
         padding: 0 16px;
@@ -28,4 +36,22 @@
         background: #fff2;
         border-radius: 8px;
     }
+}
+
+robotcarui-head-position-widget {
+    margin: 5px 5px 0 5px;
+    grid-area: robotcarui-head-position-widget;
+    z-index: 5;
+}
+
+robotcarui-throttle-widget {
+    margin: 5px 5px 5px 0;
+    grid-area: robotcarui-throttle-widget;
+    z-index: 5;
+}
+
+robotcarui-direction-widget {
+    margin: 0 5px 5px 5px;
+    grid-area: robotcarui-direction-widget;
+    z-index: 5;
 }

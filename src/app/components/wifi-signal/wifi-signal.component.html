@@ -1,3 +1,9 @@
 <div class="wifi-container">
-    <div class="wifi"></div>
+    <div class="wifi" [class.active]="isBarActive(3)">
+        <div class="wifi" [class.active]="isBarActive(2)">
+            <div class="wifi" [class.active]="isBarActive(1)">
+                <div class="wifi" [class.active]="isBarActive(0)"></div>
+            </div>
+        </div>
+    </div>
 </div>

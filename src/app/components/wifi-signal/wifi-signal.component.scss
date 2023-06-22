@@ -1,21 +1,23 @@
 .wifi-container {
-    --wifi-size: 10px;
-    height: calc(var(--wifi-size) * 3);
+    --wifi-size: 6px;
+    height: calc(var(--wifi-size) * 6);
     overflow: hidden;
+    position: relative;
+    left: -10px;
 }
 
 .wifi {
-    padding: calc(var(--wifi-size)/3);
+    padding: calc(var(--wifi-size)/2);
+    display: flex;
 }
 
-.wifi,
-.wifi:before {
+.wifi {
     display: inline-block;
-    border: var(--wifi-size) double transparent;
+    border: var(--wifi-size) solid transparent;
     border-top-color: #fff3;
     border-radius: 50%;
 }
 
-.wifi:before {
-    content: '';
+.active {
+    border-top-color: var(--primary-color);
 }

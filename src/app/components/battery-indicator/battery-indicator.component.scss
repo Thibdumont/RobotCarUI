@@ -1,20 +1,27 @@
+:host {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    text-shadow: rgb(51, 51, 51) 1px 0px 0px, rgb(51, 51, 51) 0.540302px 0.841471px 0px, rgb(51, 51, 51) -0.416147px 0.909297px 0px, rgb(51, 51, 51) -0.989992px 0.14112px 0px, rgb(51, 51, 51) -0.653644px -0.756802px 0px, rgb(51, 51, 51) 0.283662px -0.958924px 0px, rgb(51, 51, 51) 0.96017px -0.279415px 0px;
+    font-weight: bold;
+}
+
 .battery-container {
     display: flex;
     align-items: center;
-    width: 50px;
 }
 
 .battery-body {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 50px;
     height: 100%;
     border: 3px solid #333;
     padding: 0px;
     border-radius: 4px;
     position: relative;
-    color: #fff;
 }
 
 .battery-stud {
@@ -31,8 +38,6 @@
 }
 
 .battery-percent {
-    font-weight: bold;
-    text-shadow: rgb(51, 51, 51) 1px 0px 0px, rgb(51, 51, 51) 0.540302px 0.841471px 0px, rgb(51, 51, 51) -0.416147px 0.909297px 0px, rgb(51, 51, 51) -0.989992px 0.14112px 0px, rgb(51, 51, 51) -0.653644px -0.756802px 0px, rgb(51, 51, 51) 0.283662px -0.958924px 0px, rgb(51, 51, 51) 0.96017px -0.279415px 0px;
     z-index: 2;
 }
 
