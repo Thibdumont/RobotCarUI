@@ -1,5 +1,7 @@
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, Subscription } from 'rxjs';
+import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
+import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
@@ -24,16 +26,40 @@ export interface ControlPanelItem {
 export class ControlHelpPanelComponent {
 
   opened: boolean = false;
+  downPadSub!: Subscription;
 
   constructor(
     private gamepadService: GamepadService,
+    private uiPanelDirectorService: UiPanelDirectorService,
+    private appConfigService: AppConfigService
   ) {
-    this.gamepadService.menuButtonChange.pipe(distinctUntilChanged()).subscribe(yButton => {
-      if (yButton) {
-        this.opened = !this.opened;
+    this.handleActiveState();
+  }
+
+  handleNavigation() {
+    this.downPadSub = this.gamepadService.downPadChange.pipe(distinctUntilChanged()).subscribe(downPad => {
+      if (downPad) {
+        this.uiPanelDirectorService.controlHelpPanelActiveStateChange.next(false);
+        this.uiPanelDirectorService.streamWindowActiveStateChange.next(true);
       }
     });
   }
+
+  unhandleNavigation() {
+    this.downPadSub.unsubscribe();
+  }
+
+  handleActiveState() {
+    this.uiPanelDirectorService.controlHelpPanelActiveStateChange.subscribe(newState => {
+      this.opened = newState;
+      if (this.opened) {
+        setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
+      } else {
+        this.unhandleNavigation();
+      }
+    });
+  }
+
 
   getControlList(): Array<ControlPanelItem> {
     return [
@@ -54,22 +80,6 @@ export class ControlHelpPanelComponent {
         label: 'Increase max speed'
       },
       {
-        button: 'A',
-        label: 'Take photo'
-      },
-      {
-        button: 'Y',
-        label: 'Show info panel'
-      },
-      {
-        button: 'Right Dpad',
-        label: 'Show photo manager'
-      },
-      {
-        button: 'Menu button',
-        label: 'Show control help panel'
-      },
-      {
         button: 'Left joystick',
         label: 'Turn'
       },
@@ -80,6 +90,26 @@ export class ControlHelpPanelComponent {
       {
         button: 'Right joystick button',
         label: 'Center head position'
+      },
+      {
+        button: 'A',
+        label: 'Take photo'
+      },
+      {
+        button: 'B',
+        label: 'Delete photo'
+      },
+      {
+        button: 'Left Dpad',
+        label: 'Show info panel'
+      },
+      {
+        button: 'Right Dpad',
+        label: 'Show photo manager'
+      },
+      {
+        button: 'Up Dpad button',
+        label: 'Show control help panel'
       },
       {
         button: 'View button',

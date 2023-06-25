@@ -1,11 +1,8 @@
+import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
-
-const maxRobotSpeed = 250;
-const minRobotSpeed = 50;
-const maxSpeedChangeIncrement = 10;
 
 @Component({
   selector: 'robotcarui-throttle-widget',
@@ -21,7 +18,8 @@ export class ThrottleWidgetComponent {
 
   constructor(
     private gamepadService: GamepadService,
-    private robotCommunicationService: RobotCommunicationService
+    private robotCommunicationService: RobotCommunicationService,
+    private appConfigService: AppConfigService
   ) {
     this.handleThrottle();
     this.handleMaxSpeed();
@@ -50,9 +48,9 @@ export class ThrottleWidgetComponent {
     this.gamepadService.leftShoulderChange.pipe().subscribe(leftShoulder => {
       if (leftShoulder) {
         const newSpeed =
-          this.robotCommunicationService.robotState.maxSpeed - maxSpeedChangeIncrement < minRobotSpeed ?
-            minRobotSpeed :
-            this.robotCommunicationService.robotState.maxSpeed - maxSpeedChangeIncrement;
+          this.robotCommunicationService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement < this.appConfigService.minRobotSpeed ?
+            this.appConfigService.minRobotSpeed :
+            this.robotCommunicationService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement;
         this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
       }
     });
@@ -60,9 +58,9 @@ export class ThrottleWidgetComponent {
     this.gamepadService.rightShoulderChange.subscribe(rightShoulder => {
       if (rightShoulder) {
         const newSpeed =
-          this.robotCommunicationService.robotState.maxSpeed + maxSpeedChangeIncrement > maxRobotSpeed ?
-            maxRobotSpeed :
-            this.robotCommunicationService.robotState.maxSpeed + maxSpeedChangeIncrement;
+          this.robotCommunicationService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement > this.appConfigService.maxRobotSpeed ?
+            this.appConfigService.maxRobotSpeed :
+            this.robotCommunicationService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement;
         this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
       }
     });

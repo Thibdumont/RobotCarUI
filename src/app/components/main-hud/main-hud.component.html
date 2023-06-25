@@ -8,8 +8,9 @@
         <robotcarui-wifi-signal></robotcarui-wifi-signal>
     </div>
     <div class="center-hud">
-        <div>radar : {{ robotState.radarDistance }}</div>
-        <div>maxSpeed : {{ robotState.maxSpeed }}</div>
-        <div>loop : {{ robotState.loopDuration }} ms</div>
+        <div>Distance : {{ robotState.radarDistance }} cm</div>
+        <div>Max speed : {{ robotState.maxSpeed }} rpm</div>
+        <div>Uno loop : {{ robotState.unoLoopDuration }} ms</div>
+        <div>ESP loop : {{ robotState.espLoopDuration }} ms</div>
     </div>
 </div>

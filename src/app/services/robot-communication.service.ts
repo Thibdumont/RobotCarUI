@@ -58,8 +58,8 @@ export class RobotCommunicationService {
     if (lastJsonObject.substring(0, 1) === '{') {
       try {
         const json = JSON.parse(lastJsonObject);
-        console.log(json);
-        this.robotState = new RobotState(json.maxSpeed, json.distance, json.loopDuration, json.batteryVoltage, json.wifiStrength);
+        // console.log(json);
+        this.robotState = new RobotState(json.maxSpeed, json.distance, json.unoLoopDuration, json.espLoopDuration, json.batteryVoltage, json.wifiStrength);
         this.robotStateChange.next(this.robotState);
       } catch (e) {
         console.log(e);

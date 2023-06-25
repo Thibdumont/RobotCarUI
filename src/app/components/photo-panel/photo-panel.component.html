@@ -1,9 +1,12 @@
 <div class="photo-panel-container" [@openClose]="opened ? 'opened':'closed'">
-    <div *ngIf="photoList.length === 0" class="no-photo">No photo</div>
     <div class="photo-list">
+        <div *ngIf="photoList.length === 0" class="no-photo">No photo</div>
         <div class="photo-item" *ngFor="let photo of photoList; let i = index" [@slide]="getPhotoState(i)"
             [ngStyle]="{'z-index':getZIndex(i)}">
-            <label>{{ photo.date.toLocaleString() }}</label>
+            <label>
+                <div class="date">{{ photo.date.toLocaleString() }}</div>
+                <div class="total">{{ (i+1) +'/'+ photoList.length }}</div>
+            </label>
             <img src="{{photo.src}}" />
         </div>
     </div>

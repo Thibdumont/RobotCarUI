@@ -1,14 +1,14 @@
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 
 import { Injectable } from '@angular/core';
+
+import { AppConfigService } from './app-config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GamepadService {
-
-  gamepadPollingRate: number = 30; //Every 30 ms
-  gamepadSub: any;
+  gamepadSub!: Subscription;
 
   public leftStickXChange: Subject<number> = new Subject();
   public leftStickYChange: Subject<number> = new Subject();
@@ -32,7 +32,9 @@ export class GamepadService {
   public menuButtonChange: Subject<number> = new Subject();
 
 
-  constructor() {
+  constructor(
+    private appConfigService: AppConfigService
+  ) {
   }
 
   public initGamepad() {
@@ -47,7 +49,7 @@ export class GamepadService {
   }
 
   private gamepadPollingLoop() {
-    this.gamepadSub = interval(this.gamepadPollingRate)
+    this.gamepadSub = interval(this.appConfigService.gamepadPollingInterval)
       .pipe()
       .subscribe(() => {
         var gamepads = navigator.getGamepads().filter(gamepad => gamepad !== null);

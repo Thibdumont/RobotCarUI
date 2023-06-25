@@ -9,5 +9,15 @@ export class AppConfigService {
   public port: string = "80";
   public webSocketPath = "/ws";
 
+  public gamepadPollingInterval = 30;
+  public uiPanelAnimationLength = 300;
+
+  public maxRobotSpeed = 200;
+  public minRobotSpeed = 50;
+  public maxSpeedChangeIncrement = 10;
+
+  public streamWindowDelayBeforeShowingNewPhoto = 1000;
+  public photoPanelDelayBeforeShowingNewPhoto = 500;
+
   constructor() { }
 }

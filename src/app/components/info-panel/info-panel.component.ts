@@ -1,7 +1,9 @@
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, Subscription } from 'rxjs';
 import { RobotState } from 'src/app/core/robot-state';
+import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
+import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
@@ -29,17 +31,51 @@ export class InfoPanelComponent {
   opened: boolean = false;
   robotState!: RobotState;
 
+  rightPadSub!: Subscription;
+  robotStateSub!: Subscription;
+
   constructor(
     private gamepadService: GamepadService,
-    private robotCommunicationService: RobotCommunicationService
+    private robotCommunicationService: RobotCommunicationService,
+    private uiPanelDirectorService: UiPanelDirectorService,
+    private appConfigService: AppConfigService
   ) {
-    this.gamepadService.yButtonChange.pipe(distinctUntilChanged()).subscribe(yButton => {
-      if (yButton) {
-        this.opened = !this.opened;
+    this.handleActiveState();
+  }
+
+  handleSubscribe() {
+    this.handleNavigation();
+    this.handleDataCollection();
+  }
+
+  handleNavigation() {
+    this.rightPadSub = this.gamepadService.rightPadChange.pipe(distinctUntilChanged()).subscribe(rightPad => {
+      if (rightPad) {
+        this.uiPanelDirectorService.infoPanelActiveStateChange.next(false);
+        this.uiPanelDirectorService.streamWindowActiveStateChange.next(true);
       }
     });
+  }
 
-    this.robotCommunicationService.robotStateChange.subscribe(robotState => {
+  handleUnsubscribe() {
+    this.rightPadSub.unsubscribe();
+    this.robotStateSub.unsubscribe();
+  }
+
+
+  handleActiveState() {
+    this.uiPanelDirectorService.infoPanelActiveStateChange.subscribe(newState => {
+      this.opened = newState;
+      if (this.opened) {
+        setTimeout(() => this.handleSubscribe(), this.appConfigService.uiPanelAnimationLength);
+      } else {
+        this.handleUnsubscribe();
+      }
+    });
+  }
+
+  handleDataCollection() {
+    this.robotStateSub = this.robotCommunicationService.robotStateChange.subscribe(robotState => {
       this.robotState = robotState;
     });
   }
@@ -58,8 +94,13 @@ export class InfoPanelComponent {
           unit: 'rpm'
         },
         {
-          label: 'Loop time',
-          value: this.robotState.loopDuration,
+          label: 'Uno loop time',
+          value: this.robotState.unoLoopDuration,
+          unit: 'ms'
+        },
+        {
+          label: 'ESP loop time',
+          value: this.robotState.espLoopDuration,
           unit: 'ms'
         },
         {
