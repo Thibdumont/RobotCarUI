@@ -34,7 +34,7 @@ export class StreamWindowComponent {
   }
 
   getStreamUrl(): string {
-    return `http://${this.appConfigService.hostname}/stream`;
+    return `http://${this.appConfigService.getCurrentHostIP()}/stream`;
   }
 
   autoReconnectStream() {

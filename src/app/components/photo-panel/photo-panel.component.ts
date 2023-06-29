@@ -122,7 +122,7 @@ export class PhotoPanelComponent {
   }
 
   getCaptureUrl(): string {
-    return `http://${this.appConfigService.hostname}/capture?t=${Date.now()}`;
+    return `http://${this.appConfigService.getCurrentHostIP()}/capture?t=${Date.now()}`;
   }
 
   handlePhotoCapture() {

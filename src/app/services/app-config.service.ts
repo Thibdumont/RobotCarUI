@@ -5,7 +5,12 @@ import { Injectable } from '@angular/core';
 })
 export class AppConfigService {
 
-  public hostname: string = "192.168.1.32";
+  private possibleHostIP: Array<string> = [
+    "192.168.4.1",//softAP IP
+    "192.168.1.32"//local network
+  ];
+  private currentIPIndex: number = 0;
+
   public port: string = "80";
   public webSocketPath = "/ws";
 
@@ -20,4 +25,15 @@ export class AppConfigService {
   public photoPanelDelayBeforeShowingNewPhoto = 500;
 
   constructor() { }
+
+  getNextHostIP(): string {
+    if (++this.currentIPIndex >= this.possibleHostIP.length) {
+      this.currentIPIndex = 0;
+    }
+    return this.getCurrentHostIP();
+  }
+
+  getCurrentHostIP(): string {
+    return this.possibleHostIP[this.currentIPIndex];
+  }
 }

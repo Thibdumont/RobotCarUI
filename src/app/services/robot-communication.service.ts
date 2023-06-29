@@ -7,7 +7,7 @@ import { RobotState } from '../core/robot-state';
 import { AppConfigService } from './app-config.service';
 
 const heartbeatMaxInterval = 3000;
-const autoReconnectInterval = 2000;
+const autoReconnectInterval = 3000;
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,7 @@ export class RobotCommunicationService {
   private socket!: WebSocket;
   private lastHeartbeatTime: Date = new Date();
   private socketOpened: boolean = false;
+
   public connectionStatusChange: Subject<boolean> = new Subject();
   public robotStateChange: Subject<RobotState> = new Subject();
   public robotState!: RobotState;
@@ -32,7 +33,7 @@ export class RobotCommunicationService {
     if (!this.socketOpened && this.socket) {
       this.socket.close();
     }
-    this.socket = new WebSocket(`ws://${this.appConfigService.hostname}:${this.appConfigService.port}${this.appConfigService.webSocketPath}`);
+    this.socket = new WebSocket(`ws://${this.appConfigService.getNextHostIP()}:${this.appConfigService.port}${this.appConfigService.webSocketPath}`);
 
     this.socket.onmessage = this.onMessage.bind(this);
     this.socket.onopen = this.onOpen.bind(this);
