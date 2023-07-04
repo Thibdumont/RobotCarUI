@@ -3,7 +3,6 @@ import { distinctUntilChanged } from 'rxjs';
 import { Component } from '@angular/core';
 
 import { GamepadService } from './services/gamepad.service';
-import { RobotCommunicationService } from './services/robot-communication.service';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +11,9 @@ import { RobotCommunicationService } from './services/robot-communication.servic
 })
 export class AppComponent {
   constructor(
-    private gamepadService: GamepadService,
-    private robotCommunicationService: RobotCommunicationService
+    private gamepadService: GamepadService
   ) {
     this.gamepadService.initGamepad();
-    this.robotCommunicationService.autoConnectLoop();
 
     this.handleControl();
   }

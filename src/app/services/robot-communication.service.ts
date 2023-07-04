@@ -1,4 +1,4 @@
-import { interval, Subject } from 'rxjs';
+import { interval, Subject, Subscription } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 
@@ -8,6 +8,7 @@ import { AppConfigService } from './app-config.service';
 
 const heartbeatMaxInterval = 3000;
 const autoReconnectInterval = 3000;
+const sendDataInterval = 100;
 
 @Injectable({
   providedIn: 'root'
@@ -22,11 +23,14 @@ export class RobotCommunicationService {
   public robotStateChange: Subject<RobotState> = new Subject();
   public robotState!: RobotState;
 
-  autoConnectLoopSub: any;
+  autoConnectLoopSub!: Subscription;
+  sendDataLoopSub!: Subscription;
 
   constructor(
     private appConfigService: AppConfigService
   ) {
+    this.autoConnectLoop();
+    this.sendDataLoop();
   }
 
   private connectToRobot() {
@@ -70,7 +74,7 @@ export class RobotCommunicationService {
   }
 
   public sendCommand(command: RobotCommand) {
-    if (this.socket.readyState === 1) {
+    if (this.socket?.readyState === 1) {
       this.socket.send(JSON.stringify(command));
     }
   }
@@ -85,6 +89,15 @@ export class RobotCommunicationService {
         if (!this.socketOpened) {
           console.log('Connecting to robot...');
           this.connectToRobot();
+        }
+      });
+  }
+
+  public sendDataLoop() {
+    this.sendDataLoopSub = interval(sendDataInterval)
+      .subscribe(() => {
+        if (this.socketOpened) {
+          this.socket.send(JSON.stringify({ alive: true }));
         }
       });
   }

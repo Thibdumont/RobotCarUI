@@ -1,0 +1,10 @@
+<div class="camera-control-panel-container" [@openClose]="opened ? 'opened':'closed'">
+    <div class="control">
+        <label>Camera resolution</label>
+        <input type="range" min="1" max="10" value="8" class="slider" (change)="changeCameraResolution($event)">
+    </div>
+    <div class="control">
+        <label>Image quality</label>
+        <input type="range" min="1" max="10" value="10" class="slider" (change)="changeCameraQuality($event)">
+    </div>
+</div>

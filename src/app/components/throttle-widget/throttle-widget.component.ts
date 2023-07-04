@@ -27,7 +27,7 @@ export class ThrottleWidgetComponent {
 
   handleThrottle() {
     this.gamepadService.leftTriggerChange.subscribe(leftTrigger => {
-      if (!this.rightTrigger) {
+      if (!this.rightTrigger && this.leftTrigger !== leftTrigger) {
         this.leftTrigger = leftTrigger;
         this.backwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(leftTrigger) * 100))}%`;
         this.robotCommunicationService.sendCommand({ speedThrottle: -leftTrigger });
@@ -36,7 +36,7 @@ export class ThrottleWidgetComponent {
       }
     });
     this.gamepadService.rightTriggerChange.subscribe(rightTrigger => {
-      if (!this.leftTrigger) {
+      if (!this.leftTrigger && this.rightTrigger !== rightTrigger) {
         this.rightTrigger = rightTrigger;
         this.forwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(rightTrigger) * 100))}%`;
         this.robotCommunicationService.sendCommand({ speedThrottle: rightTrigger });

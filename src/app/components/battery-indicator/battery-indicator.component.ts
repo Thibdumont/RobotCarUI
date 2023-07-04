@@ -1,15 +1,17 @@
 import { interval } from 'rxjs';
+import { AppConfigService } from 'src/app/services/app-config.service';
 
 import { Component } from '@angular/core';
 
 import { RobotCommunicationService } from '../../services/robot-communication.service';
 
-const batteryEmptyThreshold = 7.5;
-const batteryFullThreshold = 8.3;
+const batteryEmptyThreshold = 7.4;
+const batteryFullThreshold = 8.4;
 const batteryVoltageRange = batteryFullThreshold - batteryEmptyThreshold;
-const voltageFifoMaxLength = 1000;
-const voltagePerCycleFifoMaxLength = 10;
-const batteryLifeMeasureDelay = 5000;
+const batteryLifeMeasureDelay = 3000;
+const voltageInfoIntervalReception = 100; //We receive data from esp once every 100ms (must be aligned with the ESP sending interval to be accurate)
+const voltageFifoMaxLength = 60000 / voltageInfoIntervalReception; //We want approx a one minute buffer to be accurate and have a realistic estimation
+const voltagePerCycleFifoMaxLength = 60000 / voltageInfoIntervalReception;
 
 
 @Component({
@@ -29,11 +31,18 @@ export class BatteryIndicatorComponent {
   averageVoltage: number = 0;
 
   constructor(
-    private robotCommunicationService: RobotCommunicationService
+    private robotCommunicationService: RobotCommunicationService,
+    private appConfigService: AppConfigService
   ) {
     this.robotCommunicationService.robotStateChange.subscribe(robotState => {
       this.addToVoltageFifo(robotState.batteryVoltage);
       this.updateAverageVoltage();
+
+      if (this.averageVoltageOneCycleAgo === 0) {
+        this.averageVoltageOneCycleAgo = this.averageVoltage;
+      }
+      this.addToVoltagePerCycleFifo(this.averageVoltageOneCycleAgo - this.averageVoltage);
+      this.averageVoltageOneCycleAgo = this.averageVoltage;
     });
 
     this.batteryDurationUpdateSub = interval(batteryLifeMeasureDelay).subscribe(() => {
@@ -43,9 +52,11 @@ export class BatteryIndicatorComponent {
   }
 
   addToVoltageFifo(voltage: number) {
-    this.voltageFifo.push(voltage);
-    if (this.voltageFifo.length > voltageFifoMaxLength) {
-      this.voltageFifo.shift();
+    if (voltage > 0) {
+      this.voltageFifo.push(voltage);
+      if (this.voltageFifo.length > voltageFifoMaxLength) {
+        this.voltageFifo.shift();
+      }
     }
   }
 
@@ -54,7 +65,7 @@ export class BatteryIndicatorComponent {
   }
 
   average(array: Array<number>): number {
-    return array.length > 1 ? array.reduce((a, b) => a + b) / array.length : 0;
+    return array.length >= 1 ? array.reduce((a, b) => a + b) / array.length : 0;
   }
 
   getBatteryStep(): string {
@@ -67,11 +78,10 @@ export class BatteryIndicatorComponent {
   }
 
   updateBatteryDuration() {
-    if (this.averageVoltage > 0 && this.averageVoltageOneCycleAgo > this.averageVoltage) {
-      this.addToVoltagePerCycleFifo((this.averageVoltageOneCycleAgo - this.averageVoltage) / batteryLifeMeasureDelay);
-      let voltageConsumedInOneCycle = this.average(this.voltagePerCycleFifo);
-
-      let minuteCountBeforeBatteryEmpty = (batteryVoltageRange / (voltageConsumedInOneCycle * 1000 * 60));
+    let voltageConsumedInOneMillis = this.average(this.voltagePerCycleFifo) / batteryLifeMeasureDelay;
+    if (voltageConsumedInOneMillis > 0) {
+      let minuteCountBeforeBatteryEmpty = (this.averageVoltage - batteryEmptyThreshold) / (voltageConsumedInOneMillis * 1000 * 60);
+      console.log('voltageConsumedInOneMillis', voltageConsumedInOneMillis, 'minuteCountBeforeBatteryEmpty', minuteCountBeforeBatteryEmpty, 'averageVoltage', this.averageVoltage, "voltageConsumedPerMin", (voltageConsumedInOneMillis * 1000 * 60));
       this.batteryDuration = '';
 
       if (minuteCountBeforeBatteryEmpty > 60) {
@@ -80,7 +90,6 @@ export class BatteryIndicatorComponent {
         this.batteryDuration += `${Math.round(minuteCountBeforeBatteryEmpty)}m`;
       }
     }
-    this.averageVoltageOneCycleAgo = this.averageVoltage;
   }
 
   addToVoltagePerCycleFifo(voltage: number) {
@@ -91,9 +100,7 @@ export class BatteryIndicatorComponent {
   }
 
   updateBatteryPercentage() {
-    if (this.averageVoltageOneCycleAgo > this.averageVoltage) {
-      this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.averageVoltage - batteryEmptyThreshold) / batteryVoltageRange) * 100)));
-    }
+    this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.averageVoltage - batteryEmptyThreshold) / batteryVoltageRange) * 100)));
   }
 
 }

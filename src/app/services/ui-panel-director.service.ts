@@ -10,6 +10,7 @@ export class UiPanelDirectorService {
   public photoPanelActiveStateChange: Subject<boolean> = new Subject();
   public infoPanelActiveStateChange: Subject<boolean> = new Subject();
   public controlHelpPanelActiveStateChange: Subject<boolean> = new Subject();
+  public cameraControlPanelActiveStateChange: Subject<boolean> = new Subject();
   public streamWindowActiveStateChange: Subject<boolean> = new Subject();
 
   constructor() {

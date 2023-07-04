@@ -21,6 +21,7 @@ export class StreamWindowComponent {
   leftPadSub!: Subscription;
   rightPadSub!: Subscription;
   upPadSub!: Subscription;
+  downPadSub!: Subscription;
 
   constructor(
     private appConfigService: AppConfigService,
@@ -68,12 +69,19 @@ export class StreamWindowComponent {
         this.uiPanelDirectorService.controlHelpPanelActiveStateChange.next(true);
       }
     });
+    this.downPadSub = this.gamepadService.downPadChange.pipe(distinctUntilChanged()).subscribe(downPad => {
+      if (downPad) {
+        this.uiPanelDirectorService.streamWindowActiveStateChange.next(false);
+        this.uiPanelDirectorService.cameraControlPanelActiveStateChange.next(true);
+      }
+    });
   }
 
   unhandleNavigation() {
     this.leftPadSub.unsubscribe();
     this.rightPadSub.unsubscribe();
     this.upPadSub.unsubscribe();
+    this.downPadSub.unsubscribe();
   }
 
   handleActiveState() {

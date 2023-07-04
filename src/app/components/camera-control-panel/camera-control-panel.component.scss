@@ -1,0 +1,19 @@
+.camera-control-panel-container {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    position: absolute;
+    top: 0;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 15px;
+    border-radius: 8px;
+    background: #dfdfdf;
+}
+
+.control {
+    padding: 8px;
+}

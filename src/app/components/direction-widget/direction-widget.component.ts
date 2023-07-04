@@ -3,6 +3,8 @@ import { RobotCommunicationService } from 'src/app/services/robot-communication.
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
+const joystickMinChange = 0.01;
+
 @Component({
   selector: 'robotcarui-direction-widget',
   templateUrl: './direction-widget.component.html',
@@ -12,19 +14,26 @@ export class DirectionWidgetComponent {
   @ViewChild('leftDirectionForce') leftDirectionForce!: ElementRef;
   @ViewChild('rightDirectionForce') rightDirectionForce!: ElementRef;
 
+  leftStick: number = 0;
+
   constructor(
     private gamepadService: GamepadService,
     private robotCommunicationService: RobotCommunicationService
   ) {
     this.gamepadService.leftStickXChange.subscribe(leftStick => {
-      if (leftStick < 0) {
-        this.leftDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(leftStick) * 100))}%`;
-        this.rightDirectionForce.nativeElement.style.width = '0%';
-      } else {
-        this.leftDirectionForce.nativeElement.style.width = '0%';
-        this.rightDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(leftStick) * 100))}%`;
+      // Prevent sending the same command every time
+      if (Math.abs(this.leftStick - leftStick) > joystickMinChange) {
+        this.leftStick = leftStick;
+
+        if (leftStick < 0) {
+          this.leftDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(leftStick) * 100))}%`;
+          this.rightDirectionForce.nativeElement.style.width = '0%';
+        } else {
+          this.leftDirectionForce.nativeElement.style.width = '0%';
+          this.rightDirectionForce.nativeElement.style.width = `${Math.round((Math.abs(leftStick) * 100))}%`;
+        }
+        this.robotCommunicationService.sendCommand({ directionX: leftStick });
       }
-      this.robotCommunicationService.sendCommand({ directionX: leftStick });
     });
 
   }
