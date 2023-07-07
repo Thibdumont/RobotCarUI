@@ -4,11 +4,19 @@
     background: #111;
 }
 
+robotcarui-main-hud {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 5;
+}
+
 img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: none;
+    position: fixed;
 }
 
 .is-streaming {

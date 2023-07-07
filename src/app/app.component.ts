@@ -10,6 +10,7 @@ import { GamepadService } from './services/gamepad.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
   constructor(
     private gamepadService: GamepadService
   ) {
