@@ -1,5 +1,5 @@
 import { RobotState } from 'src/app/core/robot-state';
-import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
+import { RobotStateService } from 'src/app/services/robot-state.service';
 
 import { Component } from '@angular/core';
 
@@ -9,12 +9,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./main-hud.component.scss']
 })
 export class MainHudComponent {
-  robotState: RobotState = new RobotState(0, 0, 0, 0, 0, 0);
+  robotState: RobotState = new RobotState();
 
   constructor(
-    private robotCommunicationService: RobotCommunicationService
+    private robotStateService: RobotStateService
   ) {
-    this.robotCommunicationService.robotStateChange.subscribe(robotState => {
+    this.robotStateService.robotStateChange.subscribe(robotState => {
       this.robotState = robotState;
     });
   }

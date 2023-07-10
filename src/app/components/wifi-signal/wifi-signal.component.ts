@@ -1,6 +1,10 @@
+
+
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
 import { Component } from '@angular/core';
+
+import { RobotStateService } from '../../services/robot-state.service';
 
 @Component({
   selector: 'robotcarui-wifi-signal',
@@ -11,9 +15,10 @@ export class WifiSignalComponent {
   wifiLevel: number = -1;
 
   constructor(
-    private robotCommunicationService: RobotCommunicationService
+    private robotCommunicationService: RobotCommunicationService,
+    private robotStateService: RobotStateService
   ) {
-    this.robotCommunicationService.robotStateChange.subscribe(robotState => {
+    this.robotStateService.robotStateChange.subscribe(robotState => {
       this.wifiLevel = this.getWifiLevel(robotState.wifiStrength);
     });
 

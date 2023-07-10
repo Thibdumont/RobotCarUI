@@ -14,7 +14,7 @@ export class AppConfigService {
   public port: string = "80";
   public webSocketPath = "/ws";
 
-  public gamepadPollingInterval = 50;
+  public gamepadPollingInterval = 30;
   public uiPanelAnimationLength = 300;
 
   public maxRobotSpeed = 200;

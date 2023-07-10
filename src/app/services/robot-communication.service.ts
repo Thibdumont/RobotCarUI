@@ -3,8 +3,8 @@ import { interval, Subject, Subscription } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 import { RobotCommand } from '../core/robot-command';
-import { RobotState } from '../core/robot-state';
 import { AppConfigService } from './app-config.service';
+import { RobotStateService } from './robot-state.service';
 
 const heartbeatMaxInterval = 3000;
 const autoReconnectInterval = 3000;
@@ -20,14 +20,13 @@ export class RobotCommunicationService {
   private socketOpened: boolean = false;
 
   public connectionStatusChange: Subject<boolean> = new Subject();
-  public robotStateChange: Subject<RobotState> = new Subject();
-  public robotState!: RobotState;
 
   autoConnectLoopSub!: Subscription;
   sendDataLoopSub!: Subscription;
 
   constructor(
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    private robotStateService: RobotStateService
   ) {
     this.autoConnectLoop();
     this.sendDataLoop();
@@ -58,19 +57,20 @@ export class RobotCommunicationService {
 
   private onMessage(event: any) {
     this.lastHeartbeatTime = new Date();
+    this.processMessage(event);
+  }
+
+  processMessage(event: any) {
     let lastJsonObject = event.data.split('}');
     lastJsonObject = lastJsonObject[lastJsonObject.length - 2] + '}';
     if (lastJsonObject.substring(0, 1) === '{') {
       try {
         const json = JSON.parse(lastJsonObject);
-        // console.log(json);
-        this.robotState = new RobotState(json.maxSpeed, json.distance, json.unoLoopDuration, json.espLoopDuration, json.batteryVoltage, json.wifiStrength);
-        this.robotStateChange.next(this.robotState);
+        this.robotStateService.processEspMessage(json);
       } catch (e) {
         console.log(e);
       }
     };
-
   }
 
   public sendCommand(command: RobotCommand) {

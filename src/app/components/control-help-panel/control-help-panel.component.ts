@@ -112,6 +112,10 @@ export class ControlHelpPanelComponent {
         label: 'Show control help panel'
       },
       {
+        button: 'Down Dpad button',
+        label: 'Show camera control panel'
+      },
+      {
         button: 'View button',
         label: 'Fullscreen'
       }

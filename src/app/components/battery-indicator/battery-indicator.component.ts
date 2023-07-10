@@ -1,9 +1,10 @@
 import { interval } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { RobotStateService } from 'src/app/services/robot-state.service';
 
 import { Component } from '@angular/core';
 
-import { RobotCommunicationService } from '../../services/robot-communication.service';
+
 
 const batteryEmptyThreshold = 7.4;
 const batteryFullThreshold = 8.4;
@@ -31,10 +32,10 @@ export class BatteryIndicatorComponent {
   averageVoltage: number = 0;
 
   constructor(
-    private robotCommunicationService: RobotCommunicationService,
+    private robotStateService: RobotStateService,
     private appConfigService: AppConfigService
   ) {
-    this.robotCommunicationService.robotStateChange.subscribe(robotState => {
+    this.robotStateService.robotStateChange.subscribe(robotState => {
       this.addToVoltageFifo(robotState.batteryVoltage);
       this.updateAverageVoltage();
 

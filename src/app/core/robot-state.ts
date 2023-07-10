@@ -1,24 +1,14 @@
 export class RobotState {
-    maxSpeed: number = 0;
-    radarDistance: number = 0;
-    unoLoopDuration: number = 0;
-    espLoopDuration: number = 0;
-    batteryVoltage: number = 0;
-    wifiStrength: number = 0;
-
-    constructor(
-        maxSpeed: number,
-        radarDistance: number,
-        unoLoopDuration: number,
-        espLoopDuration: number,
-        batteryVoltage: number,
-        wifiStrength: number
-    ) {
-        this.maxSpeed = maxSpeed;
-        this.radarDistance = radarDistance;
-        this.unoLoopDuration = unoLoopDuration;
-        this.espLoopDuration = espLoopDuration;
-        this.batteryVoltage = batteryVoltage;
-        this.wifiStrength = wifiStrength;
-    }
+    public maxSpeed: number = 0;
+    public servoAngle: number = 0;
+    public radarDistance: number = 0;
+    public unoLoopDuration: number = 0;
+    public espLoopDuration: number = 0;
+    public batteryVoltage: number = 0;
+    public wifiStrength: number = 0;
+    public cameraResolution: number = 0;
+    public cameraQuality: number = 0;
+    public cameraContrast: number = 0;
+    public cameraBrightness: number = 0;
+    public cameraSaturation: number = 0;
 }

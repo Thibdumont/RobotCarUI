@@ -2,6 +2,7 @@ import { distinctUntilChanged, Subscription } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
+import { RobotStateService } from 'src/app/services/robot-state.service';
 import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -96,9 +97,17 @@ export class CameraControlPanelComponent {
     private gamepadService: GamepadService,
     private uiPanelDirectorService: UiPanelDirectorService,
     private appConfigService: AppConfigService,
-    private robotCommunicationService: RobotCommunicationService
+    private robotCommunicationService: RobotCommunicationService,
+    private robotStateService: RobotStateService
   ) {
     this.handleActiveState();
+    this.robotStateService.robotStateHandshakeChange.subscribe(robotState => {
+      this.cameraControlList[0].value = robotState.cameraResolution;
+      this.cameraControlList[1].value = robotState.cameraQuality;
+      this.cameraControlList[2].value = robotState.cameraContrast;
+      this.cameraControlList[3].value = robotState.cameraBrightness;
+      this.cameraControlList[4].value = robotState.cameraSaturation;
+    });
   }
 
   handleNavigation() {

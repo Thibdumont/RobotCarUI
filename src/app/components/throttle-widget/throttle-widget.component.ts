@@ -1,6 +1,8 @@
+import { throttleTime } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
+import { RobotStateService } from 'src/app/services/robot-state.service';
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
@@ -19,6 +21,7 @@ export class ThrottleWidgetComponent {
   constructor(
     private gamepadService: GamepadService,
     private robotCommunicationService: RobotCommunicationService,
+    private robotStateService: RobotStateService,
     private appConfigService: AppConfigService
   ) {
     this.handleThrottle();
@@ -31,8 +34,6 @@ export class ThrottleWidgetComponent {
         this.leftTrigger = leftTrigger;
         this.backwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(leftTrigger) * 100))}%`;
         this.robotCommunicationService.sendCommand({ speedThrottle: -leftTrigger });
-      } else {
-        this.backwardThrottleForce.nativeElement.style.height = '0%';
       }
     });
     this.gamepadService.rightTriggerChange.subscribe(rightTrigger => {
@@ -45,22 +46,24 @@ export class ThrottleWidgetComponent {
   }
 
   handleMaxSpeed() {
-    this.gamepadService.leftShoulderChange.pipe().subscribe(leftShoulder => {
+    this.gamepadService.leftShoulderChange.pipe(throttleTime(100)).subscribe(leftShoulder => {
       if (leftShoulder) {
         const newSpeed =
-          this.robotCommunicationService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement < this.appConfigService.minRobotSpeed ?
+          this.robotStateService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement < this.appConfigService.minRobotSpeed ?
             this.appConfigService.minRobotSpeed :
-            this.robotCommunicationService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement;
+            this.robotStateService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement;
+        this.robotStateService.setMaxSpeed(newSpeed);
         this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
       }
     });
 
-    this.gamepadService.rightShoulderChange.subscribe(rightShoulder => {
+    this.gamepadService.rightShoulderChange.pipe(throttleTime(100)).subscribe(rightShoulder => {
       if (rightShoulder) {
         const newSpeed =
-          this.robotCommunicationService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement > this.appConfigService.maxRobotSpeed ?
+          this.robotStateService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement > this.appConfigService.maxRobotSpeed ?
             this.appConfigService.maxRobotSpeed :
-            this.robotCommunicationService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement;
+            this.robotStateService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement;
+        this.robotStateService.setMaxSpeed(newSpeed);
         this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
       }
     });

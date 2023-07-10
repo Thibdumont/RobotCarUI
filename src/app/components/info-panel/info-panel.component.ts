@@ -2,7 +2,7 @@ import { distinctUntilChanged, Subscription } from 'rxjs';
 import { RobotState } from 'src/app/core/robot-state';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
-import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
+import { RobotStateService } from 'src/app/services/robot-state.service';
 import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -36,7 +36,7 @@ export class InfoPanelComponent {
 
   constructor(
     private gamepadService: GamepadService,
-    private robotCommunicationService: RobotCommunicationService,
+    private robotStateService: RobotStateService,
     private uiPanelDirectorService: UiPanelDirectorService,
     private appConfigService: AppConfigService
   ) {
@@ -75,7 +75,7 @@ export class InfoPanelComponent {
   }
 
   handleDataCollection() {
-    this.robotStateSub = this.robotCommunicationService.robotStateChange.subscribe(robotState => {
+    this.robotStateSub = this.robotStateService.robotStateChange.subscribe(robotState => {
       this.robotState = robotState;
     });
   }
