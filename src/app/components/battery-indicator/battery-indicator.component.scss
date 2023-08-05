@@ -46,6 +46,30 @@
 }
 
 .low .battery-body,
-.low .battery-stud {
-    background-color: #f009;
+.low .battery-stud,
+.warning {
+    animation: pulse 1.5s infinite;
+}
+
+.warning {
+    padding: 4px;
+    border-radius: 4px;
+}
+
+@keyframes pulse {
+    0% {
+        background: #fff2;
+    }
+
+    30% {
+        background-color: #f00c;
+    }
+
+    50% {
+        background-color: #f00c;
+    }
+
+    100% {
+        background: #fff2;
+    }
 }

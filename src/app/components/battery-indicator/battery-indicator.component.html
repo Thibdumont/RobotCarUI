@@ -5,3 +5,6 @@
     </div>
     <div class="battery-stud"></div>
 </div>
+<div *ngIf="batteryPercent < 5" class="warning">
+    Low battery, expect unstable behaviour !
+</div>
