@@ -34,4 +34,5 @@
     border-radius: 50%;
     width: var(--head-diameter);
     height: var(--head-diameter);
+    transition: left ease-in-out 100ms;
 }

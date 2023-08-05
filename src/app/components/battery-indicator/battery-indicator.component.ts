@@ -3,7 +3,7 @@ import { RobotStateService } from 'src/app/services/robot-state.service';
 import { Component } from '@angular/core';
 
 const lowBatteryLevelThreshold = 20;
-const batteryEmptyThreshold = 7.6;
+const batteryEmptyThreshold = 7.8;
 const batteryFullThreshold = 8.4;
 const batteryVoltageRange = batteryFullThreshold - batteryEmptyThreshold;
 const voltageInfoIntervalReception = 100; //We receive data from esp once every 100ms (must be aligned with the ESP sending interval to be accurate)

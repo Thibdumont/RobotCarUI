@@ -34,6 +34,7 @@
     background-color: var(--primary-transparent-color);
     height: var(--control-bar-thickness);
     width: 0%;
+    transition: width ease-in-out 100ms;
 }
 
 .reverse {

@@ -17,7 +17,7 @@ export class AppConfigService {
   public gamepadPollingInterval = 30;
   public uiPanelAnimationLength = 300;
 
-  public maxRobotSpeed = 200;
+  public maxRobotSpeed = 250;
   public minRobotSpeed = 50;
   public maxSpeedChangeIncrement = 10;
 
