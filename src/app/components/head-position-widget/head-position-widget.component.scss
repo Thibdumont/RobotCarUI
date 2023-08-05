@@ -30,7 +30,7 @@
 .head {
     position: absolute;
     left: calc(50% - var(--head-diameter)/2);
-    background: #0d6efd;
+    background: var(--primary-transparent-color);
     border-radius: 50%;
     width: var(--head-diameter);
     height: var(--head-diameter);

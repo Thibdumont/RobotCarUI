@@ -13,8 +13,8 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
   styleUrls: ['./throttle-widget.component.scss'],
   animations: [
     trigger('toggleBoost', [
-      state('engaged', style({ background: '#fa2f2f' })),
-      state('disengaged', style({ background: '#0d6efd' })),
+      state('engaged', style({ background: '#fa2f2f99' })),
+      state('disengaged', style({ background: '#0d6efd99' })),
       transition('* => *', animate('300ms 0ms ease'))
     ])
   ]
@@ -22,16 +22,18 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 export class ThrottleWidgetComponent {
   @ViewChild('forwardThrottleForce') forwardThrottleForce!: ElementRef;
   @ViewChild('backwardThrottleForce') backwardThrottleForce!: ElementRef;
+  @ViewChild('maxSpeedIndicator') maxSpeedIndicator!: ElementRef;
 
   leftTrigger: number = 0;
   rightTrigger: number = 0;
   boost: boolean = false;
+  maxSpeed: number = 50;
 
   constructor(
     private gamepadService: GamepadService,
     private robotCommunicationService: RobotCommunicationService,
-    private robotStateService: RobotStateService,
-    private appConfigService: AppConfigService
+    public robotStateService: RobotStateService,
+    public appConfigService: AppConfigService
   ) {
     this.handleThrottle();
     this.handleMaxSpeed();
@@ -57,6 +59,9 @@ export class ThrottleWidgetComponent {
       if (boost !== this.boost) {
         this.boost = boost;
         this.robotCommunicationService.sendCommand({ boost: boost });
+        this.boost ?
+          this.maxSpeedIndicator.nativeElement.style.top = 0 :
+          this.updateMaxSpeedIndicatorPosition(this.maxSpeed);
       }
     });
   }
@@ -65,23 +70,38 @@ export class ThrottleWidgetComponent {
     this.gamepadService.leftShoulderChange.pipe(throttleTime(100)).subscribe(leftShoulder => {
       if (leftShoulder) {
         const newSpeed =
-          this.robotStateService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement < this.appConfigService.minRobotSpeed ?
+          this.maxSpeed - this.appConfigService.maxSpeedChangeIncrement < this.appConfigService.minRobotSpeed ?
             this.appConfigService.minRobotSpeed :
-            this.robotStateService.robotState.maxSpeed - this.appConfigService.maxSpeedChangeIncrement;
+            this.maxSpeed - this.appConfigService.maxSpeedChangeIncrement;
         this.robotStateService.setMaxSpeed(newSpeed);
         this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
+        this.updateMaxSpeedIndicatorPosition(newSpeed);
       }
     });
 
     this.gamepadService.rightShoulderChange.pipe(throttleTime(100)).subscribe(rightShoulder => {
       if (rightShoulder) {
         const newSpeed =
-          this.robotStateService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement > this.appConfigService.maxRobotSpeed ?
+          this.maxSpeed + this.appConfigService.maxSpeedChangeIncrement > this.appConfigService.maxRobotSpeed ?
             this.appConfigService.maxRobotSpeed :
-            this.robotStateService.robotState.maxSpeed + this.appConfigService.maxSpeedChangeIncrement;
+            this.maxSpeed + this.appConfigService.maxSpeedChangeIncrement;
         this.robotStateService.setMaxSpeed(newSpeed);
         this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
+        this.updateMaxSpeedIndicatorPosition(newSpeed);
+      }
+    });
+
+    this.robotStateService.robotStateChange.subscribe(robotState => {
+      if (this.maxSpeed !== robotState.maxSpeed) {
+        this.maxSpeed = robotState.maxSpeed;
+        this.updateMaxSpeedIndicatorPosition(this.maxSpeed);
       }
     });
   }
+
+  updateMaxSpeedIndicatorPosition(newSpeed: number) {
+    this.maxSpeedIndicator.nativeElement.style.top =
+      `${100 - Math.round(newSpeed / this.appConfigService.maxRobotSpeed * 100)}%`;
+  }
 }
+

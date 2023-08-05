@@ -1,5 +1,8 @@
 :host {
     --control-bar-thickness: 10px;
+    display: flex;
+    gap: 4px;
+    text-shadow: rgb(51, 51, 51) 1px 0px 0px, rgb(51, 51, 51) 0.540302px 0.841471px 0px, rgb(51, 51, 51) -0.416147px 0.909297px 0px, rgb(51, 51, 51) -0.989992px 0.14112px 0px, rgb(51, 51, 51) -0.653644px -0.756802px 0px, rgb(51, 51, 51) 0.283662px -0.958924px 0px, rgb(51, 51, 51) 0.96017px -0.279415px 0px;
 }
 
 .throttle-bar {
@@ -33,11 +36,58 @@
 
 .forward-throttle-force,
 .backward-throttle-force {
-    background-color: #0d6efd;
+    background-color: var(--primary-transparent-color);
     height: 0%;
     width: var(--control-bar-thickness);
 }
 
 .reverse {
     transform: rotate(180deg);
+}
+
+
+.max-speed-bar {
+    height: 100%;
+    width: 60px;
+}
+
+.max-speed {
+    color: white;
+    font-weight: bold;
+    position: relative;
+    background: #fff2;
+    padding: 4px;
+    border-radius: 4px 0 0 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 20px;
+
+    transition: top ease-out 300ms;
+}
+
+.max-speed::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 15px solid transparent;
+    border-bottom: 15px solid transparent;
+    border-left: 15px solid #fff2;
+    border-radius: 0px;
+    position: absolute;
+    right: -15px;
+    top: -1px;
+    border-radius: 2px;
+}
+
+.max-speed.boost {
+    background: #fa2f2f99;
+    font-size: 1.3rem;
+    transition: all ease-out 300ms;
+}
+
+.max-speed.boost::after {
+    border-left: 15px solid #fa2f2f99;
+    transition: all ease-out 300ms;
 }

@@ -38,9 +38,9 @@ header {
 }
 
 .active .slider {
-    border: 1px solid var(--primary-color);
+    border: 1px solid var(--primary-transparent-color);
 }
 
 .active .slider::-webkit-slider-thumb {
-    background: var(--primary-color);
+    background: var(--primary-transparent-color);
 }

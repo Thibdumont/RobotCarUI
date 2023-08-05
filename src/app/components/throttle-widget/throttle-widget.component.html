@@ -1,3 +1,8 @@
+<div class="max-speed-bar">
+    <div class="max-speed" [class.boost]="boost" #maxSpeedIndicator>
+        {{ boost ? appConfigService.maxRobotSpeed : maxSpeed }}
+    </div>
+</div>
 <div class="throttle-bar">
     <div class="top-bar reverse">
         <div class="forward-throttle-force" [@toggleBoost]="boost ? 'engaged':'disengaged'" #forwardThrottleForce></div>
