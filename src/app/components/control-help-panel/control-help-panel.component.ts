@@ -80,6 +80,10 @@ export class ControlHelpPanelComponent {
         label: 'Increase max speed'
       },
       {
+        button: 'Y',
+        label: 'Hold to boost'
+      },
+      {
         button: 'Left joystick',
         label: 'Turn'
       },

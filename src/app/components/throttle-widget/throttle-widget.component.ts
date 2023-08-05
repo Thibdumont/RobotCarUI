@@ -4,12 +4,20 @@ import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 import { RobotStateService } from 'src/app/services/robot-state.service';
 
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'robotcarui-throttle-widget',
   templateUrl: './throttle-widget.component.html',
-  styleUrls: ['./throttle-widget.component.scss']
+  styleUrls: ['./throttle-widget.component.scss'],
+  animations: [
+    trigger('toggleBoost', [
+      state('engaged', style({ background: '#fa2f2f' })),
+      state('disengaged', style({ background: '#0d6efd' })),
+      transition('* => *', animate('300ms 0ms ease'))
+    ])
+  ]
 })
 export class ThrottleWidgetComponent {
   @ViewChild('forwardThrottleForce') forwardThrottleForce!: ElementRef;
@@ -17,6 +25,7 @@ export class ThrottleWidgetComponent {
 
   leftTrigger: number = 0;
   rightTrigger: number = 0;
+  boost: boolean = false;
 
   constructor(
     private gamepadService: GamepadService,
@@ -41,6 +50,13 @@ export class ThrottleWidgetComponent {
         this.rightTrigger = rightTrigger;
         this.forwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(rightTrigger) * 100))}%`;
         this.robotCommunicationService.sendCommand({ speedThrottle: rightTrigger });
+      }
+    });
+    this.gamepadService.yButtonChange.subscribe(yButton => {
+      const boost = yButton === 1;
+      if (boost !== this.boost) {
+        this.boost = boost;
+        this.robotCommunicationService.sendCommand({ boost: boost });
       }
     });
   }
