@@ -1,9 +1,7 @@
-<div class="battery-container">
+<div class="battery-container" [ngClass]="getBatteryStep()">
     <div class="battery-body">
-        <div class="battery-level" [ngClass]="getBatteryStep()"></div>
+        <div class="battery-level"></div>
         <span class="battery-percent">{{ batteryPercent }}</span>
-        -
     </div>
     <div class="battery-stud"></div>
 </div>
-<div class="battery-duration">{{ batteryDuration }}</div>
