@@ -3,8 +3,6 @@ import { RobotCommunicationService } from 'src/app/services/robot-communication.
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
-const joystickMinChange = 0.01;
-
 @Component({
   selector: 'robotcarui-direction-widget',
   templateUrl: './direction-widget.component.html',
@@ -21,8 +19,7 @@ export class DirectionWidgetComponent {
     private robotCommunicationService: RobotCommunicationService
   ) {
     this.gamepadService.leftStickXChange.subscribe(leftStick => {
-      // Prevent sending the same command every time
-      if (Math.abs(this.leftStick - leftStick) > joystickMinChange) {
+      if (this.leftStick !== leftStick) {
         this.leftStick = leftStick;
 
         if (leftStick < 0) {
