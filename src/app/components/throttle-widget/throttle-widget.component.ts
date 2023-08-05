@@ -5,7 +5,7 @@ import { RobotCommunicationService } from 'src/app/services/robot-communication.
 import { RobotStateService } from 'src/app/services/robot-state.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'robotcarui-throttle-widget',
@@ -19,7 +19,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
     ])
   ]
 })
-export class ThrottleWidgetComponent {
+export class ThrottleWidgetComponent implements AfterViewInit {
   @ViewChild('forwardThrottleForce') forwardThrottleForce!: ElementRef;
   @ViewChild('backwardThrottleForce') backwardThrottleForce!: ElementRef;
   @ViewChild('maxSpeedIndicator') maxSpeedIndicator!: ElementRef;
@@ -38,6 +38,11 @@ export class ThrottleWidgetComponent {
     this.handleThrottle();
     this.handleMaxSpeed();
   }
+
+  ngAfterViewInit(): void {
+    this.updateMaxSpeedIndicatorPosition(this.maxSpeed);
+  }
+
 
   handleThrottle() {
     this.gamepadService.leftTriggerChange.subscribe(leftTrigger => {
