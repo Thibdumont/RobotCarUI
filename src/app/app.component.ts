@@ -3,6 +3,7 @@ import { distinctUntilChanged } from 'rxjs';
 import { Component } from '@angular/core';
 
 import { GamepadService } from './services/gamepad.service';
+import { UiPanelDirectorService } from './services/ui-panel-director.service';
 
 @Component({
   selector: 'app-root',
@@ -12,9 +13,11 @@ import { GamepadService } from './services/gamepad.service';
 export class AppComponent {
 
   constructor(
-    private gamepadService: GamepadService
+    private gamepadService: GamepadService,
+    private uiPanelDirectorService: UiPanelDirectorService
   ) {
     this.gamepadService.initGamepad();
+    this.uiPanelDirectorService.init();
 
     this.handleControl();
   }

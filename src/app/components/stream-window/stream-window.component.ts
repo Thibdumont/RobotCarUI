@@ -1,11 +1,11 @@
-import { distinctUntilChanged, Subscription } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
-import { UiPanelDirectorService } from '../../services/ui-panel-director.service';
+import { UiPanel, UiPanelDirectorService } from '../../services/ui-panel-director.service';
 
 @Component({
   selector: 'robotcarui-stream-window',
@@ -18,10 +18,7 @@ export class StreamWindowComponent {
   isStreaming: boolean = false;
   isActive: boolean = true;
 
-  leftPadSub!: Subscription;
-  rightPadSub!: Subscription;
-  upPadSub!: Subscription;
-  downPadSub!: Subscription;
+  inactive$ = new Subject<void>();
 
   constructor(
     private appConfigService: AppConfigService,
@@ -51,46 +48,30 @@ export class StreamWindowComponent {
   }
 
   handleNavigation() {
-    this.leftPadSub = this.gamepadService.leftPadChange.pipe(distinctUntilChanged()).subscribe(leftPad => {
+    this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(leftPad => {
       if (leftPad) {
-        this.uiPanelDirectorService.streamWindowActiveStateChange.next(false);
-        this.uiPanelDirectorService.infoPanelActiveStateChange.next(true);
+        this.uiPanelDirectorService.setActive(UiPanel.INFO);
       }
     });
-    this.rightPadSub = this.gamepadService.rightPadChange.pipe(distinctUntilChanged()).subscribe(rightPad => {
+    this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(rightPad => {
       if (rightPad) {
-        this.uiPanelDirectorService.streamWindowActiveStateChange.next(false);
-        this.uiPanelDirectorService.photoPanelActiveStateChange.next(true);
+        this.uiPanelDirectorService.setActive(UiPanel.PHOTO);
       }
     });
-    this.upPadSub = this.gamepadService.upPadChange.pipe(distinctUntilChanged()).subscribe(upPad => {
-      if (upPad) {
-        this.uiPanelDirectorService.streamWindowActiveStateChange.next(false);
-        this.uiPanelDirectorService.controlHelpPanelActiveStateChange.next(true);
-      }
-    });
-    this.downPadSub = this.gamepadService.downPadChange.pipe(distinctUntilChanged()).subscribe(downPad => {
+    this.gamepadService.downPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(downPad => {
       if (downPad) {
-        this.uiPanelDirectorService.streamWindowActiveStateChange.next(false);
-        this.uiPanelDirectorService.cameraControlPanelActiveStateChange.next(true);
+        this.uiPanelDirectorService.setActive(UiPanel.CAMERA_CONTROL);
       }
     });
-  }
-
-  unhandleNavigation() {
-    this.leftPadSub.unsubscribe();
-    this.rightPadSub.unsubscribe();
-    this.upPadSub.unsubscribe();
-    this.downPadSub.unsubscribe();
   }
 
   handleActiveState() {
-    this.uiPanelDirectorService.streamWindowActiveStateChange.subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.STREAM_WINDOW).subscribe(newState => {
       this.isActive = newState;
       if (this.isActive) {
         setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
       } else {
-        this.unhandleNavigation();
+        this.inactive$.next();;
       }
     });
   }

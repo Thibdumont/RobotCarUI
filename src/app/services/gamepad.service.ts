@@ -31,7 +31,6 @@ export class GamepadService {
   public viewButtonChange: Subject<number> = new Subject();
   public menuButtonChange: Subject<number> = new Subject();
 
-
   constructor(
     private appConfigService: AppConfigService
   ) {

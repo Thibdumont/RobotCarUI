@@ -1,8 +1,7 @@
-import { distinctUntilChanged, Subscription, throttleTime } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil, throttleTime } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
-import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
-import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
+import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
@@ -37,50 +36,35 @@ export class PhotoPanelComponent {
   photoList: Array<PhotoItem> = new Array();
   activePhotoIndex: number = 0;
 
-  leftPadSub!: Subscription;
-  rightPadSub!: Subscription;
-  bButtonSub!: Subscription;
+  inactive$ = new Subject<void>();
 
   constructor(
     private gamepadService: GamepadService,
     private appConfigService: AppConfigService,
-    private robotCommunicationService: RobotCommunicationService,
     private uiPanelDirectorService: UiPanelDirectorService
   ) {
     this.handleActiveState();
     this.handlePhotoCapture();
-    // this.robotCommunicationService.connectionStatusChange.subscribe(connectionOpened => {
-    //   if (connectionOpened) {
-    //     this.photoList.push(
-    //       {
-    //         date: new Date(),
-    //         src: this.getCaptureUrl()
-    //       }
-    //     );
-    //     this.opened = true;
-    //   }
-    // });
   }
 
   handleNavigation() {
-    this.leftPadSub = this.gamepadService.leftPadChange.pipe(distinctUntilChanged()).subscribe(leftPad => {
+    this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(leftPad => {
       if (leftPad) {
         if (this.activePhotoIndex <= 0) {
-          this.uiPanelDirectorService.photoPanelActiveStateChange.next(false);
-          this.uiPanelDirectorService.streamWindowActiveStateChange.next(true);
+          this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
         } else {
           this.activePhotoIndex--;
         }
       }
     });
 
-    this.rightPadSub = this.gamepadService.rightPadChange.pipe(distinctUntilChanged()).subscribe(rightPad => {
+    this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(rightPad => {
       if (rightPad && this.activePhotoIndex + 1 < this.photoList.length) {
         this.activePhotoIndex++;
       }
     });
 
-    this.bButtonSub = this.gamepadService.bButtonChange.pipe(distinctUntilChanged()).subscribe(bButton => {
+    this.gamepadService.bButtonChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(bButton => {
       if (bButton && this.photoList.length >= 0) {
         const removedPhotoIndex = this.activePhotoIndex;
         this.photoList.splice(removedPhotoIndex, 1);
@@ -91,19 +75,13 @@ export class PhotoPanelComponent {
     });
   }
 
-  unhandleNavigation() {
-    this.leftPadSub.unsubscribe();
-    this.rightPadSub.unsubscribe();
-    this.bButtonSub.unsubscribe();
-  }
-
   handleActiveState() {
-    this.uiPanelDirectorService.photoPanelActiveStateChange.subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.PHOTO).subscribe(newState => {
       this.opened = newState;
       if (this.opened) {
         setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
       } else {
-        this.unhandleNavigation();
+        this.inactive$.next();
       }
     });
   }

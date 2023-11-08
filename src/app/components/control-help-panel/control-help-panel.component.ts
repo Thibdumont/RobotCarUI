@@ -1,15 +1,10 @@
-import { distinctUntilChanged, Subscription } from 'rxjs';
-import { AppConfigService } from 'src/app/services/app-config.service';
+import { distinctUntilChanged } from 'rxjs';
+import { ControlHelpService, ControlPanelItem } from 'src/app/services/control-help.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
-
-export interface ControlPanelItem {
-  button: string;
-  label: string;
-}
 
 @Component({
   selector: 'robotcarui-control-help-panel',
@@ -26,100 +21,30 @@ export interface ControlPanelItem {
 export class ControlHelpPanelComponent {
 
   opened: boolean = false;
-  downPadSub!: Subscription;
 
-  controlList: Array<ControlPanelItem> = [
-    {
-      button: 'LT',
-      label: 'Throttle down'
-    },
-    {
-      button: 'RT',
-      label: 'Throttle up'
-    },
-    {
-      button: 'LB',
-      label: 'Decrease max speed'
-    },
-    {
-      button: 'RB',
-      label: 'Increase max speed'
-    },
-    {
-      button: 'Y',
-      label: 'Hold to boost'
-    },
-    {
-      button: 'Left joystick',
-      label: 'Turn'
-    },
-    {
-      button: 'Right joystick',
-      label: 'Control head position'
-    },
-    {
-      button: 'Right joystick button',
-      label: 'Center head position'
-    },
-    {
-      button: 'A',
-      label: 'Take photo'
-    },
-    {
-      button: 'B',
-      label: 'Delete photo'
-    },
-    {
-      button: 'Left Dpad',
-      label: 'Show info panel'
-    },
-    {
-      button: 'Right Dpad',
-      label: 'Show photo manager'
-    },
-    {
-      button: 'Up Dpad button',
-      label: 'Show control help panel'
-    },
-    {
-      button: 'Down Dpad button',
-      label: 'Show camera control panel'
-    },
-    {
-      button: 'View button',
-      label: 'Fullscreen'
-    }
-  ];
+  controlList!: Array<ControlPanelItem>;
+  commonControlList!: Array<ControlPanelItem>;
 
   constructor(
+    private controlHelpService: ControlHelpService,
     private gamepadService: GamepadService,
-    private uiPanelDirectorService: UiPanelDirectorService,
-    private appConfigService: AppConfigService
+    private uiPanelDirectorService: UiPanelDirectorService
   ) {
-    this.handleActiveState();
+    this.handleActivation();
+    this.commonControlList = this.controlHelpService.commonControlHelpList;
   }
 
-  handleNavigation() {
-    this.downPadSub = this.gamepadService.downPadChange.pipe(distinctUntilChanged()).subscribe(downPad => {
-      if (downPad) {
-        this.uiPanelDirectorService.controlHelpPanelActiveStateChange.next(false);
-        this.uiPanelDirectorService.streamWindowActiveStateChange.next(true);
+  handleActivation() {
+    this.gamepadService.menuButtonChange.pipe(distinctUntilChanged()).subscribe(menuButton => {
+      if (menuButton) {
+        this.controlList = this.controlHelpService.getUiPanelControlList(this.uiPanelDirectorService.getActivePanel());
+        this.opened = !this.opened;
       }
+    });
+
+    this.uiPanelDirectorService.uiPanelChange.pipe().subscribe(() => {
+      this.opened = false;
     });
   }
 
-  unhandleNavigation() {
-    this.downPadSub.unsubscribe();
-  }
-
-  handleActiveState() {
-    this.uiPanelDirectorService.controlHelpPanelActiveStateChange.subscribe(newState => {
-      this.opened = newState;
-      if (this.opened) {
-        setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
-      } else {
-        this.unhandleNavigation();
-      }
-    });
-  }
 }

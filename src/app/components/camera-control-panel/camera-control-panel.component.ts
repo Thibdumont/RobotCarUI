@@ -1,9 +1,9 @@
-import { distinctUntilChanged, Subscription } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 import { RobotStateService } from 'src/app/services/robot-state.service';
-import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
+import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
@@ -40,13 +40,11 @@ export interface CameraControlSlider {
 export class CameraControlPanelComponent {
 
   opened: boolean = false;
-  upPadSub!: Subscription;
-  downPadSub!: Subscription;
-  leftPadSub!: Subscription;
-  rightPadSub!: Subscription;
 
   cameraResolution: number = 8;
   cameraQuality: number = 10;
+
+  inactive$ = new Subject<void>();
 
   cameraControlList: Array<CameraControlSlider> = [
     {
@@ -111,22 +109,21 @@ export class CameraControlPanelComponent {
   }
 
   handleNavigation() {
-    this.upPadSub = this.gamepadService.upPadChange.pipe(distinctUntilChanged()).subscribe(upPad => {
+    this.gamepadService.upPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(upPad => {
       if (upPad) {
         if (this.currentCameraControl > 0) {
           this.currentCameraControl = Math.max(this.currentCameraControl - 1, 0);
         } else {
-          this.uiPanelDirectorService.cameraControlPanelActiveStateChange.next(false);
-          this.uiPanelDirectorService.streamWindowActiveStateChange.next(true);
+          this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
         }
       }
     });
-    this.downPadSub = this.gamepadService.downPadChange.pipe(distinctUntilChanged()).subscribe(downPad => {
+    this.gamepadService.downPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(downPad => {
       if (downPad) {
         this.currentCameraControl = Math.min(this.currentCameraControl + 1, this.cameraControlList.length - 1);
       }
     });
-    this.leftPadSub = this.gamepadService.leftPadChange.pipe(distinctUntilChanged()).subscribe(leftPad => {
+    this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(leftPad => {
       if (leftPad) {
         this.cameraControlList[this.currentCameraControl].value =
           Math.max(this.cameraControlList[this.currentCameraControl].value - 1,
@@ -134,7 +131,7 @@ export class CameraControlPanelComponent {
         this.changeCameraControl(this.cameraControlList[this.currentCameraControl].value);
       }
     });
-    this.rightPadSub = this.gamepadService.rightPadChange.pipe(distinctUntilChanged()).subscribe(rightPad => {
+    this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(rightPad => {
       if (rightPad) {
         this.cameraControlList[this.currentCameraControl].value =
           Math.min(this.cameraControlList[this.currentCameraControl].value + 1,
@@ -144,20 +141,15 @@ export class CameraControlPanelComponent {
     });
   }
 
-  unhandleNavigation() {
-    this.upPadSub.unsubscribe();
-    this.downPadSub.unsubscribe();
-    this.leftPadSub.unsubscribe();
-    this.rightPadSub.unsubscribe();
-  }
+
 
   handleActiveState() {
-    this.uiPanelDirectorService.cameraControlPanelActiveStateChange.subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.CAMERA_CONTROL).subscribe(newState => {
       this.opened = newState;
       if (this.opened) {
         setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
       } else {
-        this.unhandleNavigation();
+        this.inactive$.next();
       }
     });
   }
