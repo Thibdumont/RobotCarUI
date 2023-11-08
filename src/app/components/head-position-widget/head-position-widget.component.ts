@@ -1,8 +1,8 @@
-import { distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 
 const headDiameter = 10;
 const headChangeBaseIncrement = 0.05;
@@ -12,17 +12,18 @@ const deadZone = 0.01;
   templateUrl: './head-position-widget.component.html',
   styleUrls: ['./head-position-widget.component.scss']
 })
-export class HeadPositionWidgetComponent {
+export class HeadPositionWidgetComponent implements OnDestroy {
   @ViewChild('head') head!: ElementRef;
 
   headPosition: number = 0;
   previousHeadPosition: number = 0;
+  destroy$ = new Subject<void>();
 
   constructor(
     private gamepadService: GamepadService,
     private robotCommunicationService: RobotCommunicationService
   ) {
-    this.gamepadService.rightStickXChange.subscribe(rightStickX => {
+    this.gamepadService.rightStickXChange.pipe(takeUntil(this.destroy$)).subscribe(rightStickX => {
       this.previousHeadPosition = this.headPosition;
       let headChangeIncrement = Math.abs(rightStickX * headChangeBaseIncrement);
       if (rightStickX < -deadZone) {
@@ -41,7 +42,7 @@ export class HeadPositionWidgetComponent {
       this.updateHeadPosition();
     });
 
-    this.gamepadService.rightStickButtonChange.pipe(distinctUntilChanged()).subscribe(rightStickButton => {
+    this.gamepadService.rightStickButtonChange.pipe(takeUntil(this.destroy$), distinctUntilChanged()).subscribe(rightStickButton => {
       if (rightStickButton) {
         this.headPosition = 0;
         this.updateHeadPosition();
@@ -58,6 +59,10 @@ export class HeadPositionWidgetComponent {
       const headAngle = (-this.headPosition + 1) * 90;
       this.robotCommunicationService.sendCommand({ headPosition: headAngle });
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
   }
 
 }

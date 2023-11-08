@@ -1,6 +1,6 @@
 <div class="control-panel-container" [@openClose]="opened ? 'opened':'closed'">
     <div class="control-list">
-        <div class="control-item" *ngFor="let control of getControlList()">
+        <div class="control-item" *ngFor="let control of controlList">
             <div>{{ control.button }}</div>
             <label>{{ control.label}}</label>
         </div>

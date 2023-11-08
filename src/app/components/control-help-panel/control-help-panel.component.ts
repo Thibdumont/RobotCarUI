@@ -28,6 +28,69 @@ export class ControlHelpPanelComponent {
   opened: boolean = false;
   downPadSub!: Subscription;
 
+  controlList: Array<ControlPanelItem> = [
+    {
+      button: 'LT',
+      label: 'Throttle down'
+    },
+    {
+      button: 'RT',
+      label: 'Throttle up'
+    },
+    {
+      button: 'LB',
+      label: 'Decrease max speed'
+    },
+    {
+      button: 'RB',
+      label: 'Increase max speed'
+    },
+    {
+      button: 'Y',
+      label: 'Hold to boost'
+    },
+    {
+      button: 'Left joystick',
+      label: 'Turn'
+    },
+    {
+      button: 'Right joystick',
+      label: 'Control head position'
+    },
+    {
+      button: 'Right joystick button',
+      label: 'Center head position'
+    },
+    {
+      button: 'A',
+      label: 'Take photo'
+    },
+    {
+      button: 'B',
+      label: 'Delete photo'
+    },
+    {
+      button: 'Left Dpad',
+      label: 'Show info panel'
+    },
+    {
+      button: 'Right Dpad',
+      label: 'Show photo manager'
+    },
+    {
+      button: 'Up Dpad button',
+      label: 'Show control help panel'
+    },
+    {
+      button: 'Down Dpad button',
+      label: 'Show camera control panel'
+    },
+    {
+      button: 'View button',
+      label: 'Fullscreen'
+    }
+  ];
+
   constructor(
     private gamepadService: GamepadService,
     private uiPanelDirectorService: UiPanelDirectorService,
@@ -59,71 +122,4 @@ export class ControlHelpPanelComponent {
       }
     });
   }
-
-
-  getControlList(): Array<ControlPanelItem> {
-    return [
-      {
-        button: 'LT',
-        label: 'Throttle down'
-      },
-      {
-        button: 'RT',
-        label: 'Throttle up'
-      },
-      {
-        button: 'LB',
-        label: 'Decrease max speed'
-      },
-      {
-        button: 'RB',
-        label: 'Increase max speed'
-      },
-      {
-        button: 'Y',
-        label: 'Hold to boost'
-      },
-      {
-        button: 'Left joystick',
-        label: 'Turn'
-      },
-      {
-        button: 'Right joystick',
-        label: 'Control head position'
-      },
-      {
-        button: 'Right joystick button',
-        label: 'Center head position'
-      },
-      {
-        button: 'A',
-        label: 'Take photo'
-      },
-      {
-        button: 'B',
-        label: 'Delete photo'
-      },
-      {
-        button: 'Left Dpad',
-        label: 'Show info panel'
-      },
-      {
-        button: 'Right Dpad',
-        label: 'Show photo manager'
-      },
-      {
-        button: 'Up Dpad button',
-        label: 'Show control help panel'
-      },
-      {
-        button: 'Down Dpad button',
-        label: 'Show camera control panel'
-      },
-      {
-        button: 'View button',
-        label: 'Fullscreen'
-      }
-    ]
-  }
-
 }

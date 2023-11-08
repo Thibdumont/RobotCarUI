@@ -1,24 +1,26 @@
+import { Subject, takeUntil } from 'rxjs';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'robotcarui-direction-widget',
   templateUrl: './direction-widget.component.html',
   styleUrls: ['./direction-widget.component.scss']
 })
-export class DirectionWidgetComponent {
+export class DirectionWidgetComponent implements OnDestroy {
   @ViewChild('leftDirectionForce') leftDirectionForce!: ElementRef;
   @ViewChild('rightDirectionForce') rightDirectionForce!: ElementRef;
 
   leftStick: number = 0;
+  destroy$ = new Subject<void>();
 
   constructor(
     private gamepadService: GamepadService,
     private robotCommunicationService: RobotCommunicationService
   ) {
-    this.gamepadService.leftStickXChange.subscribe(leftStick => {
+    this.gamepadService.leftStickXChange.pipe(takeUntil(this.destroy$)).subscribe(leftStick => {
       if (this.leftStick !== leftStick) {
         this.leftStick = leftStick;
 
@@ -35,4 +37,7 @@ export class DirectionWidgetComponent {
 
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+  }
 }

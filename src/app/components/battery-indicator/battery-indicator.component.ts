@@ -1,6 +1,7 @@
+import { Subject, takeUntil } from 'rxjs';
 import { RobotStateService } from 'src/app/services/robot-state.service';
 
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 const lowBatteryLevelThreshold = 20;
 const batteryEmptyThreshold = 7.8;
@@ -18,17 +19,20 @@ const voltageFifoMaxLength = 30000 / voltageInfoIntervalReception; //We want app
   templateUrl: './battery-indicator.component.html',
   styleUrls: ['./battery-indicator.component.scss']
 })
-export class BatteryIndicatorComponent {
+export class BatteryIndicatorComponent implements OnDestroy {
   batteryPercent: number = 0;
   voltageFifo = new Array();
   averageVoltageFifo = new Array();
 
   maxVoltage: number = batteryFullThreshold;
 
+  lowThreshold = lowBatteryLevelThreshold;
+  destroy$ = new Subject<void>();
+
   constructor(
     private robotStateService: RobotStateService
   ) {
-    this.robotStateService.robotStateChange.subscribe(robotState => {
+    this.robotStateService.robotStateChange.pipe(takeUntil(this.destroy$)).subscribe(robotState => {
       this.addToFifo(this.voltageFifo, robotState.batteryVoltage);
       this.addToFifo(this.averageVoltageFifo, this.average(this.voltageFifo));
       this.maxVoltage = Math.min(...this.averageVoltageFifo);
@@ -60,4 +64,7 @@ export class BatteryIndicatorComponent {
     this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.maxVoltage - batteryEmptyThreshold) / batteryVoltageRange) * 100)));
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+  }
 }

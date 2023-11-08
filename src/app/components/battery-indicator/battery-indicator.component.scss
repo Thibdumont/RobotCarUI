@@ -16,7 +16,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 44px;
+    width: 46px;
     border-radius: 4px;
     padding: 4px 0px;
     position: relative;
@@ -62,11 +62,11 @@
     }
 
     30% {
-        background-color: #f00c;
+        background: #f00c;
     }
 
     50% {
-        background-color: #f00c;
+        background: #f00c;
     }
 
     100% {
