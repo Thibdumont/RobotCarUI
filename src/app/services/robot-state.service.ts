@@ -17,7 +17,9 @@ export class RobotStateService {
 
   processEspMessage(json: any) {
     if (json.handshake) {
+      // Properties retrieved only once, during the handshake
       this.robotState.maxSpeed = json.maxSpeed ?? this.robotState.maxSpeed;
+      this.robotState.safeStopDistance = json.safeStopDistance ?? this.robotState.safeStopDistance;
       this.robotState.servoAngle = json.servoAngle ?? this.robotState.servoAngle;
       this.robotState.cameraQuality = json.cameraQuality ?? this.robotState.cameraQuality;
       this.robotState.cameraResolution = json.cameraResolution ?? this.robotState.cameraResolution;
@@ -26,6 +28,7 @@ export class RobotStateService {
       this.robotState.cameraSaturation = json.cameraSaturation ?? this.robotState.cameraSaturation;
       this.robotStateHandshakeChange.next(this.robotState);
     } else {
+      // Retrieved every "frame"
       this.robotState.radarDistance = json.radarDistance ?? this.robotState.radarDistance;
       this.robotState.batteryVoltage = json.batteryVoltage ?? this.robotState.batteryVoltage;
       this.robotState.unoLoopDuration = json.unoLoopDuration ?? this.robotState.unoLoopDuration;

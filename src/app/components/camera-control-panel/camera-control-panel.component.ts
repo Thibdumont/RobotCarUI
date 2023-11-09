@@ -41,10 +41,8 @@ export class CameraControlPanelComponent {
 
   opened: boolean = false;
 
-  cameraResolution: number = 8;
-  cameraQuality: number = 10;
-
   inactive$ = new Subject<void>();
+  currentCameraControl: number = 0;
 
   cameraControlList: Array<CameraControlSlider> = [
     {
@@ -86,10 +84,8 @@ export class CameraControlPanelComponent {
       min: -2,
       max: 2,
       value: 0
-    },
+    }
   ];
-
-  currentCameraControl: number = 0;
 
   constructor(
     private gamepadService: GamepadService,
@@ -99,6 +95,10 @@ export class CameraControlPanelComponent {
     private robotStateService: RobotStateService
   ) {
     this.handleActiveState();
+    this.initControls();
+  }
+
+  initControls() {
     this.robotStateService.robotStateHandshakeChange.subscribe(robotState => {
       this.cameraControlList[0].value = robotState.cameraResolution;
       this.cameraControlList[1].value = robotState.cameraQuality;
@@ -137,6 +137,11 @@ export class CameraControlPanelComponent {
           Math.min(this.cameraControlList[this.currentCameraControl].value + 1,
             this.cameraControlList[this.currentCameraControl].max);
         this.changeCameraControl(this.cameraControlList[this.currentCameraControl].value);
+      }
+    });
+    this.gamepadService.bButtonChange.pipe(takeUntil(this.inactive$)).subscribe(bButton => {
+      if (bButton) {
+        this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
       }
     });
   }

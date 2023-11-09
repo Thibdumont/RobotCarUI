@@ -11,6 +11,9 @@ import {
   CameraControlPanelComponent
 } from './components/camera-control-panel/camera-control-panel.component';
 import {
+  CarSettingPanelComponent
+} from './components/car-setting-panel/car-setting-panel.component';
+import {
   ControlHelpPanelComponent
 } from './components/control-help-panel/control-help-panel.component';
 import { DirectionWidgetComponent } from './components/direction-widget/direction-widget.component';
@@ -37,7 +40,8 @@ import { WifiSignalComponent } from './components/wifi-signal/wifi-signal.compon
     ControlHelpPanelComponent,
     BatteryIndicatorComponent,
     WifiSignalComponent,
-    CameraControlPanelComponent
+    CameraControlPanelComponent,
+    CarSettingPanelComponent
   ],
   imports: [
     BrowserModule,

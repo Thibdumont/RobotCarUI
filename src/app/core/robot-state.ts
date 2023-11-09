@@ -1,5 +1,6 @@
 export class RobotState {
     public maxSpeed: number = 0;
+    public safeStopDistance: number = 0;
     public servoAngle: number = 0;
     public radarDistance: number = 0;
     public unoLoopDuration: number = 0;

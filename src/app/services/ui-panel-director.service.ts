@@ -6,7 +6,8 @@ export enum UiPanel {
   PHOTO = 'PHOTO',
   CAMERA_CONTROL = 'CAMERA_CONTROL',
   STREAM_WINDOW = 'STREAM_WINDOW',
-  INFO = 'INFO'
+  INFO = 'INFO',
+  CAR_SETTING = 'CAR_SETTING'
 }
 
 export interface UiPanelSubjectState {
@@ -23,7 +24,8 @@ export class UiPanelDirectorService {
     [UiPanel.PHOTO, new Subject<boolean>()],
     [UiPanel.CAMERA_CONTROL, new Subject<boolean>()],
     [UiPanel.STREAM_WINDOW, new Subject<boolean>()],
-    [UiPanel.INFO, new Subject<boolean>()]
+    [UiPanel.INFO, new Subject<boolean>()],
+    [UiPanel.CAR_SETTING, new Subject<boolean>()]
   ]);
 
   activePanel: UiPanel = UiPanel.STREAM_WINDOW;

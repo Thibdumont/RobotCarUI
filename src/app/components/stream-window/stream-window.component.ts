@@ -63,6 +63,11 @@ export class StreamWindowComponent {
         this.uiPanelDirectorService.setActive(UiPanel.CAMERA_CONTROL);
       }
     });
+    this.gamepadService.upPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(upPad => {
+      if (upPad) {
+        this.uiPanelDirectorService.setActive(UiPanel.CAR_SETTING);
+      }
+    });
   }
 
   handleActiveState() {

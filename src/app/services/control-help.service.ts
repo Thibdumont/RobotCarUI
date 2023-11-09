@@ -29,7 +29,15 @@ export class ControlHelpService {
         { button: 'Left Dpad', label: 'Decrease current value' },
         { button: 'Right Dpad', label: 'Increase current value' },
         { button: 'Up Dpad button', label: 'Go to previous parameter / Return to main view' },
-        { button: 'Down Dpad button', label: 'Go to next parameter' }
+        { button: 'Down Dpad button', label: 'Go to next parameter' },
+        { button: 'B button', label: 'Return to main view' }
+      ]],
+      [UiPanel.CAR_SETTING, [
+        { button: 'Left Dpad', label: 'Decrease current value' },
+        { button: 'Right Dpad', label: 'Increase current value' },
+        { button: 'Up Dpad button', label: 'Go to previous parameter' },
+        { button: 'Down Dpad button', label: 'Go to next parameter / Return to main view' },
+        { button: 'B button', label: 'Return to main view' }
       ]],
       [UiPanel.STREAM_WINDOW, [
         { button: 'LT', label: 'Throttle down' },
