@@ -9,7 +9,8 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Component } from '@angular/core';
 
 export enum CarSettingEnum {
-  SAFE_STOP_DISTANCE
+  SAFE_STOP_DISTANCE,
+  SERVO_SPEED
 }
 
 export interface CarSettingSlider {
@@ -18,7 +19,8 @@ export interface CarSettingSlider {
   jsonProp: string,
   min: number,
   max: number,
-  value: number
+  value: number,
+  increment: number;
 }
 
 
@@ -46,7 +48,17 @@ export class CarSettingPanelComponent {
       jsonProp: 'safeStopDistance',
       min: 0,
       max: 30,
-      value: 10
+      value: 0,
+      increment: 1
+    },
+    {
+      id: CarSettingEnum.SERVO_SPEED,
+      label: 'Head speed (deg/sec)',
+      jsonProp: 'servoSpeed',
+      min: 0,
+      max: 250, //250 max => 8 bits int on arduino side
+      value: 0,
+      increment: 10
     }
   ];
 
@@ -66,6 +78,7 @@ export class CarSettingPanelComponent {
   initSettings() {
     this.robotStateService.robotStateHandshakeChange.subscribe(robotState => {
       this.carSettingList[0].value = robotState.safeStopDistance;
+      this.carSettingList[1].value = robotState.servoSpeed;
     });
   }
 
@@ -87,7 +100,7 @@ export class CarSettingPanelComponent {
     this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), throttleTime(100)).subscribe(leftPad => {
       if (leftPad) {
         this.carSettingList[this.currentCarSetting].value =
-          Math.max(this.carSettingList[this.currentCarSetting].value - 1,
+          Math.max(this.carSettingList[this.currentCarSetting].value - this.carSettingList[this.currentCarSetting].increment,
             this.carSettingList[this.currentCarSetting].min);
         this.changeCarSetting(this.carSettingList[this.currentCarSetting].value);
       }
@@ -95,7 +108,7 @@ export class CarSettingPanelComponent {
     this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), throttleTime(100)).subscribe(rightPad => {
       if (rightPad) {
         this.carSettingList[this.currentCarSetting].value =
-          Math.min(this.carSettingList[this.currentCarSetting].value + 1,
+          Math.min(this.carSettingList[this.currentCarSetting].value + this.carSettingList[this.currentCarSetting].increment,
             this.carSettingList[this.currentCarSetting].max);
         this.changeCarSetting(this.carSettingList[this.currentCarSetting].value);
       }

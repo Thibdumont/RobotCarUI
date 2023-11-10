@@ -21,6 +21,7 @@ export class RobotStateService {
       this.robotState.maxSpeed = json.maxSpeed ?? this.robotState.maxSpeed;
       this.robotState.safeStopDistance = json.safeStopDistance ?? this.robotState.safeStopDistance;
       this.robotState.servoAngle = json.servoAngle ?? this.robotState.servoAngle;
+      this.robotState.servoSpeed = json.servoSpeed ?? this.robotState.servoSpeed;
       this.robotState.cameraQuality = json.cameraQuality ?? this.robotState.cameraQuality;
       this.robotState.cameraResolution = json.cameraResolution ?? this.robotState.cameraResolution;
       this.robotState.cameraContrast = json.cameraContrast ?? this.robotState.cameraContrast;
