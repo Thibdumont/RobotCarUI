@@ -12,7 +12,7 @@
     width: 100%;
     height: 15px;
     border-radius: 8px;
-    border: 1px solid #666;
+    border: 1px solid #999;
 }
 
 .slider::-webkit-slider-thumb {
@@ -21,8 +21,7 @@
     width: 15px;
     height: 15px;
     border-radius: 50%;
-    background: #666;
-    cursor: pointer;
+    background: #999;
 }
 
 header {

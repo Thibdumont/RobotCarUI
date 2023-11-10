@@ -48,13 +48,16 @@ export class ControlHelpService {
         { button: 'Left joystick', label: 'Turn' },
         { button: 'Right joystick', label: 'Control head position' },
         { button: 'Right joystick button', label: 'Center head position' },
-        { button: 'A', label: 'Take photo' },
+        { button: 'X', label: 'Take photo' },
         { button: 'Left Dpad', label: 'Show info panel' },
         { button: 'Right Dpad', label: 'Show photo manager' },
         { button: 'Down Dpad button', label: 'Show camera control panel' }
       ]],
       [UiPanel.INFO, [
-        { button: 'Right Dpad', label: 'Return to main view' }
+        { button: 'Right Dpad', label: 'Return to main view' },
+        { button: 'Up Dpad button', label: 'Go to previous info' },
+        { button: 'Down Dpad button', label: 'Go to next info' },
+        { button: 'A', label: 'Toggle info HUD visibility' },
       ]]
     ]);
 

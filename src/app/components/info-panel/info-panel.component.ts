@@ -1,18 +1,11 @@
 import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
-import { RobotState } from 'src/app/core/robot-state';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
-import { RobotStateService } from 'src/app/services/robot-state.service';
+import { HudInfoServiceService } from 'src/app/services/hud-info-service.service';
 import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
-
-export interface InfoPanelItem {
-  label: string;
-  value: string | number;
-  unit?: string;
-}
 
 @Component({
   selector: 'robotcarui-info-panel',
@@ -29,28 +22,42 @@ export interface InfoPanelItem {
 export class InfoPanelComponent {
 
   opened: boolean = false;
-  robotState!: RobotState;
 
   inactive$ = new Subject<void>();
+  currentInfo: number = 0;
 
   constructor(
     private gamepadService: GamepadService,
-    private robotStateService: RobotStateService,
     private uiPanelDirectorService: UiPanelDirectorService,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
+    public hudInfoService: HudInfoServiceService
   ) {
     this.handleActiveState();
   }
 
   handleSubscribe() {
     this.handleNavigation();
-    this.handleDataCollection();
   }
 
   handleNavigation() {
     this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(rightPad => {
       if (rightPad) {
         this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
+      }
+    });
+    this.gamepadService.upPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(upPad => {
+      if (upPad) {
+        this.currentInfo = Math.max(this.currentInfo - 1, 0);
+      }
+    });
+    this.gamepadService.downPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(downPad => {
+      if (downPad) {
+        this.currentInfo = Math.min(this.currentInfo + 1, this.hudInfoService.infoList.length - 1);
+      }
+    });
+    this.gamepadService.aButtonChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(aButton => {
+      if (aButton) {
+        this.toggleHudVisibilityOfCurrentInfo();
       }
     });
   }
@@ -66,43 +73,12 @@ export class InfoPanelComponent {
     });
   }
 
-  handleDataCollection() {
-    this.robotStateService.robotStateChange.pipe(takeUntil(this.inactive$)).subscribe(robotState => {
-      this.robotState = robotState;
-    });
+  toggleHudVisibilityOfCurrentInfo() {
+    this.hudInfoService.toggleHudVisibility(this.currentInfo);
   }
 
-  getInfoList(): Array<InfoPanelItem> {
-    if (this.robotState) {
-      return [
-        {
-          label: 'Radar',
-          value: this.robotState.radarDistance,
-          unit: 'cm'
-        },
-        {
-          label: 'Max speed',
-          value: this.robotState.maxSpeed,
-          unit: 'rpm'
-        },
-        {
-          label: 'Uno loop time',
-          value: this.robotState.unoLoopDuration,
-          unit: 'ms'
-        },
-        {
-          label: 'ESP loop time',
-          value: this.robotState.espLoopDuration,
-          unit: 'ms'
-        },
-        {
-          label: 'Battery voltage',
-          value: this.robotState.batteryVoltage.toPrecision(3),
-          unit: 'V'
-        }
-      ]
-    }
-    return [];
-  }
 
+  isActive(infoIndex: number) {
+    return this.currentInfo === infoIndex;
+  }
 }

@@ -3,11 +3,10 @@
     height: 100%;
     width: 100%;
     grid-template-columns: 10fr auto;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: auto 1fr auto;
     grid-template-areas:
         "robotcarui-head-position-widget robotcarui-head-position-widget"
         "left-hud robotcarui-throttle-widget"
-        "center-hud robotcarui-throttle-widget"
         "robotcarui-direction-widget robotcarui-direction-widget";
 }
 
@@ -17,22 +16,13 @@
     flex-direction: column;
     gap: 8px;
     grid-area: left-hud;
-}
 
-.center-hud {
-    padding: 8px 0;
-    box-sizing: border-box;
-    color: #fff;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    grid-area: center-hud;
-
-    &>div {
-        padding: 0 16px;
+    div {
+        color: #fff;
         display: flex;
+        align-self: start;
+
+        padding: 0 8px;
         background: #fff2;
         border-radius: 8px;
     }

@@ -104,8 +104,8 @@ export class PhotoPanelComponent {
   }
 
   handlePhotoCapture() {
-    this.gamepadService.aButtonChange.pipe(distinctUntilChanged(), throttleTime(500)).subscribe(aButton => {
-      if (aButton) {
+    this.gamepadService.xButtonChange.pipe(distinctUntilChanged(), throttleTime(500)).subscribe(xButton => {
+      if (xButton) {
         this.activePhotoIndex++;
         this.photoList.unshift(
           {

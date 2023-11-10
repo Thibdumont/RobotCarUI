@@ -6,7 +6,7 @@
 }
 
 .list-container {
-    background-color: #fffc;
+    background-color: #fffa;
     margin: 5vw;
     padding: 10px;
     border-radius: 8px;
@@ -22,9 +22,8 @@
     gap: 10px;
 }
 
-.common-control-list>.control-item>div {
-    background: var(--primary-color);
-    color: #fff;
+.common-control-list {
+    border-bottom: 1px solid var(--primary-transparent-color);
 }
 
 .control-item {
@@ -37,7 +36,8 @@
     div {
         padding: 8px;
         border-radius: 8px;
-        background: #eee;
+        background: var(--primary-color);
+        color: #fff;
     }
 
     label {

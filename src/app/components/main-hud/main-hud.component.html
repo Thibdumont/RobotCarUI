@@ -6,9 +6,10 @@
     <div class="left-hud">
         <robotcarui-battery-indicator></robotcarui-battery-indicator>
         <robotcarui-wifi-signal></robotcarui-wifi-signal>
-    </div>
-    <div class="center-hud">
-        <div>Distance : {{ robotState.radarDistance }} cm</div>
-        <div>Volt : {{ robotState.batteryVoltage.toPrecision(3) }} V</div>
+        <ng-container *ngFor="let info of hudInfoService.hudInfoList$ | async">
+            <div *ngIf="info.hudVisible">
+                {{info.label}} : {{ info.value }} {{ info.unit }}
+            </div>
+        </ng-container>
     </div>
 </div>
