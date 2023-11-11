@@ -82,13 +82,13 @@
     border-radius: 2px;
 }
 
-.max-speed.boost {
-    background: #fa2f2f99;
+.boost {
+    background: var(--tertiary-color);
     font-size: 1.3rem;
     transition: all ease-out 300ms;
 }
 
-.max-speed.boost::after {
-    border-left: 15px solid #fa2f2f99;
+.boost::after {
+    border-left: 15px solid var(--tertiary-color);
     transition: all ease-out 300ms;
 }

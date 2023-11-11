@@ -2,8 +2,13 @@
     width: 100%;
     height: 100%;
     background: #fff;
-    position: absolute;
     left: 0;
+    position: absolute;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .info-list {
@@ -20,13 +25,18 @@
     align-items: center;
     flex-direction: column;
     padding: 10px;
-    background: #eee;
     border-radius: 8px;
+    border: 2px solid transparent;
+    background-color: var(--slate-100);
+}
+
+.value {
+    color: var(--accent-color);
+    font-weight: bold;
 }
 
 .active {
-    background: var(--primary-transparent-color);
-    color: #fff;
+    border: 2px solid var(--primary-color);
 }
 
 .toggle {
@@ -36,7 +46,7 @@
     width: 40px;
     height: 20px;
     border-radius: 50px;
-    border: 1px solid #999;
+    border: 2px solid var(--slate-500);
     background: #fff;
     right: 0;
 }
@@ -48,7 +58,7 @@
     width: 20px;
     height: 20px;
     border-radius: 10px;
-    background: #999;
+    background: var(--slate-300);
     left: 0%;
     transition: all ease-in-out 300ms;
 }

@@ -1,4 +1,4 @@
-import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil, throttleTime } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
@@ -7,6 +7,9 @@ import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-direc
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
+
+// Camera needs 300ms between each setting update, to prevent crashing
+const cameraSettingUpdateDelay = 300;
 
 export enum CameraControlEnum {
   CAMERA_RESOLUTION,
@@ -123,7 +126,7 @@ export class CameraControlPanelComponent {
         this.currentCameraControl = Math.min(this.currentCameraControl + 1, this.cameraControlList.length - 1);
       }
     });
-    this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(leftPad => {
+    this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged(), throttleTime(cameraSettingUpdateDelay)).subscribe(leftPad => {
       if (leftPad) {
         this.cameraControlList[this.currentCameraControl].value =
           Math.max(this.cameraControlList[this.currentCameraControl].value - 1,
@@ -131,7 +134,7 @@ export class CameraControlPanelComponent {
         this.changeCameraControl(this.cameraControlList[this.currentCameraControl].value);
       }
     });
-    this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(rightPad => {
+    this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged(), throttleTime(cameraSettingUpdateDelay)).subscribe(rightPad => {
       if (rightPad) {
         this.cameraControlList[this.currentCameraControl].value =
           Math.min(this.cameraControlList[this.currentCameraControl].value + 1,

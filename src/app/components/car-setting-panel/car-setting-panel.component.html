@@ -1,10 +1,12 @@
 <div class="car-setting-container" [@openClose]="opened ? 'opened':'closed'">
-    <div class="control" *ngFor="let cameraControl of carSettingList; let i = index" [class.active]="isActive(i)">
-        <header>
-            <label>{{cameraControl.label}}</label>
-            <span>{{cameraControl.value}}</span>
-        </header>
-        <input type="range" min="{{cameraControl.min}}" max="{{cameraControl.max}}" class="slider"
-            [ngModel]="cameraControl.value" (ngModelChange)="changeCarSetting($event)">
+    <div class="control-list">
+        <div class="control" *ngFor="let cameraControl of carSettingList; let i = index" [class.active]="isActive(i)">
+            <header>
+                <label>{{cameraControl.label}}</label>
+                <span class="value">{{cameraControl.value}}</span>
+            </header>
+            <input type="range" min="{{cameraControl.min}}" max="{{cameraControl.max}}" class="slider"
+                [ngModel]="cameraControl.value" (ngModelChange)="changeCarSetting($event)">
+        </div>
     </div>
 </div>

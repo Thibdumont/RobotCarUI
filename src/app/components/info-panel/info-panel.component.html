@@ -3,7 +3,7 @@
         <div class="info-item" *ngFor="let info of hudInfoService.hudInfoList$ | async;let i = index"
             [class.active]="isActive(i)">
             <label>{{ info.label }}</label>
-            <span>{{ info.value }} {{ info.unit }}</span>
+            <span class="value">{{ info.value }} {{ info.unit }}</span>
             <span class="toggle" [class.toggled]="info.hudVisible"></span>
         </div>
     </div>

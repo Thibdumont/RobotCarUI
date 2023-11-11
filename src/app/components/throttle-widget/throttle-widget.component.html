@@ -5,10 +5,10 @@
 </div>
 <div class="throttle-bar">
     <div class="top-bar reverse">
-        <div class="forward-throttle-force" [@toggleBoost]="boost ? 'engaged':'disengaged'" #forwardThrottleForce></div>
+        <div class="forward-throttle-force" [class.boost]="boost" #forwardThrottleForce></div>
     </div>
     <div class="bottom-bar">
-        <div class="backward-throttle-force" [@toggleBoost]="boost ? 'engaged':'disengaged'" #backwardThrottleForce>
+        <div class="backward-throttle-force" [class.boost]="boost" #backwardThrottleForce>
         </div>
     </div>
     <span class="center"></span>

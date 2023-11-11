@@ -4,20 +4,13 @@ import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 import { RobotStateService } from 'src/app/services/robot-state.service';
 
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import { style } from '@angular/animations';
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'robotcarui-throttle-widget',
   templateUrl: './throttle-widget.component.html',
   styleUrls: ['./throttle-widget.component.scss'],
-  animations: [
-    trigger('toggleBoost', [
-      state('engaged', style({ background: '#fa2f2f99' })),
-      state('disengaged', style({ background: '#0d6efd99' })),
-      transition('* => *', animate('300ms 0ms ease'))
-    ])
-  ]
 })
 export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
   @ViewChild('forwardThrottleForce') forwardThrottleForce!: ElementRef;

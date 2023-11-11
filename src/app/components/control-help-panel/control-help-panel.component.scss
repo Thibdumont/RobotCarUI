@@ -3,15 +3,19 @@
     height: 100%;
     position: absolute;
     overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 }
 
 .list-container {
-    background-color: #fffa;
+    background-color: #fffd;
     margin: 5vw;
     padding: 10px;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(3px);
 }
 
 .common-control-list,
@@ -22,8 +26,8 @@
     gap: 10px;
 }
 
-.common-control-list {
-    border-bottom: 1px solid var(--primary-transparent-color);
+.common-control-list>.control-item>div {
+    background: var(--accent-color);
 }
 
 .control-item {
