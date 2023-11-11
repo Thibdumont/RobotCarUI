@@ -21,23 +21,23 @@ export class ControlHelpService {
   uiPanelControlHelpMap: Map<UiPanel, Array<ControlPanelItem>> =
     new Map([
       [UiPanel.PHOTO, [
-        { button: 'B', label: 'Delete photo' },
         { button: 'Left Dpad', label: 'Show previous photo / Return to main view' },
-        { button: 'Right Dpad', label: 'Show next photo' }
+        { button: 'Right Dpad', label: 'Show next photo' },
+        { button: 'B', label: 'Delete photo' }
       ]],
       [UiPanel.CAMERA_CONTROL, [
+        { button: 'Up Dpad', label: 'Go to previous parameter / Return to main view' },
+        { button: 'Down Dpad', label: 'Go to next parameter' },
         { button: 'Left Dpad', label: 'Decrease current value' },
         { button: 'Right Dpad', label: 'Increase current value' },
-        { button: 'Up Dpad button', label: 'Go to previous parameter / Return to main view' },
-        { button: 'Down Dpad button', label: 'Go to next parameter' },
-        { button: 'B button', label: 'Return to main view' }
+        { button: 'B', label: 'Return to main view' }
       ]],
       [UiPanel.CAR_SETTING, [
+        { button: 'Down Dpad', label: 'Go to next parameter / Return to main view' },
+        { button: 'Up Dpad', label: 'Go to previous parameter' },
         { button: 'Left Dpad', label: 'Decrease current value' },
         { button: 'Right Dpad', label: 'Increase current value' },
-        { button: 'Up Dpad button', label: 'Go to previous parameter' },
-        { button: 'Down Dpad button', label: 'Go to next parameter / Return to main view' },
-        { button: 'B button', label: 'Return to main view' }
+        { button: 'B', label: 'Return to main view' }
       ]],
       [UiPanel.STREAM_WINDOW, [
         { button: 'LT', label: 'Throttle down' },
@@ -49,15 +49,16 @@ export class ControlHelpService {
         { button: 'Right joystick', label: 'Control head position' },
         { button: 'Right joystick button', label: 'Center head position' },
         { button: 'X', label: 'Take photo' },
-        { button: 'Left Dpad', label: 'Show info panel' },
+        { button: 'Left Dpad', label: 'Show info HUD visibility panel' },
         { button: 'Right Dpad', label: 'Show photo manager' },
-        { button: 'Down Dpad button', label: 'Show camera control panel' }
+        { button: 'Down Dpad', label: 'Show camera control panel' }
       ]],
       [UiPanel.INFO, [
         { button: 'Right Dpad', label: 'Return to main view' },
-        { button: 'Up Dpad button', label: 'Go to previous info' },
-        { button: 'Down Dpad button', label: 'Go to next info' },
+        { button: 'Up Dpad', label: 'Go to previous info' },
+        { button: 'Down Dpad', label: 'Go to next info' },
         { button: 'A', label: 'Toggle info HUD visibility' },
+        { button: 'B', label: 'Return to main view' }
       ]]
     ]);
 

@@ -64,7 +64,7 @@
 }
 
 .toggled::after {
-    background: var(--primary-color);
+    background: var(--accent-color);
     left: 50%;
     transition: all ease-in-out 300ms;
 }

@@ -60,6 +60,11 @@ export class InfoPanelComponent {
         this.toggleHudVisibilityOfCurrentInfo();
       }
     });
+    this.gamepadService.bButtonChange.pipe(takeUntil(this.inactive$)).subscribe(bButton => {
+      if (bButton) {
+        this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
+      }
+    });
   }
 
   handleActiveState() {

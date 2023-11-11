@@ -56,7 +56,7 @@ export class CarSettingPanelComponent {
       label: 'Head speed (deg/sec)',
       jsonProp: 'servoSpeed',
       min: 0,
-      max: 250, //250 max => 8 bits int on arduino side
+      max: 250,
       value: 0,
       increment: 10
     }

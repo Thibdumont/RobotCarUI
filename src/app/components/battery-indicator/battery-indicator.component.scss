@@ -46,15 +46,10 @@
 }
 
 .low .battery-body,
-.low .battery-stud,
-.warning {
+.low .battery-stud {
     animation: pulse 1.5s infinite;
 }
 
-.warning {
-    padding: 4px;
-    border-radius: 4px;
-}
 
 @keyframes pulse {
     0% {
