@@ -76,7 +76,7 @@ export class CarSettingPanelComponent {
   }
 
   initSettings() {
-    this.robotStateService.robotStateHandshakeChange.subscribe(robotState => {
+    this.robotStateService.robotStateFirstSync$.subscribe(robotState => {
       this.carSettingList[0].value = robotState.safeStopDistance;
       this.carSettingList[1].value = robotState.servoSpeed;
     });

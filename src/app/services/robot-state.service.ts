@@ -8,7 +8,7 @@ import { RobotState } from '../core/robot-state';
   providedIn: 'root'
 })
 export class RobotStateService {
-  public robotStateHandshakeChange: Subject<RobotState> = new Subject();
+  public robotStateFirstSync$: Subject<RobotState> = new Subject();
   public robotStateChange: Subject<RobotState> = new Subject();
 
   public robotState: RobotState = new RobotState();
@@ -17,7 +17,7 @@ export class RobotStateService {
 
   processEspMessage(json: any) {
     if (json.handshake) {
-      // Properties retrieved only once, during the handshake
+      // Properties retrieved only once, during the first sync
       this.robotState.maxSpeed = json.maxSpeed ?? this.robotState.maxSpeed;
       this.robotState.safeStopDistance = json.safeStopDistance ?? this.robotState.safeStopDistance;
       this.robotState.servoAngle = json.servoAngle ?? this.robotState.servoAngle;
@@ -27,7 +27,7 @@ export class RobotStateService {
       this.robotState.cameraContrast = json.cameraContrast ?? this.robotState.cameraContrast;
       this.robotState.cameraBrightness = json.cameraBrightness ?? this.robotState.cameraBrightness;
       this.robotState.cameraSaturation = json.cameraSaturation ?? this.robotState.cameraSaturation;
-      this.robotStateHandshakeChange.next(this.robotState);
+      this.robotStateFirstSync$.next(this.robotState);
     } else {
       // Retrieved every "frame"
       this.robotState.radarDistance = json.radarDistance ?? this.robotState.radarDistance;

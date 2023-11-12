@@ -1,4 +1,4 @@
-import { interval, Subject, Subscription } from 'rxjs';
+import { interval, Subject, Subscription, timer } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 
@@ -80,9 +80,10 @@ export class RobotCommunicationService {
   }
 
   public autoConnectLoop() {
-    this.autoConnectLoopSub = interval(autoReconnectInterval)
+    this.autoConnectLoopSub = timer(0, autoReconnectInterval)
       .subscribe(() => {
         if (this.socketOpened && new Date().getTime() - this.lastHeartbeatTime.getTime() > heartbeatMaxInterval) {
+          console.log('No heartbeat received for the last %d ms', heartbeatMaxInterval);
           this.socketOpened = false;
           this.connectionStatusChange.next(false);
         }

@@ -102,7 +102,7 @@ export class CameraControlPanelComponent {
   }
 
   initControls() {
-    this.robotStateService.robotStateHandshakeChange.subscribe(robotState => {
+    this.robotStateService.robotStateFirstSync$.subscribe(robotState => {
       this.cameraControlList[0].value = robotState.cameraResolution;
       this.cameraControlList[1].value = robotState.cameraQuality;
       this.cameraControlList[2].value = robotState.cameraContrast;
