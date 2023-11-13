@@ -16,7 +16,7 @@ export class RobotStateService {
   constructor() { }
 
   processEspMessage(json: any) {
-    if (json.handshake) {
+    if (json.syncRequest) {
       // Properties retrieved only once, during the first sync
       this.robotState.maxSpeed = json.maxSpeed ?? this.robotState.maxSpeed;
       this.robotState.safeStopDistance = json.safeStopDistance ?? this.robotState.safeStopDistance;
