@@ -1,3 +1,3 @@
 <img src="" #stream [class.is-streaming]="isStreaming">
 
-<robotcarui-main-hud *ngIf="isActive"></robotcarui-main-hud>
+<robotcarui-main-hud [hidden]="!isActive"></robotcarui-main-hud>

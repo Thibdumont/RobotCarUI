@@ -4,7 +4,6 @@ import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 import { RobotStateService } from 'src/app/services/robot-state.service';
 
-import { style } from '@angular/animations';
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 
 @Component({
@@ -40,14 +39,14 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
 
 
   handleThrottle() {
-    this.gamepadService.leftTriggerChange.pipe(takeUntil(this.destroy$)).subscribe(leftTrigger => {
+    this.gamepadService.leftTriggerChange.pipe(takeUntil(this.destroy$), throttleTime(this.appConfigService.carControlSendInterval)).subscribe(leftTrigger => {
       if (!this.rightTrigger && this.leftTrigger !== leftTrigger) {
         this.leftTrigger = leftTrigger;
         this.backwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(leftTrigger) * 100))}%`;
         this.robotCommunicationService.sendCommand({ speedThrottle: -leftTrigger });
       }
     });
-    this.gamepadService.rightTriggerChange.pipe(takeUntil(this.destroy$)).subscribe(rightTrigger => {
+    this.gamepadService.rightTriggerChange.pipe(takeUntil(this.destroy$), throttleTime(this.appConfigService.carControlSendInterval)).subscribe(rightTrigger => {
       if (!this.leftTrigger && this.rightTrigger !== rightTrigger) {
         this.rightTrigger = rightTrigger;
         this.forwardThrottleForce.nativeElement.style.height = `${Math.round((Math.abs(rightTrigger) * 100))}%`;
@@ -67,7 +66,7 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
   }
 
   handleMaxSpeed() {
-    this.gamepadService.leftShoulderChange.pipe(takeUntil(this.destroy$), throttleTime(100)).subscribe(leftShoulder => {
+    this.gamepadService.leftShoulderChange.pipe(takeUntil(this.destroy$), throttleTime(this.appConfigService.carControlSendInterval)).subscribe(leftShoulder => {
       if (leftShoulder) {
         const newSpeed =
           this.maxSpeed - this.appConfigService.maxSpeedChangeIncrement < this.appConfigService.minRobotSpeed ?
@@ -79,7 +78,7 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
       }
     });
 
-    this.gamepadService.rightShoulderChange.pipe(takeUntil(this.destroy$), throttleTime(100)).subscribe(rightShoulder => {
+    this.gamepadService.rightShoulderChange.pipe(takeUntil(this.destroy$), throttleTime(this.appConfigService.carControlSendInterval)).subscribe(rightShoulder => {
       if (rightShoulder) {
         const newSpeed =
           this.maxSpeed + this.appConfigService.maxSpeedChangeIncrement > this.appConfigService.maxRobotSpeed ?

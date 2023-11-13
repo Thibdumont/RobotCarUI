@@ -1,4 +1,5 @@
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, throttleTime } from 'rxjs';
+import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
@@ -18,9 +19,10 @@ export class DirectionWidgetComponent implements OnDestroy {
 
   constructor(
     private gamepadService: GamepadService,
+    private appConfigService: AppConfigService,
     private robotCommunicationService: RobotCommunicationService
   ) {
-    this.gamepadService.leftStickXChange.pipe(takeUntil(this.destroy$)).subscribe(leftStick => {
+    this.gamepadService.leftStickXChange.pipe(takeUntil(this.destroy$), throttleTime(this.appConfigService.carControlSendInterval)).subscribe(leftStick => {
       if (this.leftStick !== leftStick) {
         this.leftStick = leftStick;
 
