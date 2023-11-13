@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 export class AppConfigService {
 
   private possibleHostIP: Array<string> = [
-    "192.168.4.1",//softAP IP
+    "192.168.1.1",//softAP IP
     "192.168.1.32"//local network
   ];
   private currentIPIndex: number = 0;
