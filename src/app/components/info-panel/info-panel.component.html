@@ -4,7 +4,7 @@
             [class.active]="isActive(i)">
             <label>{{ info.label }}</label>
             <span class="value">{{ info.value }} {{ info.unit }}</span>
-            <span class="toggle" [class.toggled]="info.hudVisible"></span>
+            <span class="toggle" [class.toggled]="info.hudVisible" (click)=" toggleHudVisibilityOfCurrentInfo()"></span>
         </div>
     </div>
 </div>
