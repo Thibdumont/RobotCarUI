@@ -58,7 +58,7 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
       const boost = yButton === 1;
       if (boost !== this.boost) {
         this.boost = boost;
-        this.robotCommunicationService.sendCommand({ boost: boost });
+        this.robotCommunicationService.sendCommand({ boost: boost ? 1 : 0 });
         this.boost ?
           this.maxSpeedIndicator.nativeElement.style.top = 0 :
           this.updateMaxSpeedIndicatorPosition(this.maxSpeed);
