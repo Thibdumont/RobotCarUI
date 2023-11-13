@@ -2,6 +2,8 @@
     width: 100%;
     height: 100%;
     background: #111;
+
+    --photo-border-width: 10px;
 }
 
 robotcarui-main-hud {
@@ -11,7 +13,7 @@ robotcarui-main-hud {
     z-index: 5;
 }
 
-img {
+.stream {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -21,4 +23,25 @@ img {
 
 .is-streaming {
     display: block;
+}
+
+.photo-container {
+    width: 100%;
+    height: 100%;
+
+    transform: translateX(0) translateY(-100%);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+
+    &>img {
+        box-sizing: border-box;
+        border: var(--photo-border-width) solid #fff;
+        max-width: 100%;
+        max-height: 100%;
+        min-height: 80%;
+        border-radius: 4px;
+    }
 }

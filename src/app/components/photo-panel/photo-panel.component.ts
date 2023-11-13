@@ -1,15 +1,11 @@
-import { distinctUntilChanged, Subject, takeUntil, throttleTime } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
+import { PhotoItem, PhotoService } from 'src/app/services/photo.service';
 import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component } from '@angular/core';
-
-export interface PhotoItem {
-  date: Date;
-  src: string;
-}
 
 @Component({
   selector: 'robotcarui-photo-panel',
@@ -25,9 +21,7 @@ export interface PhotoItem {
       state('active', style({ transform: 'translateX(0)' })),
       state('slideLeft', style({ transform: 'translateX(-100%)' })),
       state('slideRight', style({ transform: 'translateX(100%)' })),
-      transition('* => *', animate('300ms 0ms ease')),
-      transition(':enter', animate(1000, style({ transform: 'translateY(0)' })))
-
+      transition('* => *', animate('300ms 0ms ease'))
     ])
   ]
 })
@@ -41,13 +35,15 @@ export class PhotoPanelComponent {
   constructor(
     private gamepadService: GamepadService,
     private appConfigService: AppConfigService,
-    private uiPanelDirectorService: UiPanelDirectorService
+    private uiPanelDirectorService: UiPanelDirectorService,
+    private photoService: PhotoService
   ) {
     this.handleActiveState();
-    this.handlePhotoCapture();
+    this.handlePhotoListChange();
   }
 
   handleNavigation() {
+    this.activePhotoIndex = 0;
     this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(leftPad => {
       if (leftPad) {
         if (this.activePhotoIndex <= 0) {
@@ -65,9 +61,11 @@ export class PhotoPanelComponent {
     });
 
     this.gamepadService.bButtonChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(bButton => {
+      if (bButton && this.photoList.length === 0) {
+        this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
+      }
       if (bButton && this.photoList.length >= 0) {
-        const removedPhotoIndex = this.activePhotoIndex;
-        this.photoList.splice(removedPhotoIndex, 1);
+        this.photoService.removePhoto(this.activePhotoIndex);
         if (this.activePhotoIndex >= this.photoList.length) {
           this.activePhotoIndex--;
         }
@@ -86,6 +84,12 @@ export class PhotoPanelComponent {
     });
   }
 
+  handlePhotoListChange() {
+    this.photoService.photoListChanged$.subscribe(() => {
+      this.photoList = this.photoService.getPhotoList();
+    })
+  }
+
   getPhotoState(index: number): string {
     if (index < this.activePhotoIndex) {
       return 'slideLeft';
@@ -99,25 +103,5 @@ export class PhotoPanelComponent {
     return Math.abs(index - this.photoList.length);
   }
 
-  getCaptureUrl(): string {
-    return `http://${this.appConfigService.getCurrentHostIP()}/capture?t=${Date.now()}`;
-  }
-
-  handlePhotoCapture() {
-    this.gamepadService.xButtonChange.pipe(distinctUntilChanged(), throttleTime(500)).subscribe(xButton => {
-      if (xButton) {
-        this.activePhotoIndex++;
-        this.photoList.unshift(
-          {
-            date: new Date(),
-            src: this.getCaptureUrl()
-          }
-        );
-        setTimeout(() => {
-          this.activePhotoIndex = 0;
-        }, this.opened ? this.appConfigService.photoPanelDelayBeforeShowingNewPhoto : this.appConfigService.streamWindowDelayBeforeShowingNewPhoto);
-      }
-    });
-  }
 
 }

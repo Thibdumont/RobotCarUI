@@ -22,8 +22,7 @@ export class AppConfigService {
   public minRobotSpeed = 50;
   public maxSpeedChangeIncrement = 10;
 
-  public streamWindowDelayBeforeShowingNewPhoto = 1000;
-  public photoPanelDelayBeforeShowingNewPhoto = 500;
+  public delayBetweenPhoto = 1000;
 
   constructor() { }
 

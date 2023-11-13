@@ -1,8 +1,10 @@
-import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { distinctUntilChanged, Subject, takeUntil, throttleTime } from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
+import { PhotoItem, PhotoService } from 'src/app/services/photo.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
+import { animate, state, style, transition, trigger } from '@angular/animations';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
 import { UiPanel, UiPanelDirectorService } from '../../services/ui-panel-director.service';
@@ -10,7 +12,14 @@ import { UiPanel, UiPanelDirectorService } from '../../services/ui-panel-directo
 @Component({
   selector: 'robotcarui-stream-window',
   templateUrl: './stream-window.component.html',
-  styleUrls: ['./stream-window.component.scss']
+  styleUrls: ['./stream-window.component.scss'],
+  animations: [
+    trigger('enterLeave', [
+      transition(':enter', animate(500, style({ transform: 'translateX(0) translateY(0)' }))),
+      state('opened', style({ transform: 'translateX(0) translateY(0)' })),
+      transition(':leave', animate(500, style({ transform: 'translateX(100%) translateY(0)' })))
+    ])
+  ]
 })
 export class StreamWindowComponent {
   @ViewChild('stream') stream!: ElementRef;
@@ -20,15 +29,19 @@ export class StreamWindowComponent {
 
   inactive$ = new Subject<void>();
 
+  photo!: PhotoItem | null;
+
   constructor(
     private appConfigService: AppConfigService,
     private robotCommunicationService: RobotCommunicationService,
     private gamepadService: GamepadService,
-    private uiPanelDirectorService: UiPanelDirectorService
+    private uiPanelDirectorService: UiPanelDirectorService,
+    private photoService: PhotoService
   ) {
     this.autoReconnectStream();
-    this.handleNavigation();
     this.handleActiveState();
+    this.handleNavigation();
+    this.handlePhotoCapture();
   }
 
   getStreamUrl(): string {
@@ -74,10 +87,25 @@ export class StreamWindowComponent {
     this.uiPanelDirectorService.getUiPanelSubject(UiPanel.STREAM_WINDOW).subscribe(newState => {
       this.isActive = newState;
       if (this.isActive) {
-        setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
+        setTimeout(() => {
+          this.handleNavigation();
+          this.handlePhotoCapture();
+        }, this.appConfigService.uiPanelAnimationLength);
       } else {
         this.inactive$.next();;
       }
     });
   }
+
+  handlePhotoCapture() {
+    this.gamepadService.xButtonChange.pipe(takeUntil(this.inactive$), distinctUntilChanged(), throttleTime(this.appConfigService.delayBetweenPhoto)).subscribe(xButton => {
+      if (xButton) {
+        this.photo = this.photoService.takePhoto();
+        setTimeout(() => {
+          this.photo = null;
+        }, this.appConfigService.delayBetweenPhoto);
+      }
+    });
+  }
+
 }
