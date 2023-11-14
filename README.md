@@ -1,3 +1,23 @@
+- [RobotCarUI](#robotcarui)
+  - [Requirements](#requirements)
+  - [Key features](#key-features)
+  - [Installation instructions](#installation-instructions)
+    - [Configuration](#configuration)
+    - [Building the app](#building-the-app)
+  - [Detailed features](#detailed-features)
+    - [Gamepad](#gamepad)
+    - [Screens](#screens)
+      - [Live stream/control car](#live-streamcontrol-car)
+      - [Car settings](#car-settings)
+      - [HUD info](#hud-info)
+      - [Photo library](#photo-library)
+      - [Camera settings](#camera-settings)
+    - [Connection](#connection)
+    - [Settings persistence](#settings-persistence)
+    - [Battery percentage](#battery-percentage)
+  - [Work in progress](#work-in-progress)
+  - [Coming soon](#coming-soon)
+
 # RobotCarUI
 
 I was gifted an Elegoo Smart robot car v4 and started to experiment by writing some new software to provide a better experience than the one provided out of the box.
@@ -102,7 +122,7 @@ I couldn't figure out how to get a proper estimation.. if anybody have an idea o
 This project is still work in progress.
 Any suggestion or advice is welcome.
 
-### Coming soon
+## Coming soon
 
 1. Angular 17 upgrade
 2. Battery level estimation improvement
