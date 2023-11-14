@@ -50,14 +50,14 @@ Some basic knowledge of Angular/Web is required.
     * Run `npm start` to locally run the app (it will open a browser tab with the app and connect to the car)
     * Run `npm run prod` to build a bundle, so you can upload it to the ESP32 storage and access it directly by typing the ESP IP address in your browser 
 
-### Detailed features
+## Detailed features
 
-#### Gamepad
+### Gamepad
 
 The app should be used with a gamepad. Connect a gamepad on your computer/smartphone and it should work (test with Xbox controller only).
 Press the `start button` anywhere and you will have the key mapping for each screen.
 
-#### Screens
+### Screens
 
 The app is composed of a central video stream UI that is used to drive the car, and is surrounded by 4 panels that can be displayed using the directional Dpad of the controller.
 
@@ -66,25 +66,25 @@ The app is composed of a central video stream UI that is used to drive the car, 
 3. Right panel is for displaying the photos taken. You can navigate left/right and delete photos. Photos are not stored anywhere, they are lost if you refresh the page.
 4. Down panel is for changing the camera settings
 
-#### Connection
+### Connection
 
 The app automatically reconnect to the ESP, it cycles between every IP address filled in the config (see Configuration section) so you don't have to worry when changing network mode (LAN/SoftAP).
 
-#### Settings persistence
+### Settings persistence
 
 Any settings you change (HUD settings apart) will be saved on ESP32 storage. So when you restart the car or refresh the page, it will keep the settings you chose.
 
-#### Battery percentage
+### Battery percentage
 
 The battery percentage estimation is innacurate (to say the least..). But well, it gives you a rough idea of the battery level, better than nothing for now.
 I couldn't figure out how to get a proper estimation.. if anybody have an idea on how I could do it, do not hesitate.
 
-### Work in progress
+## Work in progress
 
 This project is still work in progress.
 Any suggestion or advice is welcome.
 
-#### Coming soon
+### Coming soon
 
 1. Angular 17 upgrade
 2. Battery level estimation improvement
