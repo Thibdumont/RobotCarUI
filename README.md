@@ -59,12 +59,30 @@ Press the `start button` anywhere and you will have the key mapping for each scr
 
 ### Screens
 
-The app is composed of a central video stream UI that is used to drive the car, and is surrounded by 4 panels that can be displayed using the directional Dpad of the controller.
+#### Live stream/control car
+The app is composed of a central video stream UI that is used to drive the car.
+There, you can drive the car using the gamepad. You can take some photos, adjust the speed, and see some informations on the HUD.
+![stream](https://github.com/Thibdumont/RobotCarUI/assets/33493112/916c291a-be4a-4376-82d8-9b7ec364c0b1)
 
-1. Upper panel is for adjusting the car settings : servo speed, safe stop distance ..
-2. Left panel is for displaying some live data (radar distance, voltage, debug info etc). There you can toggle on/off the HUD display of this data.
-3. Right panel is for displaying the photos taken. You can navigate left/right and delete photos. Photos are not stored anywhere, they are lost if you refresh the page.
-4. Down panel is for changing the camera settings
+#### Car settings
+Opened with the up Dpad.
+This panel is for adjusting the car settings : servo speed, safe stop distance ..
+![car settings](https://github.com/Thibdumont/RobotCarUI/assets/33493112/c5247d1b-2bcf-47b2-a0b9-bf14b2c9455d)
+
+#### HUD info
+Opened with the left Dpad.
+This panel is for displaying some live data (radar distance, voltage, debug info etc). There you can toggle on/off the HUD display of this data.
+![hud settings](https://github.com/Thibdumont/RobotCarUI/assets/33493112/87010f05-957a-4543-a7dd-12602ec09646)
+
+#### Photo library
+Opened with the right Dpad.
+There you can see photos taken. You can navigate left/right and delete photos. Photos are not stored anywhere, they are lost if you refresh the page.
+![photo](https://github.com/Thibdumont/RobotCarUI/assets/33493112/fd542a1b-d5ac-4a65-9e62-42f6e4612860)
+
+#### Camera settings
+Opened with the down Dpad.
+It is used to change the camera settings
+![camera settings](https://github.com/Thibdumont/RobotCarUI/assets/33493112/c49a93ad-a579-4b72-92ef-46018419decc)
 
 ### Connection
 
