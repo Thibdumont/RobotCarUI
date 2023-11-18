@@ -87,9 +87,9 @@ export class StreamWindowComponent {
     this.uiPanelDirectorService.getUiPanelSubject(UiPanel.STREAM_WINDOW).subscribe(newState => {
       this.isActive = newState;
       if (this.isActive) {
+        this.handlePhotoCapture();
         setTimeout(() => {
           this.handleNavigation();
-          this.handlePhotoCapture();
         }, this.appConfigService.uiPanelAnimationLength);
       } else {
         this.inactive$.next();;
@@ -98,7 +98,7 @@ export class StreamWindowComponent {
   }
 
   handlePhotoCapture() {
-    this.gamepadService.xButtonChange.pipe(takeUntil(this.inactive$), distinctUntilChanged(), throttleTime(this.appConfigService.delayBetweenPhoto)).subscribe(xButton => {
+    this.gamepadService.xButtonChange.pipe(takeUntil(this.inactive$), distinctUntilChanged(), throttleTime(this.appConfigService.delayBetweenPhoto, undefined, { leading: true })).subscribe(xButton => {
       if (xButton) {
         this.photo = this.photoService.takePhoto();
         setTimeout(() => {

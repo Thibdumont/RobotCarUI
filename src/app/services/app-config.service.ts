@@ -22,7 +22,7 @@ export class AppConfigService {
   public minRobotSpeed = 50;
   public maxSpeedChangeIncrement = 10;
 
-  public delayBetweenPhoto = 1000;
+  public delayBetweenPhoto = 500;
 
   constructor() { }
 

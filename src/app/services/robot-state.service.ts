@@ -20,6 +20,9 @@ export class RobotStateService {
       // Properties retrieved only once, during the first sync
       this.robotState.maxSpeed = json.maxSpeed ?? this.robotState.maxSpeed;
       this.robotState.safeStopDistance = json.safeStopDistance ?? this.robotState.safeStopDistance;
+      this.robotState.turnFactor = json.turnFactor ?? this.robotState.turnFactor;
+      this.robotState.autoSpeedFactor = json.autoSpeedFactor ?? this.robotState.autoSpeedFactor;
+      this.robotState.autoSpeedMode = json.autoSpeedMode ?? this.robotState.autoSpeedMode;
       this.robotState.servoAngle = json.servoAngle ?? this.robotState.servoAngle;
       this.robotState.servoSpeed = json.servoSpeed ?? this.robotState.servoSpeed;
       this.robotState.cameraQuality = json.cameraQuality ?? this.robotState.cameraQuality;
@@ -31,6 +34,7 @@ export class RobotStateService {
     } else {
       // Retrieved every "frame"
       this.robotState.radarDistance = json.radarDistance ?? this.robotState.radarDistance;
+      this.robotState.onGround = json.onGround ?? this.robotState.onGround;
       this.robotState.batteryVoltage = json.batteryVoltage ?? this.robotState.batteryVoltage;
       this.robotState.unoLoopDuration = json.unoLoopDuration ?? this.robotState.unoLoopDuration;
       this.robotState.espLoopDuration = json.espLoopDuration ?? this.robotState.espLoopDuration;

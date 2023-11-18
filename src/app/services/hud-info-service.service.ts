@@ -30,6 +30,10 @@ export class HudInfoServiceService {
       hudVisible: true
     },
     {
+      label: 'On ground',
+      unit: ''
+    },
+    {
       label: 'Uno loop time',
       unit: 'ms'
     },
@@ -49,8 +53,9 @@ export class HudInfoServiceService {
     this.robotStateService.robotStateChange.subscribe(robotState => {
       this.infoList[0].value = robotState.radarDistance;
       this.infoList[1].value = robotState.batteryVoltage?.toPrecision(3);
-      this.infoList[2].value = robotState.unoLoopDuration;
-      this.infoList[3].value = robotState.espLoopDuration;
+      this.infoList[2].value = robotState.onGround === 1 ? 'true' : 'false';
+      this.infoList[3].value = robotState.unoLoopDuration;
+      this.infoList[4].value = robotState.espLoopDuration;
       this.hudInfoList$.next(this.infoList);
     });
   }

@@ -37,6 +37,7 @@ export class ControlHelpService {
         { button: 'Up Dpad', label: 'Go to previous parameter' },
         { button: 'Left Dpad', label: 'Decrease current value' },
         { button: 'Right Dpad', label: 'Increase current value' },
+        { button: 'A', label: 'Toggle setting (toggle setting only)' },
         { button: 'B', label: 'Return to main view' }
       ]],
       [UiPanel.STREAM_WINDOW, [

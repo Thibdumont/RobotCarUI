@@ -1,12 +1,19 @@
 <div class="car-setting-container" [@openClose]="opened ? 'opened':'closed'">
     <div class="control-list">
-        <div class="control" *ngFor="let carSetting of carSettingList; let i = index" [class.active]="isActive(i)">
-            <header>
-                <label>{{carSetting.label}}</label>
-                <span class="value">{{carSetting.value}}</span>
-            </header>
-            <input type="range" min="{{carSetting.min}}" max="{{carSetting.max}}" step="{{carSetting.increment}}"
-                class="slider" [ngModel]="carSetting.value" (ngModelChange)="changeCarSetting($event)">
-        </div>
+        <ng-container *ngFor="let carSetting of carSettingList; let i = index">
+            <div class="control" *ngIf="isSettingSlider(carSetting)" [class.active]="isActive(i)">
+                <header>
+                    <label>{{carSetting.label}}</label>
+                    <span class="value">{{carSetting.value}}</span>
+                </header>
+                <input type="range" min="{{carSetting.min}}" max="{{carSetting.max}}" step="{{carSetting.increment}}"
+                    class="slider" [ngModel]="carSetting.value" (ngModelChange)="changeCarSetting($event)">
+            </div>
+            <div class="control" *ngIf="!isSettingSlider(carSetting)" [class.active]="isActive(i)"
+                [class.toggle-control]="!isSettingSlider(carSetting)">
+                <label>{{ carSetting.label }}</label>
+                <span class="toggle" [class.toggled]="carSetting.value === 1"></span>
+            </div>
+        </ng-container>
     </div>
 </div>
