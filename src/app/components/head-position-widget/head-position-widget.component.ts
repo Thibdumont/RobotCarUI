@@ -56,7 +56,7 @@ export class HeadPositionWidgetComponent implements OnDestroy {
     this.head.nativeElement.style.setProperty('left', calc);
 
     if (this.headPosition !== this.previousHeadPosition) {
-      const headAngle = (-this.headPosition + 1) * 90;
+      const headAngle = Math.round((-this.headPosition + 1) * 90);
       this.robotCommunicationService.sendCommand({ headPosition: headAngle });
     }
   }
