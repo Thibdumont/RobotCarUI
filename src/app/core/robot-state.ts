@@ -22,6 +22,13 @@ export class RobotState {
     // Wifi
     public wifiStrength: number = 0;
 
+    //HUD
+    public hudRadarDistance: number = 0;
+    public hudBatteryVoltage: number = 0;
+    public hudOnGround: number = 0;
+    public hudUnoLoopTime: number = 0;
+    public hudEspLoopTime: number = 0;
+
     //Camera settings
     public cameraResolution: number = 0;
     public cameraQuality: number = 0;

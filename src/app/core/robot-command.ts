@@ -9,4 +9,9 @@ export class RobotCommand {
     headPosition?: number;
     cameraResolution?: number;
     cameraQuality?: number;
+    hudRadarDistance?: number;
+    hudBatteryVoltage?: number;
+    hudOnGround?: number;
+    hudUnoLoopTime?: number;
+    hudEspLoopTime?: number;
 }

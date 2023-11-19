@@ -18,18 +18,28 @@ export class RobotStateService {
   processEspMessage(json: any) {
     if (json.syncRequest) {
       // Properties retrieved only once, during the first sync
+      //Motor
       this.robotState.maxSpeed = json.maxSpeed ?? this.robotState.maxSpeed;
       this.robotState.safeStopDistance = json.safeStopDistance ?? this.robotState.safeStopDistance;
       this.robotState.turnFactor = json.turnFactor ?? this.robotState.turnFactor;
       this.robotState.autoSpeedFactor = json.autoSpeedFactor ?? this.robotState.autoSpeedFactor;
       this.robotState.autoSpeedMode = json.autoSpeedMode ?? this.robotState.autoSpeedMode;
+      //Servo
       this.robotState.servoAngle = json.servoAngle ?? this.robotState.servoAngle;
       this.robotState.servoSpeed = json.servoSpeed ?? this.robotState.servoSpeed;
+      //Camera
       this.robotState.cameraQuality = json.cameraQuality ?? this.robotState.cameraQuality;
       this.robotState.cameraResolution = json.cameraResolution ?? this.robotState.cameraResolution;
       this.robotState.cameraContrast = json.cameraContrast ?? this.robotState.cameraContrast;
       this.robotState.cameraBrightness = json.cameraBrightness ?? this.robotState.cameraBrightness;
       this.robotState.cameraSaturation = json.cameraSaturation ?? this.robotState.cameraSaturation;
+      //HUD
+      this.robotState.hudRadarDistance = json.hudRadarDistance ?? this.robotState.hudRadarDistance;
+      this.robotState.hudBatteryVoltage = json.hudBatteryVoltage ?? this.robotState.hudBatteryVoltage;
+      this.robotState.hudOnGround = json.hudOnGround ?? this.robotState.hudOnGround;
+      this.robotState.hudUnoLoopTime = json.hudUnoLoopTime ?? this.robotState.hudUnoLoopTime;
+      this.robotState.hudEspLoopTime = json.hudEspLoopTime ?? this.robotState.hudEspLoopTime;
+
       this.robotStateFirstSync$.next(this.robotState);
     } else {
       // Retrieved every "frame"
