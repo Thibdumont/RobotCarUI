@@ -1,4 +1,5 @@
 import { distinctUntilChanged } from 'rxjs';
+import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
 import { Component } from '@angular/core';
 
@@ -14,7 +15,8 @@ export class AppComponent {
 
   constructor(
     private gamepadService: GamepadService,
-    private uiPanelDirectorService: UiPanelDirectorService
+    private uiPanelDirectorService: UiPanelDirectorService,
+    public robotCommunicationService: RobotCommunicationService
   ) {
     this.gamepadService.initGamepad();
     this.uiPanelDirectorService.init();
@@ -34,4 +36,5 @@ export class AppComponent {
       }
     });
   }
+
 }

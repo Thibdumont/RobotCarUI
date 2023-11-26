@@ -5,7 +5,7 @@ import { HudInfoServiceService } from 'src/app/services/hud-info-service.service
 import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'robotcarui-info-panel',
@@ -19,11 +19,12 @@ import { Component } from '@angular/core';
     ])
   ]
 })
-export class InfoPanelComponent {
+export class InfoPanelComponent implements OnDestroy {
 
   opened: boolean = false;
 
   inactive$ = new Subject<void>();
+  destroy$ = new Subject<void>();
   currentInfo: number = 0;
 
   constructor(
@@ -68,7 +69,7 @@ export class InfoPanelComponent {
   }
 
   handleActiveState() {
-    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.INFO).subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.INFO).pipe(takeUntil(this.destroy$)).subscribe(newState => {
       this.opened = newState;
       if (this.opened) {
         setTimeout(() => this.handleSubscribe(), this.appConfigService.uiPanelAnimationLength);
@@ -85,5 +86,10 @@ export class InfoPanelComponent {
 
   isActive(infoIndex: number) {
     return this.currentInfo === infoIndex;
+  }
+
+  ngOnDestroy(): void {
+    this.inactive$.next();
+    this.destroy$.next();
   }
 }

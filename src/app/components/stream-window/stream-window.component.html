@@ -1,4 +1,4 @@
-<img class="stream" src="" #stream [class.is-streaming]="isStreaming">
+<img class="stream" src="{{ getStreamUrl()}}" #stream>
 
 <robotcarui-main-hud [hidden]="!isActive"></robotcarui-main-hud>
 

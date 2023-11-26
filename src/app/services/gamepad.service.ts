@@ -1,4 +1,4 @@
-import { interval, Subject, Subscription } from 'rxjs';
+import { interval, Subject } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 
@@ -8,7 +8,8 @@ import { AppConfigService } from './app-config.service';
   providedIn: 'root'
 })
 export class GamepadService {
-  gamepadSub!: Subscription;
+
+  public gamepadConnectedChange = new Subject<boolean>();
 
   public leftStickXChange: Subject<number> = new Subject();
   public leftStickYChange: Subject<number> = new Subject();
@@ -39,16 +40,18 @@ export class GamepadService {
   public initGamepad() {
     window.addEventListener("gamepadconnected", (event) => {
       console.log("A gamepad connected:", event.gamepad);
+      this.gamepadConnectedChange.next(true);
       this.gamepadPollingLoop();
     });
 
     window.addEventListener("gamepaddisconnected", (event) => {
       console.log("A gamepad disconnected:", event.gamepad);
+      this.gamepadConnectedChange.next(false);
     });
   }
 
   private gamepadPollingLoop() {
-    this.gamepadSub = interval(this.appConfigService.gamepadPollingInterval)
+    interval(this.appConfigService.gamepadPollingInterval)
       .pipe()
       .subscribe(() => {
         var gamepads = navigator.getGamepads().filter(gamepad => gamepad !== null);

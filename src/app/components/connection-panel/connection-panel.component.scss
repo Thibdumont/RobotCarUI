@@ -1,0 +1,49 @@
+:host {
+    background: #fff;
+
+    --spinner-size: 3vw;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4vw;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 3vw;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.connection-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+span {
+    color: var(--primary-color);
+}
+
+.spinner {
+    width: var(--spinner-size);
+    height: var(--spinner-size);
+    border: calc(var(--spinner-size) / 6) solid var(--accent-color);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

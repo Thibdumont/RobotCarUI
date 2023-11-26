@@ -24,7 +24,7 @@ export class WifiSignalComponent implements OnDestroy {
       this.wifiLevel = this.getWifiLevel(robotState.wifiStrength);
     });
 
-    this.robotCommunicationService.connectionStatusChange.pipe(takeUntil(this.destroy$)).subscribe(connectionStatus => {
+    this.robotCommunicationService.connectionStatusChange$.pipe(takeUntil(this.destroy$)).subscribe(connectionStatus => {
       this.wifiLevel = connectionStatus ? 1 : -1;
     });
   }

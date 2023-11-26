@@ -26,6 +26,7 @@ import { PhotoPanelComponent } from './components/photo-panel/photo-panel.compon
 import { StreamWindowComponent } from './components/stream-window/stream-window.component';
 import { ThrottleWidgetComponent } from './components/throttle-widget/throttle-widget.component';
 import { WifiSignalComponent } from './components/wifi-signal/wifi-signal.component';
+import { ConnectionPanelComponent } from './components/connection-panel/connection-panel.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { WifiSignalComponent } from './components/wifi-signal/wifi-signal.compon
     BatteryIndicatorComponent,
     WifiSignalComponent,
     CameraControlPanelComponent,
-    CarSettingPanelComponent
+    CarSettingPanelComponent,
+    ConnectionPanelComponent
   ],
   imports: [
     BrowserModule,

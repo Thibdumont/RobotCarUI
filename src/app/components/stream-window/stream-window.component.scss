@@ -17,13 +17,10 @@ robotcarui-main-hud {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: none;
+    display: block;
     position: fixed;
 }
 
-.is-streaming {
-    display: block;
-}
 
 .photo-container {
     width: 100%;

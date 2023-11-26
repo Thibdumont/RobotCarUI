@@ -5,7 +5,7 @@ import { PhotoItem, PhotoService } from 'src/app/services/photo.service';
 import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'robotcarui-photo-panel',
@@ -25,12 +25,13 @@ import { Component } from '@angular/core';
     ])
   ]
 })
-export class PhotoPanelComponent {
+export class PhotoPanelComponent implements OnDestroy {
   opened: boolean = false;
   photoList: Array<PhotoItem> = new Array();
   activePhotoIndex: number = 0;
 
   inactive$ = new Subject<void>();
+  destroy$ = new Subject<void>();
 
   constructor(
     private gamepadService: GamepadService,
@@ -74,7 +75,7 @@ export class PhotoPanelComponent {
   }
 
   handleActiveState() {
-    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.PHOTO).subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.PHOTO).pipe(takeUntil(this.destroy$)).subscribe(newState => {
       this.opened = newState;
       if (this.opened) {
         setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
@@ -85,7 +86,7 @@ export class PhotoPanelComponent {
   }
 
   handlePhotoListChange() {
-    this.photoService.photoListChanged$.subscribe(() => {
+    this.photoService.photoListChanged$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.photoList = this.photoService.getPhotoList();
     })
   }
@@ -103,5 +104,8 @@ export class PhotoPanelComponent {
     return Math.abs(index - this.photoList.length);
   }
 
-
+  ngOnDestroy(): void {
+    this.inactive$.next();
+    this.destroy$.next();
+  }
 }

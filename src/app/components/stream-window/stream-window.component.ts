@@ -5,7 +5,7 @@ import { PhotoItem, PhotoService } from 'src/app/services/photo.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 
 import { UiPanel, UiPanelDirectorService } from '../../services/ui-panel-director.service';
 
@@ -21,13 +21,14 @@ import { UiPanel, UiPanelDirectorService } from '../../services/ui-panel-directo
     ])
   ]
 })
-export class StreamWindowComponent {
+export class StreamWindowComponent implements OnDestroy {
   @ViewChild('stream') stream!: ElementRef;
 
   isStreaming: boolean = false;
   isActive: boolean = true;
 
   inactive$ = new Subject<void>();
+  destroy$ = new Subject<void>();
 
   photo!: PhotoItem | null;
 
@@ -49,7 +50,7 @@ export class StreamWindowComponent {
   }
 
   autoReconnectStream() {
-    this.robotCommunicationService.connectionStatusChange.subscribe(connectionOpened => {
+    this.robotCommunicationService.connectionStatusChange$.pipe(takeUntil(this.destroy$)).subscribe(connectionOpened => {
       if (!connectionOpened) {
         this.stream.nativeElement.src = '';
         this.isStreaming = false;
@@ -84,7 +85,7 @@ export class StreamWindowComponent {
   }
 
   handleActiveState() {
-    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.STREAM_WINDOW).subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.STREAM_WINDOW).pipe(takeUntil(this.destroy$)).subscribe(newState => {
       this.isActive = newState;
       if (this.isActive) {
         this.handlePhotoCapture();
@@ -108,4 +109,8 @@ export class StreamWindowComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    this.inactive$.next();
+    this.destroy$.next();
+  }
 }

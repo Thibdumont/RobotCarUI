@@ -6,7 +6,7 @@ import { RobotStateService } from 'src/app/services/robot-state.service';
 import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 // Camera needs 300ms between each setting update, to prevent crashing
 const cameraSettingUpdateDelay = 300;
@@ -40,11 +40,12 @@ export interface CameraControlSlider {
     ])
   ]
 })
-export class CameraControlPanelComponent {
+export class CameraControlPanelComponent implements OnDestroy {
 
   opened: boolean = false;
 
   inactive$ = new Subject<void>();
+  destroy$ = new Subject<void>();
   currentCameraControl: number = 0;
 
   cameraControlList: Array<CameraControlSlider> = [
@@ -102,7 +103,7 @@ export class CameraControlPanelComponent {
   }
 
   initControls() {
-    this.robotStateService.robotStateFirstSync$.subscribe(robotState => {
+    this.robotStateService.robotStateFirstSync$.pipe(takeUntil(this.destroy$)).subscribe(robotState => {
       this.cameraControlList[0].value = robotState.cameraResolution;
       this.cameraControlList[1].value = robotState.cameraQuality;
       this.cameraControlList[2].value = robotState.cameraContrast;
@@ -152,7 +153,7 @@ export class CameraControlPanelComponent {
 
 
   handleActiveState() {
-    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.CAMERA_CONTROL).subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.CAMERA_CONTROL).pipe(takeUntil(this.destroy$)).subscribe(newState => {
       this.opened = newState;
       if (this.opened) {
         setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
@@ -171,5 +172,10 @@ export class CameraControlPanelComponent {
     this.robotCommunicationService.sendCommand(
       JSON.parse(`{ "${this.cameraControlList[this.currentCameraControl].jsonProp}": ${value} }`)
     );
+  }
+
+  ngOnDestroy(): void {
+    this.inactive$.next();
+    this.destroy$.next();
   }
 }

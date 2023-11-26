@@ -6,7 +6,7 @@ import { RobotStateService } from 'src/app/services/robot-state.service';
 import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 
 export enum CarSettingEnum {
   SAFE_STOP_DISTANCE,
@@ -44,10 +44,11 @@ export interface CarSettingItem {
     ])
   ]
 })
-export class CarSettingPanelComponent {
+export class CarSettingPanelComponent implements OnDestroy {
   opened: boolean = false;
 
   inactive$ = new Subject<void>();
+  destroy$ = new Subject<void>();
 
   carSettingList: Array<CarSettingItem> = [
     {
@@ -113,7 +114,7 @@ export class CarSettingPanelComponent {
   }
 
   initSettings() {
-    this.robotStateService.robotStateFirstSync$.subscribe(robotState => {
+    this.robotStateService.robotStateFirstSync$.pipe(takeUntil(this.destroy$)).subscribe(robotState => {
       this.carSettingList[0].value = robotState.safeStopDistance;
       this.carSettingList[1].value = robotState.servoSpeed;
       this.carSettingList[2].value = this.trimFloat(robotState.turnFactor);
@@ -169,7 +170,7 @@ export class CarSettingPanelComponent {
   }
 
   handleActiveState() {
-    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.CAR_SETTING).subscribe(newState => {
+    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.CAR_SETTING).pipe(takeUntil(this.destroy$)).subscribe(newState => {
       this.opened = newState;
       if (this.opened) {
         setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
@@ -200,5 +201,10 @@ export class CarSettingPanelComponent {
 
   trimFloat(value: number): number {
     return Number(value.toPrecision(2));
+  }
+
+  ngOnDestroy(): void {
+    this.inactive$.next();
+    this.destroy$.next();
   }
 }

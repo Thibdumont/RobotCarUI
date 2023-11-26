@@ -1,4 +1,4 @@
-import { interval, Subject, Subscription, timer } from 'rxjs';
+import { interval, Subject, timer } from 'rxjs';
 
 import { Injectable } from '@angular/core';
 
@@ -19,10 +19,7 @@ export class RobotCommunicationService {
   private lastHeartbeatTime: Date = new Date();
   private socketOpened: boolean = false;
 
-  public connectionStatusChange: Subject<boolean> = new Subject();
-
-  autoConnectLoopSub!: Subscription;
-  sendDataLoopSub!: Subscription;
+  public connectionStatusChange$: Subject<boolean> = new Subject();
 
   constructor(
     private appConfigService: AppConfigService,
@@ -46,13 +43,13 @@ export class RobotCommunicationService {
   private onOpen() {
     console.log('Connected');
     this.socketOpened = true;
-    this.connectionStatusChange.next(true);
+    this.connectionStatusChange$.next(true);
   };
 
   private onClose() {
     this.socketOpened = false;
     console.log('Disconnected');
-    this.connectionStatusChange.next(false);
+    this.connectionStatusChange$.next(false);
   }
 
   private onMessage(event: any) {
@@ -80,12 +77,12 @@ export class RobotCommunicationService {
   }
 
   public autoConnectLoop() {
-    this.autoConnectLoopSub = timer(0, autoReconnectInterval)
+    timer(0, autoReconnectInterval)
       .subscribe(() => {
         if (this.socketOpened && new Date().getTime() - this.lastHeartbeatTime.getTime() > heartbeatMaxInterval) {
           console.log('No heartbeat received for the last %d ms', heartbeatMaxInterval);
           this.socketOpened = false;
-          this.connectionStatusChange.next(false);
+          this.connectionStatusChange$.next(false);
         }
         if (!this.socketOpened) {
           console.log('Connecting to robot...');
@@ -95,7 +92,7 @@ export class RobotCommunicationService {
   }
 
   public sendDataLoop() {
-    this.sendDataLoopSub = interval(sendDataInterval)
+    interval(sendDataInterval)
       .subscribe(() => {
         if (this.socketOpened) {
           this.socket.send(JSON.stringify({ alive: true }));
