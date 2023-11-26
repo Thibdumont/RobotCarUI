@@ -1,16 +1,10 @@
 import { Subject, takeUntil } from 'rxjs';
-import { GamepadService } from 'src/app/services/gamepad.service';
+import { AppConfigService } from 'src/app/services/app-config.service';
 import { RobotStateService } from 'src/app/services/robot-state.service';
 
 import { Component, OnDestroy } from '@angular/core';
 
-const lowBatteryLevelThreshold = 20;
-const batteryEmptyThreshold = 7.0;
-const batteryFullThreshold = 8.4;
-const batteryVoltageRange = batteryFullThreshold - batteryEmptyThreshold;
-const voltageInfoIntervalReception = 100; //We receive data from esp once every 100ms (must be aligned with the ESP sending interval to be accurate)
-
-const voltageFifoMaxLength = 30000 / voltageInfoIntervalReception; //We want approx a one minute buffer to be accurate and have a realistic estimation
+const voltageFifoMaxLength = 100; // We keep the last 100 measures to make an average and have the most accurate estimation of the battery life
 
 @Component({
   selector: 'robotcarui-battery-indicator',
@@ -34,7 +28,7 @@ export class BatteryIndicatorComponent implements OnDestroy {
 
   constructor(
     private robotStateService: RobotStateService,
-    private gamepadService: GamepadService
+    private appConfigService: AppConfigService
   ) {
     this.init();
 
@@ -51,8 +45,8 @@ export class BatteryIndicatorComponent implements OnDestroy {
   init() {
     this.voltageFifo = new Array();
     this.averageVoltageFifo = new Array();
-    this.maxVoltage = batteryFullThreshold;
-    this.lowThreshold = lowBatteryLevelThreshold;
+    this.maxVoltage = this.appConfigService.batteryFullThreshold;
+    this.lowThreshold = this.appConfigService.lowBatteryLevelThreshold;
     this.batteryPercent = 0;
   }
 
@@ -76,11 +70,12 @@ export class BatteryIndicatorComponent implements OnDestroy {
   }
 
   updateBatteryPercentage(): void {
-    this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.maxVoltage - batteryEmptyThreshold) / batteryVoltageRange) * 100)));
+    const batteryVoltageRange = this.appConfigService.batteryFullThreshold - this.appConfigService.batteryEmptyThreshold;
+    this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.maxVoltage - this.appConfigService.batteryEmptyThreshold) / batteryVoltageRange) * 100)));
   }
 
   getBatteryStep(): string {
-    if (this.batteryPercent < lowBatteryLevelThreshold) {
+    if (this.batteryPercent < this.appConfigService.lowBatteryLevelThreshold) {
       return 'low';
     }
     return '';
