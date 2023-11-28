@@ -123,8 +123,8 @@ Press the `start button` anywhere and you will have the button mapping for each 
 #### Live stream/control car
 
 The app is composed of a central video stream UI that is used to drive the car.
-There, you can drive the car using the gamepad. You can take some photos, adjust the speed, and see some informations on the HUD.
-![Car settings](doc/assets/stream.png)
+There, you can drive the car using the gamepad. You can take some photos, adjust the max speed, and see some informations on the HUD.
+![live stream](doc/assets/stream.png)
 
 #### Car settings
 
@@ -175,3 +175,4 @@ This project is still work in progress. Any suggestion, advice, pull request is 
 1. Angular 17 upgrade
 2. Battery level estimation improvement
 3. More car settings/features
+4. Better documentation if people are interested
