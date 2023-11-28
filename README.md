@@ -8,6 +8,7 @@ It works with these 2 other projects that have to be installed on the Uno and ES
 2. The ESP32 part : [https://github.com/Thibdumont/espCam2](https://github.com/Thibdumont/espCam2)
 
 - [RobotCarUI](#robotcarui)
+  - [Demo](#demo)
   - [Requirements](#requirements)
   - [Key features](#key-features)
   - [Installation instructions](#installation-instructions)
@@ -31,6 +32,10 @@ It works with these 2 other projects that have to be installed on the Uno and ES
     - [Wifi level](#wifi-level)
   - [Work in progress](#work-in-progress)
   - [Coming soon](#coming-soon)
+
+## Demo
+
+Quick video demo : [https://youtu.be/IlVKu30kO0o](https://youtu.be/IlVKu30kO0o)
 
 ## Requirements
 
