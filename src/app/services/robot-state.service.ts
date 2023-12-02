@@ -43,6 +43,11 @@ export class RobotStateService {
       this.robotState.hudEspLoopTime = json.hudEspLoopTime ?? this.robotState.hudEspLoopTime;
       //Battery
       this.robotState.batteryVoltage = json.batteryVoltage ?? this.robotState.batteryVoltage;
+      //Wifi 
+      this.robotState.wifiStrength = json.wifiStrength ?? this.robotState.wifiStrength;
+      //Debug
+      this.robotState.unoLoopDuration = json.unoLoopDuration ?? this.robotState.unoLoopDuration;
+      this.robotState.espLoopDuration = json.espLoopDuration ?? this.robotState.espLoopDuration;
 
       this.robotStateFirstSync$.next(this.robotState);
     } else {
