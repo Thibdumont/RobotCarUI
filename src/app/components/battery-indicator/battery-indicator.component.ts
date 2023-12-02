@@ -52,7 +52,7 @@ export class BatteryIndicatorComponent implements OnDestroy {
 
   processNewMeasure(batteryVoltage: number): void {
     this.addToFifo(this.voltageFifo, batteryVoltage);
-    this.maxVoltage = this.average(this.voltageFifo);
+    this.maxVoltage = Math.min(this.maxVoltage, this.average(this.voltageFifo));
     this.updateBatteryPercentage();
   }
 
