@@ -1,7 +1,8 @@
 <div class="battery-container" [ngClass]="getBatteryStep()">
     <div class="battery-body">
+        <div class="spinner" *ngIf="!canDisplayBatteryLevel()"></div>
         <div class="battery-level"></div>
-        <span class="battery-percent">{{ batteryPercent }}</span>
+        <span class="battery-percent" *ngIf="canDisplayBatteryLevel()">{{ batteryPercent }}</span>
     </div>
     <div class="battery-stud"></div>
 </div>

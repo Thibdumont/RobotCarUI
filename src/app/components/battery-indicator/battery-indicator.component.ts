@@ -5,6 +5,7 @@ import { RobotStateService } from 'src/app/services/robot-state.service';
 import { Component, OnDestroy } from '@angular/core';
 
 const voltageFifoMaxLength = 100; // We keep the last 100 measures to make an average and have the most accurate estimation of the battery life
+const minMeasureCount = 50; // Measures required to display the battery level (we don't want to have a bad first estimation)
 
 @Component({
   selector: 'robotcarui-battery-indicator',
@@ -53,7 +54,9 @@ export class BatteryIndicatorComponent implements OnDestroy {
   processNewMeasure(batteryVoltage: number): void {
     this.addToFifo(this.voltageFifo, batteryVoltage);
     this.maxVoltage = Math.min(this.maxVoltage, this.average(this.voltageFifo));
-    this.updateBatteryPercentage();
+    if (this.canDisplayBatteryLevel()) {
+      this.updateBatteryPercentage();
+    }
   }
 
   addToFifo(fifo: Array<number>, voltage: number): void {
@@ -75,10 +78,14 @@ export class BatteryIndicatorComponent implements OnDestroy {
   }
 
   getBatteryStep(): string {
-    if (this.batteryPercent < this.appConfigService.lowBatteryLevelThreshold) {
+    if (this.batteryPercent < this.appConfigService.lowBatteryLevelThreshold && this.canDisplayBatteryLevel()) {
       return 'low';
     }
     return '';
+  }
+
+  canDisplayBatteryLevel(): boolean {
+    return this.voltageFifo.length >= minMeasureCount;
   }
 
   ngOnDestroy(): void {
