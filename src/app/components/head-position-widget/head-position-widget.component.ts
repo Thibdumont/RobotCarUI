@@ -10,7 +10,7 @@ const deadZone = 0.01;
 @Component({
   selector: 'robotcarui-head-position-widget',
   templateUrl: './head-position-widget.component.html',
-  styleUrls: ['./head-position-widget.component.scss']
+  styleUrls: ['./head-position-widget.component.scss'],
 })
 export class HeadPositionWidgetComponent implements OnDestroy {
   @ViewChild('head') head!: ElementRef;
@@ -21,38 +21,45 @@ export class HeadPositionWidgetComponent implements OnDestroy {
 
   constructor(
     private gamepadService: GamepadService,
-    private robotCommunicationService: RobotCommunicationService
+    private robotCommunicationService: RobotCommunicationService,
   ) {
-    this.gamepadService.rightStickXChange.pipe(takeUntil(this.destroy$)).subscribe(rightStickX => {
-      this.previousHeadPosition = this.headPosition;
-      let headChangeIncrement = Math.abs(rightStickX * headChangeBaseIncrement);
-      if (rightStickX < -deadZone) {
-        if (this.headPosition - headChangeIncrement > -1) {
-          this.headPosition -= headChangeIncrement;
-        } else {
-          this.headPosition = -1;
+    this.gamepadService.rightStickXChange
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((rightStickX) => {
+        this.previousHeadPosition = this.headPosition;
+        let headChangeIncrement = Math.abs(
+          rightStickX * headChangeBaseIncrement,
+        );
+        if (rightStickX < -deadZone) {
+          if (this.headPosition - headChangeIncrement > -1) {
+            this.headPosition -= headChangeIncrement;
+          } else {
+            this.headPosition = -1;
+          }
+        } else if (rightStickX > deadZone) {
+          if (this.headPosition + headChangeIncrement < 1) {
+            this.headPosition += headChangeIncrement;
+          } else {
+            this.headPosition = 1;
+          }
         }
-      } else if (rightStickX > deadZone) {
-        if (this.headPosition + headChangeIncrement < 1) {
-          this.headPosition += headChangeIncrement;
-        } else {
-          this.headPosition = 1;
-        }
-      }
-      this.updateHeadPosition();
-    });
-
-    this.gamepadService.rightStickButtonChange.pipe(takeUntil(this.destroy$), distinctUntilChanged()).subscribe(rightStickButton => {
-      if (rightStickButton) {
-        this.headPosition = 0;
         this.updateHeadPosition();
-      }
-    });
+      });
 
+    this.gamepadService.rightStickButtonChange
+      .pipe(takeUntil(this.destroy$), distinctUntilChanged())
+      .subscribe((rightStickButton) => {
+        if (rightStickButton) {
+          this.headPosition = 0;
+          this.updateHeadPosition();
+        }
+      });
   }
 
   updateHeadPosition() {
-    const calc = `calc(${this.headPosition * 50}% + (50% - ${headDiameter / 2}px))`;
+    const calc = `calc(${this.headPosition * 50}% + (50% - ${
+      headDiameter / 2
+    }px))`;
     this.head.nativeElement.style.setProperty('left', calc);
 
     if (this.headPosition !== this.previousHeadPosition) {
@@ -64,5 +71,4 @@ export class HeadPositionWidgetComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
   }
-
 }

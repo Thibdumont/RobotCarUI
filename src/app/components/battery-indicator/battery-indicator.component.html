@@ -1,12 +1,11 @@
 <div class="battery-container" [ngClass]="getBatteryStep()">
-    <div class="battery-body">
-        <div class="battery-level"></div>
-        @if (canDisplayBatteryLevel()){
-        <span class="battery-percent">{{ batteryPercent }}</span>
-        }@else {
-        <div class="spinner"></div>
-        }
-    </div>
-    <div class=" battery-stud">
-    </div>
+  <div class="battery-body">
+    <div class="battery-level"></div>
+    @if (canDisplayBatteryLevel()) {
+      <span class="battery-percent">{{ batteryPercent }}</span>
+    } @else {
+      <div class="spinner"></div>
+    }
+  </div>
+  <div class="battery-stud"></div>
 </div>

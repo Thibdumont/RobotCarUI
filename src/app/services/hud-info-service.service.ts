@@ -10,56 +10,54 @@ export interface HudInfoItem {
   jsonProp: string;
   value?: string | number;
   unit?: string;
-  hudVisible?: boolean
+  hudVisible?: boolean;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HudInfoServiceService {
-
   hudInfoList$: Subject<Array<HudInfoItem>> = new Subject();
   infoList: Array<HudInfoItem> = [
     {
       label: 'Forward distance',
       jsonProp: 'hudRadarDistance',
       unit: 'cm',
-      hudVisible: true
+      hudVisible: true,
     },
     {
       label: 'Battery voltage',
       jsonProp: 'hudBatteryVoltage',
       unit: 'V',
-      hudVisible: true
+      hudVisible: true,
     },
     {
       label: 'On ground',
       jsonProp: 'hudOnGround',
-      unit: ''
+      unit: '',
     },
     {
       label: 'Uno loop time',
       jsonProp: 'hudUnoLoopTime',
-      unit: 'ms'
+      unit: 'ms',
     },
     {
       label: 'ESP loop time',
       jsonProp: 'hudEspLoopTime',
-      unit: 'ms'
-    }
+      unit: 'ms',
+    },
   ];
 
   constructor(
     private robotStateService: RobotStateService,
-    private robotCommunicationService: RobotCommunicationService
+    private robotCommunicationService: RobotCommunicationService,
   ) {
     this.handleDataCollection();
     this.initHudInfoState();
   }
 
   initHudInfoState() {
-    this.robotStateService.robotStateFirstSync$.subscribe(robotState => {
+    this.robotStateService.robotStateFirstSync$.subscribe((robotState) => {
       this.infoList[0].hudVisible = robotState.hudRadarDistance === 1;
       this.infoList[1].hudVisible = robotState.hudBatteryVoltage === 1;
       this.infoList[2].hudVisible = robotState.hudOnGround === 1;
@@ -69,7 +67,7 @@ export class HudInfoServiceService {
   }
 
   handleDataCollection() {
-    this.robotStateService.robotStateChange.subscribe(robotState => {
+    this.robotStateService.robotStateChange.subscribe((robotState) => {
       this.infoList[0].value = robotState.radarDistance;
       this.infoList[1].value = robotState.batteryVoltage?.toPrecision(3);
       this.infoList[2].value = robotState.onGround === 1 ? 'true' : 'false';
@@ -82,6 +80,12 @@ export class HudInfoServiceService {
   toggleHudVisibility(index: number) {
     this.infoList[index].hudVisible = !this.infoList[index].hudVisible;
     this.hudInfoList$.next(this.infoList);
-    this.robotCommunicationService.sendCommand(JSON.parse(`{ "${this.infoList[index].jsonProp}": ${this.infoList[index].hudVisible ? 1 : 0} }`))
+    this.robotCommunicationService.sendCommand(
+      JSON.parse(
+        `{ "${this.infoList[index].jsonProp}": ${
+          this.infoList[index].hudVisible ? 1 : 0
+        } }`,
+      ),
+    );
   }
 }

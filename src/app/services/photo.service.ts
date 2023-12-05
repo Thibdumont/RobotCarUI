@@ -10,22 +10,18 @@ export interface PhotoItem {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PhotoService {
-
-
   photoList: Array<PhotoItem> = new Array();
   photoListChanged$: Subject<void> = new Subject();
 
-  constructor(
-    private appConfigService: AppConfigService
-  ) { }
+  constructor(private appConfigService: AppConfigService) {}
 
   takePhoto(): PhotoItem {
     const photo = {
       date: new Date(),
-      src: this.getCaptureUrl()
+      src: this.getCaptureUrl(),
     };
     this.photoList.unshift(photo);
     this.photoListChanged$.next();

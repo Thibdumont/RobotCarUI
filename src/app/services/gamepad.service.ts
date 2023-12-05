@@ -5,10 +5,9 @@ import { Injectable } from '@angular/core';
 import { AppConfigService } from './app-config.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GamepadService {
-
   public gamepadConnectedChange = new Subject<boolean>();
 
   public leftStickXChange: Subject<number> = new Subject();
@@ -32,20 +31,17 @@ export class GamepadService {
   public viewButtonChange: Subject<number> = new Subject();
   public menuButtonChange: Subject<number> = new Subject();
 
-  constructor(
-    private appConfigService: AppConfigService
-  ) {
-  }
+  constructor(private appConfigService: AppConfigService) {}
 
   public initGamepad() {
-    window.addEventListener("gamepadconnected", (event) => {
-      console.log("A gamepad connected:", event.gamepad);
+    window.addEventListener('gamepadconnected', (event) => {
+      console.log('A gamepad connected:', event.gamepad);
       this.gamepadConnectedChange.next(true);
       this.gamepadPollingLoop();
     });
 
-    window.addEventListener("gamepaddisconnected", (event) => {
-      console.log("A gamepad disconnected:", event.gamepad);
+    window.addEventListener('gamepaddisconnected', (event) => {
+      console.log('A gamepad disconnected:', event.gamepad);
       this.gamepadConnectedChange.next(false);
     });
   }
@@ -54,7 +50,9 @@ export class GamepadService {
     interval(this.appConfigService.gamepadPollingInterval)
       .pipe()
       .subscribe(() => {
-        var gamepads = navigator.getGamepads().filter(gamepad => gamepad !== null);
+        var gamepads = navigator
+          .getGamepads()
+          .filter((gamepad) => gamepad !== null);
 
         for (const gamepad of gamepads) {
           this.leftStickXChange.next(this.getAxisValue(gamepad, 0));
@@ -81,15 +79,14 @@ export class GamepadService {
       });
   }
 
-  private getButtonValue(gamepad: Gamepad | null, buttonNumber: number): number {
-    return gamepad === null ?
-      0 :
-      gamepad.buttons[buttonNumber].value;
+  private getButtonValue(
+    gamepad: Gamepad | null,
+    buttonNumber: number,
+  ): number {
+    return gamepad === null ? 0 : gamepad.buttons[buttonNumber].value;
   }
 
   private getAxisValue(gamepad: Gamepad | null, axisNumber: number): number {
-    return gamepad === null ?
-      0 :
-      gamepad.axes[axisNumber];
+    return gamepad === null ? 0 : gamepad.axes[axisNumber];
   }
 }

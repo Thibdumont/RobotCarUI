@@ -1,42 +1,42 @@
 :host {
-    --control-bar-thickness: 10px;
+  --control-bar-thickness: 10px;
 }
 
 .direction-bar {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    background: #fff2;
-    border-radius: 4px;
-    overflow: hidden;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  background: #fff2;
+  border-radius: 4px;
+  overflow: hidden;
 
-    &>div {
-        width: 50%;
-        height: var(--control-bar-thickness);
-    }
+  & > div {
+    width: 50%;
+    height: var(--control-bar-thickness);
+  }
 
-    &>span {
-        position: absolute;
-    }
+  & > span {
+    position: absolute;
+  }
 }
 
 .center {
-    width: 2px;
-    margin-left: -1px;
-    height: var(--control-bar-thickness);
-    background-color: black;
-    left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  height: var(--control-bar-thickness);
+  background-color: black;
+  left: 50%;
 }
 
 .left-direction-force,
 .right-direction-force {
-    background-color: var(--primary-transparent-color);
-    height: var(--control-bar-thickness);
-    width: 0%;
-    transition: width ease-in-out 100ms;
+  background-color: var(--primary-transparent-color);
+  height: var(--control-bar-thickness);
+  width: 0%;
+  transition: width ease-in-out 100ms;
 }
 
 .reverse {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }

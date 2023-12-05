@@ -90,8 +90,8 @@ The app is built using Angular framework. I tried to keep the final bundle size 
 3. Clone this repository and go to the `RobotCarUI` folder
 4. Run `npm install` to install Angular and project dependencies
 5. Run the app
-    - Run `npm start` to locally run the app (it will open a browser tab with the app and connect to the car)
-    - Run `npm run prod` to build a bundle, so you can upload it to the ESP32 storage and access it directly by typing the ESP IP address in your browser. To do so, copy every file from `dist/` folder to the `data/` folder of the ESP32 project, then upload these files to the ESP32 ([https://github.com/Thibdumont/espCam2](https://github.com/Thibdumont/espCam2))
+   - Run `npm start` to locally run the app (it will open a browser tab with the app and connect to the car)
+   - Run `npm run prod` to build a bundle, so you can upload it to the ESP32 storage and access it directly by typing the ESP IP address in your browser. To do so, copy every file from `dist/` folder to the `data/` folder of the ESP32 project, then upload these files to the ESP32 ([https://github.com/Thibdumont/espCam2](https://github.com/Thibdumont/espCam2))
 
 ## Using the app
 

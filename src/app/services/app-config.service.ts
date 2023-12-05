@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AppConfigService {
-
   private possibleHostIP: Array<string> = [
-    "192.168.1.1", //softAP IP
-    "192.168.1.32" //local network
+    '192.168.1.1', //softAP IP
+    '192.168.1.32', //local network
   ];
   private currentIPIndex: number = 0;
 
-  public port: string = "80";
-  public webSocketPath = "/ws";
+  public port: string = '80';
+  public webSocketPath = '/ws';
 
   public gamepadPollingInterval = 30;
   public uiPanelAnimationLength = 300;
@@ -31,7 +30,7 @@ export class AppConfigService {
   public batteryEmptyThreshold = 7.2; // Battery voltage when battery is considered empty
   public batteryFullThreshold = 8.4; // Battery voltage when battery if fully charged
 
-  constructor() { }
+  constructor() {}
 
   getNextHostIP(): string {
     if (++this.currentIPIndex >= this.possibleHostIP.length) {

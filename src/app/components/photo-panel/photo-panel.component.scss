@@ -1,51 +1,51 @@
 :host {
-    --heading-font-size: 2vw;
+  --heading-font-size: 2vw;
 }
 
 .photo-panel-container {
-    width: 100%;
-    height: 100%;
-    background: #fff;
-    position: absolute;
-    left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  position: absolute;
+  left: 0;
 }
 
 .photo-list,
 .no-photo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    color: var(--accent-color);
-    font-size: var(--heading-font-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--accent-color);
+  font-size: var(--heading-font-size);
 }
 
 .no-photo {
-    font-size: calc(2 * var(--heading-font-size));
+  font-size: calc(2 * var(--heading-font-size));
 }
 
 .photo-item {
-    border-radius: 8px;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    transform: translateX(0) translateY(-100%);
+  border-radius: 8px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transform: translateX(0) translateY(-100%);
+  background: #fff;
+
+  label {
+    padding: 0 8px;
+    width: calc(100% - 16px);
     background: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: var(--heading-font-size);
+  }
 
-    label {
-        padding: 0 8px;
-        width: calc(100% - 16px);
-        background: #fff;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: var(--heading-font-size);
-    }
-
-    img {
-        width: 100%;
-        height: calc(100% - var(--heading-font-size));
-        object-fit: contain;
-    }
+  img {
+    width: 100%;
+    height: calc(100% - var(--heading-font-size));
+    object-fit: contain;
+  }
 }

@@ -3,9 +3,18 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 import { RobotStateService } from 'src/app/services/robot-state.service';
-import { UiPanel, UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
+import {
+  UiPanel,
+  UiPanelDirectorService,
+} from 'src/app/services/ui-panel-director.service';
 
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { Component, OnDestroy } from '@angular/core';
 
 // Camera needs 300ms between each setting update, to prevent crashing
@@ -16,16 +25,16 @@ export enum CameraControlEnum {
   CAMERA_QUALITY,
   CAMERA_CONTRAST,
   CAMERA_BRIGHTNESS,
-  CAMERA_SATURATION
+  CAMERA_SATURATION,
 }
 
 export interface CameraControlSlider {
-  id: CameraControlEnum,
-  label: string,
-  jsonProp: string,
-  min: number,
-  max: number,
-  value: number
+  id: CameraControlEnum;
+  label: string;
+  jsonProp: string;
+  min: number;
+  max: number;
+  value: number;
 }
 
 @Component({
@@ -36,12 +45,11 @@ export interface CameraControlSlider {
     trigger('openClose', [
       state('closed', style({ top: '0' })),
       state('opened', style({ top: '-100%' })),
-      transition('* => *', animate('300ms 0ms ease'))
-    ])
-  ]
+      transition('* => *', animate('300ms 0ms ease')),
+    ]),
+  ],
 })
 export class CameraControlPanelComponent implements OnDestroy {
-
   opened: boolean = false;
 
   inactive$ = new Subject<void>();
@@ -55,7 +63,7 @@ export class CameraControlPanelComponent implements OnDestroy {
       jsonProp: 'cameraResolution',
       min: 0,
       max: 13,
-      value: 8
+      value: 8,
     },
     {
       id: CameraControlEnum.CAMERA_QUALITY,
@@ -63,7 +71,7 @@ export class CameraControlPanelComponent implements OnDestroy {
       jsonProp: 'cameraQuality',
       min: 0,
       max: 10,
-      value: 10
+      value: 10,
     },
     {
       id: CameraControlEnum.CAMERA_CONTRAST,
@@ -71,7 +79,7 @@ export class CameraControlPanelComponent implements OnDestroy {
       jsonProp: 'cameraContrast',
       min: -2,
       max: 2,
-      value: 0
+      value: 0,
     },
     {
       id: CameraControlEnum.CAMERA_BRIGHTNESS,
@@ -79,7 +87,7 @@ export class CameraControlPanelComponent implements OnDestroy {
       jsonProp: 'cameraBrightness',
       min: -2,
       max: 2,
-      value: 0
+      value: 0,
     },
     {
       id: CameraControlEnum.CAMERA_SATURATION,
@@ -87,8 +95,8 @@ export class CameraControlPanelComponent implements OnDestroy {
       jsonProp: 'cameraSaturation',
       min: -2,
       max: 2,
-      value: 0
-    }
+      value: 0,
+    },
   ];
 
   constructor(
@@ -96,71 +104,107 @@ export class CameraControlPanelComponent implements OnDestroy {
     private uiPanelDirectorService: UiPanelDirectorService,
     private appConfigService: AppConfigService,
     private robotCommunicationService: RobotCommunicationService,
-    private robotStateService: RobotStateService
+    private robotStateService: RobotStateService,
   ) {
     this.handleActiveState();
     this.initControls();
   }
 
   initControls() {
-    this.robotStateService.robotStateFirstSync$.pipe(takeUntil(this.destroy$)).subscribe(robotState => {
-      this.cameraControlList[0].value = robotState.cameraResolution;
-      this.cameraControlList[1].value = robotState.cameraQuality;
-      this.cameraControlList[2].value = robotState.cameraContrast;
-      this.cameraControlList[3].value = robotState.cameraBrightness;
-      this.cameraControlList[4].value = robotState.cameraSaturation;
-    });
+    this.robotStateService.robotStateFirstSync$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((robotState) => {
+        this.cameraControlList[0].value = robotState.cameraResolution;
+        this.cameraControlList[1].value = robotState.cameraQuality;
+        this.cameraControlList[2].value = robotState.cameraContrast;
+        this.cameraControlList[3].value = robotState.cameraBrightness;
+        this.cameraControlList[4].value = robotState.cameraSaturation;
+      });
   }
 
   handleNavigation() {
-    this.gamepadService.upPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(upPad => {
-      if (upPad) {
-        if (this.currentCameraControl > 0) {
-          this.currentCameraControl = Math.max(this.currentCameraControl - 1, 0);
-        } else {
+    this.gamepadService.upPadChange
+      .pipe(takeUntil(this.inactive$), distinctUntilChanged())
+      .subscribe((upPad) => {
+        if (upPad) {
+          if (this.currentCameraControl > 0) {
+            this.currentCameraControl = Math.max(
+              this.currentCameraControl - 1,
+              0,
+            );
+          } else {
+            this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
+          }
+        }
+      });
+    this.gamepadService.downPadChange
+      .pipe(takeUntil(this.inactive$), distinctUntilChanged())
+      .subscribe((downPad) => {
+        if (downPad) {
+          this.currentCameraControl = Math.min(
+            this.currentCameraControl + 1,
+            this.cameraControlList.length - 1,
+          );
+        }
+      });
+    this.gamepadService.leftPadChange
+      .pipe(
+        takeUntil(this.inactive$),
+        distinctUntilChanged(),
+        throttleTime(cameraSettingUpdateDelay),
+      )
+      .subscribe((leftPad) => {
+        if (leftPad) {
+          this.cameraControlList[this.currentCameraControl].value = Math.max(
+            this.cameraControlList[this.currentCameraControl].value - 1,
+            this.cameraControlList[this.currentCameraControl].min,
+          );
+          this.changeCameraControl(
+            this.cameraControlList[this.currentCameraControl].value,
+          );
+        }
+      });
+    this.gamepadService.rightPadChange
+      .pipe(
+        takeUntil(this.inactive$),
+        distinctUntilChanged(),
+        throttleTime(cameraSettingUpdateDelay),
+      )
+      .subscribe((rightPad) => {
+        if (rightPad) {
+          this.cameraControlList[this.currentCameraControl].value = Math.min(
+            this.cameraControlList[this.currentCameraControl].value + 1,
+            this.cameraControlList[this.currentCameraControl].max,
+          );
+          this.changeCameraControl(
+            this.cameraControlList[this.currentCameraControl].value,
+          );
+        }
+      });
+    this.gamepadService.bButtonChange
+      .pipe(takeUntil(this.inactive$))
+      .subscribe((bButton) => {
+        if (bButton) {
           this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
         }
-      }
-    });
-    this.gamepadService.downPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged()).subscribe(downPad => {
-      if (downPad) {
-        this.currentCameraControl = Math.min(this.currentCameraControl + 1, this.cameraControlList.length - 1);
-      }
-    });
-    this.gamepadService.leftPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged(), throttleTime(cameraSettingUpdateDelay)).subscribe(leftPad => {
-      if (leftPad) {
-        this.cameraControlList[this.currentCameraControl].value =
-          Math.max(this.cameraControlList[this.currentCameraControl].value - 1,
-            this.cameraControlList[this.currentCameraControl].min);
-        this.changeCameraControl(this.cameraControlList[this.currentCameraControl].value);
-      }
-    });
-    this.gamepadService.rightPadChange.pipe(takeUntil(this.inactive$), distinctUntilChanged(), throttleTime(cameraSettingUpdateDelay)).subscribe(rightPad => {
-      if (rightPad) {
-        this.cameraControlList[this.currentCameraControl].value =
-          Math.min(this.cameraControlList[this.currentCameraControl].value + 1,
-            this.cameraControlList[this.currentCameraControl].max);
-        this.changeCameraControl(this.cameraControlList[this.currentCameraControl].value);
-      }
-    });
-    this.gamepadService.bButtonChange.pipe(takeUntil(this.inactive$)).subscribe(bButton => {
-      if (bButton) {
-        this.uiPanelDirectorService.setActive(UiPanel.STREAM_WINDOW);
-      }
-    });
+      });
   }
 
-
-
   handleActiveState() {
-    this.uiPanelDirectorService.getUiPanelSubject(UiPanel.CAMERA_CONTROL).pipe(takeUntil(this.destroy$)).subscribe(newState => {
-      this.opened = newState;
-      if (this.opened) {
-        setTimeout(() => this.handleNavigation(), this.appConfigService.uiPanelAnimationLength);
-      } else {
-        this.inactive$.next();
-      }
-    });
+    this.uiPanelDirectorService
+      .getUiPanelSubject(UiPanel.CAMERA_CONTROL)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((newState) => {
+        this.opened = newState;
+        if (this.opened) {
+          setTimeout(
+            () => this.handleNavigation(),
+            this.appConfigService.uiPanelAnimationLength,
+          );
+        } else {
+          this.inactive$.next();
+        }
+      });
   }
 
   isActive(cameraControlIndex: number) {
@@ -170,7 +214,11 @@ export class CameraControlPanelComponent implements OnDestroy {
   changeCameraControl(value: number) {
     this.cameraControlList[this.currentCameraControl].value = value;
     this.robotCommunicationService.sendCommand(
-      JSON.parse(`{ "${this.cameraControlList[this.currentCameraControl].jsonProp}": ${value} }`)
+      JSON.parse(
+        `{ "${
+          this.cameraControlList[this.currentCameraControl].jsonProp
+        }": ${value} }`,
+      ),
     );
   }
 

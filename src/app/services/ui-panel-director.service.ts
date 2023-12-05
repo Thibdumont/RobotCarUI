@@ -7,33 +7,31 @@ export enum UiPanel {
   CAMERA_CONTROL = 'CAMERA_CONTROL',
   STREAM_WINDOW = 'STREAM_WINDOW',
   INFO = 'INFO',
-  CAR_SETTING = 'CAR_SETTING'
+  CAR_SETTING = 'CAR_SETTING',
 }
 
 export interface UiPanelSubjectState {
-  subject: Subject<boolean>,
-  state: boolean
+  subject: Subject<boolean>;
+  state: boolean;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UiPanelDirectorService {
-
   private uiPanelSubjectMap: Map<UiPanel, Subject<boolean>> = new Map([
     [UiPanel.PHOTO, new Subject<boolean>()],
     [UiPanel.CAMERA_CONTROL, new Subject<boolean>()],
     [UiPanel.STREAM_WINDOW, new Subject<boolean>()],
     [UiPanel.INFO, new Subject<boolean>()],
-    [UiPanel.CAR_SETTING, new Subject<boolean>()]
+    [UiPanel.CAR_SETTING, new Subject<boolean>()],
   ]);
 
   activePanel: UiPanel = UiPanel.STREAM_WINDOW;
 
   uiPanelChange = new Subject<UiPanel>();
 
-  constructor() {
-  }
+  constructor() {}
 
   init() {
     this.setActive(UiPanel.STREAM_WINDOW);
@@ -47,7 +45,7 @@ export class UiPanelDirectorService {
   }
 
   private disableAllUi() {
-    Object.keys(UiPanel).forEach(uiPanel => {
+    Object.keys(UiPanel).forEach((uiPanel) => {
       this.uiPanelSubjectMap.get(uiPanel as UiPanel)?.next(false);
     });
   }
@@ -59,5 +57,4 @@ export class UiPanelDirectorService {
   getActivePanel(): UiPanel {
     return this.activePanel;
   }
-
 }

@@ -1,9 +1,18 @@
 import { distinctUntilChanged, Subject, takeUntil } from 'rxjs';
-import { ControlHelpService, ControlPanelItem } from 'src/app/services/control-help.service';
+import {
+  ControlHelpService,
+  ControlPanelItem,
+} from 'src/app/services/control-help.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { UiPanelDirectorService } from 'src/app/services/ui-panel-director.service';
 
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { Component, OnDestroy } from '@angular/core';
 
 @Component({
@@ -14,12 +23,11 @@ import { Component, OnDestroy } from '@angular/core';
     trigger('openClose', [
       state('closed', style({ top: '0' })),
       state('opened', style({ top: '100%' })),
-      transition('* => *', animate('300ms 0ms ease'))
-    ])
-  ]
+      transition('* => *', animate('300ms 0ms ease')),
+    ]),
+  ],
 })
 export class ControlHelpPanelComponent implements OnDestroy {
-
   opened: boolean = false;
 
   destroy$ = new Subject<void>();
@@ -30,23 +38,29 @@ export class ControlHelpPanelComponent implements OnDestroy {
   constructor(
     private controlHelpService: ControlHelpService,
     private gamepadService: GamepadService,
-    private uiPanelDirectorService: UiPanelDirectorService
+    private uiPanelDirectorService: UiPanelDirectorService,
   ) {
     this.handleActivation();
     this.commonControlList = this.controlHelpService.commonControlHelpList;
   }
 
   handleActivation() {
-    this.gamepadService.menuButtonChange.pipe(takeUntil(this.destroy$), distinctUntilChanged()).subscribe(menuButton => {
-      if (menuButton) {
-        this.controlList = this.controlHelpService.getUiPanelControlList(this.uiPanelDirectorService.getActivePanel());
-        this.opened = !this.opened;
-      }
-    });
+    this.gamepadService.menuButtonChange
+      .pipe(takeUntil(this.destroy$), distinctUntilChanged())
+      .subscribe((menuButton) => {
+        if (menuButton) {
+          this.controlList = this.controlHelpService.getUiPanelControlList(
+            this.uiPanelDirectorService.getActivePanel(),
+          );
+          this.opened = !this.opened;
+        }
+      });
 
-    this.uiPanelDirectorService.uiPanelChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.opened = false;
-    });
+    this.uiPanelDirectorService.uiPanelChange
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.opened = false;
+      });
   }
 
   ngOnDestroy(): void {

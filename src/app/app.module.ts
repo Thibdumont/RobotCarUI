@@ -4,22 +4,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
-import {
-  BatteryIndicatorComponent
-} from './components/battery-indicator/battery-indicator.component';
-import {
-  CameraControlPanelComponent
-} from './components/camera-control-panel/camera-control-panel.component';
-import {
-  CarSettingPanelComponent
-} from './components/car-setting-panel/car-setting-panel.component';
-import {
-  ControlHelpPanelComponent
-} from './components/control-help-panel/control-help-panel.component';
+import { BatteryIndicatorComponent } from './components/battery-indicator/battery-indicator.component';
+import { CameraControlPanelComponent } from './components/camera-control-panel/camera-control-panel.component';
+import { CarSettingPanelComponent } from './components/car-setting-panel/car-setting-panel.component';
+import { ControlHelpPanelComponent } from './components/control-help-panel/control-help-panel.component';
 import { DirectionWidgetComponent } from './components/direction-widget/direction-widget.component';
-import {
-  HeadPositionWidgetComponent
-} from './components/head-position-widget/head-position-widget.component';
+import { HeadPositionWidgetComponent } from './components/head-position-widget/head-position-widget.component';
 import { InfoPanelComponent } from './components/info-panel/info-panel.component';
 import { MainHudComponent } from './components/main-hud/main-hud.component';
 import { PhotoPanelComponent } from './components/photo-panel/photo-panel.component';
@@ -43,14 +33,10 @@ import { ConnectionPanelComponent } from './components/connection-panel/connecti
     WifiSignalComponent,
     CameraControlPanelComponent,
     CarSettingPanelComponent,
-    ConnectionPanelComponent
+    ConnectionPanelComponent,
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule
-  ],
+  imports: [BrowserModule, BrowserAnimationsModule, FormsModule],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

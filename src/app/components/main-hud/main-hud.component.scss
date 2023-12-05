@@ -1,47 +1,47 @@
 .hud-container {
-    display: grid;
-    height: 100%;
-    width: 100%;
-    grid-template-columns: 10fr auto;
-    grid-template-rows: auto 1fr auto;
-    grid-template-areas:
-        "robotcarui-head-position-widget robotcarui-head-position-widget"
-        "left-hud robotcarui-throttle-widget"
-        "robotcarui-direction-widget robotcarui-direction-widget";
+  display: grid;
+  height: 100%;
+  width: 100%;
+  grid-template-columns: 10fr auto;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "robotcarui-head-position-widget robotcarui-head-position-widget"
+    "left-hud robotcarui-throttle-widget"
+    "robotcarui-direction-widget robotcarui-direction-widget";
 }
 
 .left-hud {
-    padding: 8px 4px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  grid-area: left-hud;
+
+  div {
+    color: #fff;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    grid-area: left-hud;
+    align-self: start;
 
-    div {
-        color: #fff;
-        display: flex;
-        align-self: start;
-
-        padding: 0 8px;
-        background: #fff2;
-        border-radius: 8px;
-    }
+    padding: 0 8px;
+    background: #fff2;
+    border-radius: 8px;
+  }
 }
 
 robotcarui-head-position-widget {
-    margin: 5px 5px 0 5px;
-    grid-area: robotcarui-head-position-widget;
-    z-index: 5;
+  margin: 5px 5px 0 5px;
+  grid-area: robotcarui-head-position-widget;
+  z-index: 5;
 }
 
 robotcarui-throttle-widget {
-    margin: 5px 5px 5px 0;
-    grid-area: robotcarui-throttle-widget;
-    z-index: 5;
+  margin: 5px 5px 5px 0;
+  grid-area: robotcarui-throttle-widget;
+  z-index: 5;
 }
 
 robotcarui-direction-widget {
-    margin: 0 5px 5px 5px;
-    grid-area: robotcarui-direction-widget;
-    z-index: 5;
+  margin: 0 5px 5px 5px;
+  grid-area: robotcarui-direction-widget;
+  z-index: 5;
 }

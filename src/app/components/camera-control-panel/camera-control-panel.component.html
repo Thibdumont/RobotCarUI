@@ -1,14 +1,23 @@
-<div class="camera-control-panel-container" [@openClose]="opened ? 'opened':'closed'">
-    <div class="control-list">
-        @for(cameraControl of cameraControlList; track $index){
-        <div class="control" [class.active]="isActive($index)">
-            <header>
-                <label>{{cameraControl.label}}</label>
-                <span class="value">{{cameraControl.value}}</span>
-            </header>
-            <input type="range" min="{{cameraControl.min}}" max="{{cameraControl.max}}" class="slider"
-                [ngModel]="cameraControl.value" (ngModelChange)="changeCameraControl($event)">
-        </div>
-        }
-    </div>
+<div
+  class="camera-control-panel-container"
+  [@openClose]="opened ? 'opened' : 'closed'"
+>
+  <div class="control-list">
+    @for (cameraControl of cameraControlList; track $index) {
+      <div class="control" [class.active]="isActive($index)">
+        <header>
+          <label>{{ cameraControl.label }}</label>
+          <span class="value">{{ cameraControl.value }}</span>
+        </header>
+        <input
+          type="range"
+          min="{{ cameraControl.min }}"
+          max="{{ cameraControl.max }}"
+          class="slider"
+          [ngModel]="cameraControl.value"
+          (ngModelChange)="changeCameraControl($event)"
+        />
+      </div>
+    }
+  </div>
 </div>

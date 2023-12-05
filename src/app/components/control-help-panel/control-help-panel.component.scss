@@ -1,50 +1,50 @@
 .control-panel-container {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    overflow-y: scroll;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow-y: scroll;
 
-    &::-webkit-scrollbar {
-        display: none;
-    }
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .list-container {
-    background-color: #fffd;
-    margin: 5vw;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    backdrop-filter: blur(3px);
+  background-color: #fffd;
+  margin: 5vw;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  backdrop-filter: blur(3px);
 }
 
 .common-control-list,
 .control-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 10px;
 }
 
-.common-control-list>.control-item>div {
-    background: var(--accent-color);
+.common-control-list > .control-item > div {
+  background: var(--accent-color);
 }
 
 .control-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    border-radius: 4px;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 4px;
+  gap: 10px;
 
-    div {
-        padding: 8px;
-        border-radius: 8px;
-        background: var(--primary-color);
-        color: #fff;
-    }
+  div {
+    padding: 8px;
+    border-radius: 8px;
+    background: var(--primary-color);
+    color: #fff;
+  }
 
-    label {
-        font-size: 0.9rem;
-    }
+  label {
+    font-size: 0.9rem;
+  }
 }

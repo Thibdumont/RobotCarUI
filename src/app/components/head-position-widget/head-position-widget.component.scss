@@ -1,38 +1,38 @@
 :host {
-    --control-bar-thickness: 10px;
-    --head-diameter: 10px;
+  --control-bar-thickness: 10px;
+  --head-diameter: 10px;
 }
 
 .head-bar {
-    width: 100%;
-    height: var(--control-bar-thickness);
-    background: #fff2;
-    border-radius: 4px;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
+  width: 100%;
+  height: var(--control-bar-thickness);
+  background: #fff2;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
 }
 
 .navigable-bar {
-    width: calc(100% - var(--head-diameter));
-    position: relative;
+  width: calc(100% - var(--head-diameter));
+  position: relative;
 }
 
 .center {
-    position: absolute;
-    width: 2px;
-    margin-left: -1px;
-    height: var(--control-bar-thickness);
-    background-color: black;
-    left: 50%;
+  position: absolute;
+  width: 2px;
+  margin-left: -1px;
+  height: var(--control-bar-thickness);
+  background-color: black;
+  left: 50%;
 }
 
 .head {
-    position: absolute;
-    left: calc(50% - var(--head-diameter)/2);
-    background: var(--primary-transparent-color);
-    border-radius: 50%;
-    width: var(--head-diameter);
-    height: var(--head-diameter);
-    transition: left ease-in-out 100ms;
+  position: absolute;
+  left: calc(50% - var(--head-diameter) / 2);
+  background: var(--primary-transparent-color);
+  border-radius: 50%;
+  width: var(--head-diameter);
+  height: var(--head-diameter);
+  transition: left ease-in-out 100ms;
 }

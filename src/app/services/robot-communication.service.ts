@@ -11,10 +11,9 @@ const autoReconnectInterval = 3000;
 const sendDataInterval = 100;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RobotCommunicationService {
-
   private socket!: WebSocket;
   private lastHeartbeatTime: Date = new Date();
   private socketOpened: boolean = false;
@@ -23,7 +22,7 @@ export class RobotCommunicationService {
 
   constructor(
     private appConfigService: AppConfigService,
-    private robotStateService: RobotStateService
+    private robotStateService: RobotStateService,
   ) {
     this.autoConnectLoop();
     this.sendDataLoop();
@@ -33,7 +32,11 @@ export class RobotCommunicationService {
     if (!this.socketOpened && this.socket) {
       this.socket.close();
     }
-    this.socket = new WebSocket(`ws://${this.appConfigService.getNextHostIP()}:${this.appConfigService.port}${this.appConfigService.webSocketPath}`);
+    this.socket = new WebSocket(
+      `ws://${this.appConfigService.getNextHostIP()}:${
+        this.appConfigService.port
+      }${this.appConfigService.webSocketPath}`,
+    );
 
     this.socket.onmessage = this.onMessage.bind(this);
     this.socket.onopen = this.onOpen.bind(this);
@@ -44,7 +47,7 @@ export class RobotCommunicationService {
     console.log('Connected');
     this.socketOpened = true;
     this.connectionStatusChange$.next(true);
-  };
+  }
 
   private onClose() {
     this.socketOpened = false;
@@ -67,7 +70,7 @@ export class RobotCommunicationService {
       } catch (e) {
         console.log(e);
       }
-    };
+    }
   }
 
   public sendCommand(command: RobotCommand) {
@@ -77,26 +80,31 @@ export class RobotCommunicationService {
   }
 
   public autoConnectLoop() {
-    timer(0, autoReconnectInterval)
-      .subscribe(() => {
-        if (this.socketOpened && new Date().getTime() - this.lastHeartbeatTime.getTime() > heartbeatMaxInterval) {
-          console.log('No heartbeat received for the last %d ms', heartbeatMaxInterval);
-          this.socketOpened = false;
-          this.connectionStatusChange$.next(false);
-        }
-        if (!this.socketOpened) {
-          console.log('Connecting to robot...');
-          this.connectToRobot();
-        }
-      });
+    timer(0, autoReconnectInterval).subscribe(() => {
+      if (
+        this.socketOpened &&
+        new Date().getTime() - this.lastHeartbeatTime.getTime() >
+          heartbeatMaxInterval
+      ) {
+        console.log(
+          'No heartbeat received for the last %d ms',
+          heartbeatMaxInterval,
+        );
+        this.socketOpened = false;
+        this.connectionStatusChange$.next(false);
+      }
+      if (!this.socketOpened) {
+        console.log('Connecting to robot...');
+        this.connectToRobot();
+      }
+    });
   }
 
   public sendDataLoop() {
-    interval(sendDataInterval)
-      .subscribe(() => {
-        if (this.socketOpened) {
-          this.socket.send(JSON.stringify({ alive: true }));
-        }
-      });
+    interval(sendDataInterval).subscribe(() => {
+      if (this.socketOpened) {
+        this.socket.send(JSON.stringify({ alive: true }));
+      }
+    });
   }
 }

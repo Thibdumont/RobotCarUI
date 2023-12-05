@@ -10,7 +10,7 @@ const minMeasureCount = 50; // Measures required to display the battery level (w
 @Component({
   selector: 'robotcarui-battery-indicator',
   templateUrl: './battery-indicator.component.html',
-  styleUrls: ['./battery-indicator.component.scss']
+  styleUrls: ['./battery-indicator.component.scss'],
 })
 export class BatteryIndicatorComponent implements OnDestroy {
   batteryPercent!: number;
@@ -29,18 +29,22 @@ export class BatteryIndicatorComponent implements OnDestroy {
 
   constructor(
     private robotStateService: RobotStateService,
-    private appConfigService: AppConfigService
+    private appConfigService: AppConfigService,
   ) {
     this.init();
 
-    this.robotStateService.robotStateChange.pipe(takeUntil(this.destroy$)).subscribe(robotState => {
-      this.processNewMeasure(robotState.batteryVoltage);
-    });
+    this.robotStateService.robotStateChange
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((robotState) => {
+        this.processNewMeasure(robotState.batteryVoltage);
+      });
 
-    this.robotStateService.robotStateFirstSync$.pipe(takeUntil(this.destroy$)).subscribe(robotState => {
-      this.init();
-      this.maxVoltage = robotState.batteryVoltage;
-    });
+    this.robotStateService.robotStateFirstSync$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((robotState) => {
+        this.init();
+        this.maxVoltage = robotState.batteryVoltage;
+      });
   }
 
   init() {
@@ -73,12 +77,27 @@ export class BatteryIndicatorComponent implements OnDestroy {
   }
 
   updateBatteryPercentage(): void {
-    const batteryVoltageRange = this.appConfigService.batteryFullThreshold - this.appConfigService.batteryEmptyThreshold;
-    this.batteryPercent = Math.round(Math.min(100, Math.max(0, ((this.maxVoltage - this.appConfigService.batteryEmptyThreshold) / batteryVoltageRange) * 100)));
+    const batteryVoltageRange =
+      this.appConfigService.batteryFullThreshold -
+      this.appConfigService.batteryEmptyThreshold;
+    this.batteryPercent = Math.round(
+      Math.min(
+        100,
+        Math.max(
+          0,
+          ((this.maxVoltage - this.appConfigService.batteryEmptyThreshold) /
+            batteryVoltageRange) *
+            100,
+        ),
+      ),
+    );
   }
 
   getBatteryStep(): string {
-    if (this.batteryPercent < this.appConfigService.lowBatteryLevelThreshold && this.canDisplayBatteryLevel()) {
+    if (
+      this.batteryPercent < this.appConfigService.lowBatteryLevelThreshold &&
+      this.canDisplayBatteryLevel()
+    ) {
       return 'low';
     }
     return '';

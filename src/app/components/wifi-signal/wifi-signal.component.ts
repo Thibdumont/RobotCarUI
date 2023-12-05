@@ -1,5 +1,3 @@
-
-
 import { Subject, takeUntil } from 'rxjs';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 
@@ -10,7 +8,7 @@ import { RobotStateService } from '../../services/robot-state.service';
 @Component({
   selector: 'robotcarui-wifi-signal',
   templateUrl: './wifi-signal.component.html',
-  styleUrls: ['./wifi-signal.component.scss']
+  styleUrls: ['./wifi-signal.component.scss'],
 })
 export class WifiSignalComponent implements OnDestroy {
   wifiLevel: number = -1;
@@ -18,15 +16,19 @@ export class WifiSignalComponent implements OnDestroy {
 
   constructor(
     private robotCommunicationService: RobotCommunicationService,
-    private robotStateService: RobotStateService
+    private robotStateService: RobotStateService,
   ) {
-    this.robotStateService.robotStateChange.pipe(takeUntil(this.destroy$)).subscribe(robotState => {
-      this.wifiLevel = this.getWifiLevel(robotState.wifiStrength);
-    });
+    this.robotStateService.robotStateChange
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((robotState) => {
+        this.wifiLevel = this.getWifiLevel(robotState.wifiStrength);
+      });
 
-    this.robotCommunicationService.connectionStatusChange$.pipe(takeUntil(this.destroy$)).subscribe(connectionStatus => {
-      this.wifiLevel = connectionStatus ? 1 : -1;
-    });
+    this.robotCommunicationService.connectionStatusChange$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((connectionStatus) => {
+        this.wifiLevel = connectionStatus ? 1 : -1;
+      });
   }
 
   isBarActive(barNum: number) {
@@ -49,5 +51,4 @@ export class WifiSignalComponent implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
   }
-
 }

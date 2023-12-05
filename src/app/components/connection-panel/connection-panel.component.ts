@@ -5,13 +5,8 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'robotcarui-connection-panel',
   templateUrl: './connection-panel.component.html',
-  styleUrls: ['./connection-panel.component.scss']
+  styleUrls: ['./connection-panel.component.scss'],
 })
 export class ConnectionPanelComponent {
-
-  constructor(
-    public appConfigService: AppConfigService
-  ) {
-
-  }
+  constructor(public appConfigService: AppConfigService) {}
 }

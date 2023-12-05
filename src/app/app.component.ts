@@ -9,14 +9,13 @@ import { UiPanelDirectorService } from './services/ui-panel-director.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-
   constructor(
     private gamepadService: GamepadService,
     private uiPanelDirectorService: UiPanelDirectorService,
-    public robotCommunicationService: RobotCommunicationService
+    public robotCommunicationService: RobotCommunicationService,
   ) {
     this.gamepadService.initGamepad();
     this.uiPanelDirectorService.init();
@@ -25,16 +24,16 @@ export class AppComponent {
   }
 
   handleControl() {
-    this.gamepadService.viewButtonChange.pipe(distinctUntilChanged()).subscribe(viewButton => {
-      if (viewButton) {
-        if (document.fullscreenElement) {
-          document.exitFullscreen();
+    this.gamepadService.viewButtonChange
+      .pipe(distinctUntilChanged())
+      .subscribe((viewButton) => {
+        if (viewButton) {
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          } else {
+            document.body.requestFullscreen();
+          }
         }
-        else {
-          document.body.requestFullscreen();
-        }
-      }
-    });
+      });
   }
-
 }

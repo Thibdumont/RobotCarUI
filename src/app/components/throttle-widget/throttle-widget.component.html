@@ -1,15 +1,22 @@
 <div class="max-speed-bar">
-    <div class="max-speed" [class.boost]="boost" #maxSpeedIndicator>
-        {{ boost ? appConfigService.maxRobotSpeed : maxSpeed }}
-    </div>
+  <div class="max-speed" [class.boost]="boost" #maxSpeedIndicator>
+    {{ boost ? appConfigService.maxRobotSpeed : maxSpeed }}
+  </div>
 </div>
 <div class="throttle-bar">
-    <div class="top-bar reverse">
-        <div class="forward-throttle-force" [class.boost]="boost" #forwardThrottleForce></div>
-    </div>
-    <div class="bottom-bar">
-        <div class="backward-throttle-force" [class.boost]="boost" #backwardThrottleForce>
-        </div>
-    </div>
-    <span class="center"></span>
+  <div class="top-bar reverse">
+    <div
+      class="forward-throttle-force"
+      [class.boost]="boost"
+      #forwardThrottleForce
+    ></div>
+  </div>
+  <div class="bottom-bar">
+    <div
+      class="backward-throttle-force"
+      [class.boost]="boost"
+      #backwardThrottleForce
+    ></div>
+  </div>
+  <span class="center"></span>
 </div>
