@@ -1,15 +1,15 @@
 <div class="hud-container">
-    <robotcarui-head-position-widget></robotcarui-head-position-widget>
-    <robotcarui-throttle-widget></robotcarui-throttle-widget>
-    <robotcarui-direction-widget></robotcarui-direction-widget>
+  <robotcarui-head-position-widget></robotcarui-head-position-widget>
+  <robotcarui-throttle-widget></robotcarui-throttle-widget>
+  <robotcarui-direction-widget></robotcarui-direction-widget>
 
-    <div class="left-hud">
-        <robotcarui-battery-indicator></robotcarui-battery-indicator>
-        <robotcarui-wifi-signal></robotcarui-wifi-signal>
-        <ng-container *ngFor="let info of hudInfoService.hudInfoList$ | async">
-            <div *ngIf="info.hudVisible">
-                {{info.label}} : {{ info.value }} {{ info.unit }}
-            </div>
-        </ng-container>
-    </div>
+  <div class="left-hud">
+    <robotcarui-battery-indicator></robotcarui-battery-indicator>
+    <robotcarui-wifi-signal></robotcarui-wifi-signal>
+    @for (info of hudInfoService.hudInfoList$ | async; track $index) {
+      @if (info.hudVisible) {
+        <div>{{ info.label }} : {{ info.value }} {{ info.unit }}</div>
+      }
+    }
+  </div>
 </div>

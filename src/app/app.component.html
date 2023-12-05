@@ -1,16 +1,15 @@
-<robotcarui-connection-panel
-    *ngIf="!(robotCommunicationService.connectionStatusChange$ | async)"></robotcarui-connection-panel>
+@if(robotCommunicationService.connectionStatusChange$ | async){
+<robotcarui-stream-window></robotcarui-stream-window>
 
-<ng-container *ngIf="robotCommunicationService.connectionStatusChange$ | async">
-    <robotcarui-stream-window></robotcarui-stream-window>
+<robotcarui-control-help-panel></robotcarui-control-help-panel>
 
-    <robotcarui-control-help-panel></robotcarui-control-help-panel>
+<robotcarui-info-panel></robotcarui-info-panel>
 
-    <robotcarui-info-panel></robotcarui-info-panel>
+<robotcarui-photo-panel></robotcarui-photo-panel>
 
-    <robotcarui-photo-panel></robotcarui-photo-panel>
+<robotcarui-camera-control-panel></robotcarui-camera-control-panel>
 
-    <robotcarui-camera-control-panel></robotcarui-camera-control-panel>
-
-    <robotcarui-car-setting-panel></robotcarui-car-setting-panel>
-</ng-container>
+<robotcarui-car-setting-panel></robotcarui-car-setting-panel>
+}@else{
+<robotcarui-connection-panel></robotcarui-connection-panel>
+}

@@ -1,16 +1,23 @@
-<div class="control-panel-container" [@openClose]="opened ? 'opened':'closed'">
-    <div class="list-container">
-        <div class="common-control-list">
-            <div class="control-item" *ngFor="let control of commonControlList">
-                <div>{{ control.button }}</div>
-                <label>{{ control.label}}</label>
-            </div>
+<div
+  class="control-panel-container"
+  [@openClose]="opened ? 'opened' : 'closed'"
+>
+  <div class="list-container">
+    <div class="common-control-list">
+      @for (control of commonControlList; track $index) {
+        <div class="control-item">
+          <div>{{ control.button }}</div>
+          <label>{{ control.label }}</label>
         </div>
-        <div class="control-list">
-            <div class="control-item" *ngFor="let control of controlList">
-                <div>{{ control.button }}</div>
-                <label>{{ control.label}}</label>
-            </div>
-        </div>
+      }
     </div>
+    <div class="control-list">
+      @for (control of controlList; track $index) {
+        <div class="control-item">
+          <div>{{ control.button }}</div>
+          <label>{{ control.label }}</label>
+        </div>
+      }
+    </div>
+  </div>
 </div>

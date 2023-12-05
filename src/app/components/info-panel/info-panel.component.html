@@ -1,10 +1,15 @@
-<div class="info-panel-container" [@openClose]="opened ? 'opened':'closed'">
-    <div class="info-list">
-        <div class="info-item" *ngFor="let info of hudInfoService.hudInfoList$ | async;let i = index"
-            [class.active]="isActive(i)">
-            <label>{{ info.label }}</label>
-            <span class="value">{{ info.value }} {{ info.unit }}</span>
-            <span class="toggle" [class.toggled]="info.hudVisible" (click)=" toggleHudVisibilityOfCurrentInfo()"></span>
-        </div>
-    </div>
+<div class="info-panel-container" [@openClose]="opened ? 'opened' : 'closed'">
+  <div class="info-list">
+    @for (info of hudInfoService.hudInfoList$ | async; track $index) {
+      <div class="info-item" [class.active]="isActive($index)">
+        <label>{{ info.label }}</label>
+        <span class="value">{{ info.value }} {{ info.unit }}</span>
+        <span
+          class="toggle"
+          [class.toggled]="info.hudVisible"
+          (click)="toggleHudVisibilityOfCurrentInfo()"
+        ></span>
+      </div>
+    }
+  </div>
 </div>

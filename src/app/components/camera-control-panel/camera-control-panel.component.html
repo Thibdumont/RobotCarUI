@@ -1,7 +1,7 @@
 <div class="camera-control-panel-container" [@openClose]="opened ? 'opened':'closed'">
     <div class="control-list">
-        <div class="control" *ngFor="let cameraControl of cameraControlList; let i = index"
-            [class.active]="isActive(i)">
+        @for(cameraControl of cameraControlList; track $index){
+        <div class="control" [class.active]="isActive($index)">
             <header>
                 <label>{{cameraControl.label}}</label>
                 <span class="value">{{cameraControl.value}}</span>
@@ -9,5 +9,6 @@
             <input type="range" min="{{cameraControl.min}}" max="{{cameraControl.max}}" class="slider"
                 [ngModel]="cameraControl.value" (ngModelChange)="changeCameraControl($event)">
         </div>
+        }
     </div>
 </div>

@@ -1,7 +1,9 @@
-<img class="stream" src="{{ getStreamUrl()}}" #stream>
+<img class="stream" src="{{ getStreamUrl() }}" #stream />
 
 <robotcarui-main-hud [hidden]="!isActive"></robotcarui-main-hud>
 
-<div class="photo-container" *ngIf="photo" [@enterLeave]="'opened'">
-    <img src="{{photo.src}}">
-</div>
+@if (photo) {
+  <div class="photo-container" [@enterLeave]="'opened'">
+    <img src="{{ photo.src }}" />
+  </div>
+}
