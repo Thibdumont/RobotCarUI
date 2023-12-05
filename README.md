@@ -111,7 +111,7 @@ In this mode, enter the `192.168.1.1` address in your browser to access the app.
 
 ### Help
 
-Anywhere in the app, you can have some help by pressing the `start button` of your gamepad.
+Anywhere in the app, you can have some help by pressing the `Start button` of your gamepad.
 
 You could start by pressing the `View button` to go fullscreen.
 
@@ -121,7 +121,7 @@ You could start by pressing the `View button` to go fullscreen.
 
 The app should be used with a gamepad. Connect a gamepad on your computer/smartphone and it should work (tested with Xbox controller only).
 
-Press the `start button` anywhere and you will have the button mapping for each screen.
+Press the `Start button` anywhere and you will have the button mapping for each screen.
 
 ### Screens
 
@@ -177,7 +177,6 @@ This project is still work in progress. Any suggestion, advice, pull request is 
 
 ## Coming soon
 
-1. Angular 17 upgrade
-2. Battery level estimation improvement
-3. More car settings/features
-4. Better documentation if people are interested
+1. Battery level estimation improvement
+2. More car settings/features
+3. Better documentation if people are interested
