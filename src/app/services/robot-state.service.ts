@@ -87,8 +87,8 @@ export class RobotStateService {
     }
   }
 
-  setMaxSpeed(maxSpeed: number) {
-    this.robotState.maxSpeed = maxSpeed;
+  updateValue(property: string, value: any) {
+    this.robotState[property as keyof typeof this.robotState] = value;
     this.robotStateChange.next(this.robotState);
   }
 }

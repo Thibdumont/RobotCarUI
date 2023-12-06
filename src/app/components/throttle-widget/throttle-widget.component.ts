@@ -3,7 +3,6 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { RobotCommunicationService } from 'src/app/services/robot-communication.service';
 import { RobotStateService } from 'src/app/services/robot-state.service';
-
 import {
   AfterViewInit,
   Component,
@@ -26,6 +25,7 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
   rightTrigger: number = 0;
   boost: boolean = false;
   maxSpeed: number = 50;
+  autoSpeedModeEnabled: boolean = false;
 
   destroy$ = new Subject<void>();
 
@@ -37,10 +37,11 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
   ) {
     this.handleThrottle();
     this.handleMaxSpeed();
+    this.handleAutoSpeedMode();
   }
 
   ngAfterViewInit(): void {
-    this.updateMaxSpeedIndicatorPosition(this.maxSpeed);
+    this.updateMaxSpeedIndicatorPosition();
   }
 
   handleThrottle() {
@@ -80,12 +81,10 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((yButton) => {
         const boost = yButton === 1;
-        if (boost !== this.boost) {
+        if (boost !== this.boost && !this.autoSpeedModeEnabled) {
           this.boost = boost;
           this.robotCommunicationService.sendCommand({ boost: boost ? 1 : 0 });
-          this.boost
-            ? (this.maxSpeedIndicator.nativeElement.style.top = 0)
-            : this.updateMaxSpeedIndicatorPosition(this.maxSpeed);
+          this.updateMaxSpeedIndicatorPosition();
         }
       });
   }
@@ -97,15 +96,15 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
         throttleTime(this.appConfigService.carControlSendInterval),
       )
       .subscribe((leftShoulder) => {
-        if (leftShoulder) {
+        if (leftShoulder && !this.autoSpeedModeEnabled) {
           const newSpeed =
             this.maxSpeed - this.appConfigService.maxSpeedChangeIncrement <
             this.appConfigService.minRobotSpeed
               ? this.appConfigService.minRobotSpeed
               : this.maxSpeed - this.appConfigService.maxSpeedChangeIncrement;
-          this.robotStateService.setMaxSpeed(newSpeed);
+          this.robotStateService.updateValue('maxSpeed', newSpeed);
           this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
-          this.updateMaxSpeedIndicatorPosition(newSpeed);
+          this.updateMaxSpeedIndicatorPosition();
         }
       });
 
@@ -115,32 +114,51 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
         throttleTime(this.appConfigService.carControlSendInterval),
       )
       .subscribe((rightShoulder) => {
-        if (rightShoulder) {
+        if (rightShoulder && !this.autoSpeedModeEnabled) {
           const newSpeed =
             this.maxSpeed + this.appConfigService.maxSpeedChangeIncrement >
             this.appConfigService.maxRobotSpeed
               ? this.appConfigService.maxRobotSpeed
               : this.maxSpeed + this.appConfigService.maxSpeedChangeIncrement;
-          this.robotStateService.setMaxSpeed(newSpeed);
+          this.robotStateService.updateValue('maxSpeed', newSpeed);
           this.robotCommunicationService.sendCommand({ maxSpeed: newSpeed });
-          this.updateMaxSpeedIndicatorPosition(newSpeed);
+          this.updateMaxSpeedIndicatorPosition();
         }
       });
 
     this.robotStateService.robotStateChange
       .pipe(takeUntil(this.destroy$))
       .subscribe((robotState) => {
-        if (this.maxSpeed !== robotState.maxSpeed) {
+        if (
+          this.maxSpeed !== robotState.maxSpeed &&
+          !this.autoSpeedModeEnabled
+        ) {
           this.maxSpeed = robotState.maxSpeed;
-          this.updateMaxSpeedIndicatorPosition(this.maxSpeed);
+          this.updateMaxSpeedIndicatorPosition();
         }
       });
   }
 
-  updateMaxSpeedIndicatorPosition(newSpeed: number) {
-    this.maxSpeedIndicator.nativeElement.style.top = `${
-      100 - Math.round((newSpeed / this.appConfigService.maxRobotSpeed) * 100)
-    }%`;
+  handleAutoSpeedMode() {
+    this.robotStateService.robotStateChange
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((robotState) => {
+        this.autoSpeedModeEnabled = robotState.autoSpeedMode === 1;
+        if (!this.autoSpeedModeEnabled) {
+          setTimeout(() => this.updateMaxSpeedIndicatorPosition(), 0);
+        }
+      });
+  }
+
+  updateMaxSpeedIndicatorPosition() {
+    if (this.boost) {
+      this.maxSpeedIndicator.nativeElement.style.top = 0;
+    } else {
+      this.maxSpeedIndicator.nativeElement.style.top = `${
+        100 -
+        Math.round((this.maxSpeed / this.appConfigService.maxRobotSpeed) * 100)
+      }%`;
+    }
   }
 
   ngOnDestroy(): void {

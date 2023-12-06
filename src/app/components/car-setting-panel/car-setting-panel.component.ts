@@ -82,7 +82,7 @@ export class CarSettingPanelComponent implements OnDestroy {
     },
     {
       id: CarSettingEnum.TURN_FACTOR,
-      label: 'Turn factor (effectiveness of the turn)',
+      label: 'Turn factor (force of the turn)',
       jsonProp: 'turnFactor',
       min: 1,
       max: 5,
@@ -92,15 +92,14 @@ export class CarSettingPanelComponent implements OnDestroy {
     },
     {
       id: CarSettingEnum.AUTO_SPEED_MODE,
-      label:
-        'Auto speed mode (Adjust max speed to the clearance in front of the car)',
+      label: 'Auto speed mode (adjust max speed to the front clearance)',
       jsonProp: 'autoSpeedMode',
       value: 0,
       itemType: CarSettingType.TOGGLE,
     },
     {
       id: CarSettingEnum.AUTO_SPEED_FACTOR,
-      label: 'Auto speed factor (reduction factor of the auto speed mode)',
+      label: 'Auto speed factor (speed level of the auto speed mode)',
       jsonProp: 'autoSpeedFactor',
       min: 1,
       max: 3,
@@ -230,6 +229,10 @@ export class CarSettingPanelComponent implements OnDestroy {
 
   changeCarSetting(value: number) {
     this.getSelectedSetting().value = value;
+    this.robotStateService.updateValue(
+      this.getSelectedSetting().jsonProp,
+      value,
+    );
     this.robotCommunicationService.sendCommand(
       JSON.parse(`{ "${this.getSelectedSetting().jsonProp}": ${value} }`),
     );

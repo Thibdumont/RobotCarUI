@@ -1,20 +1,22 @@
 <div class="max-speed-bar">
-  <div class="max-speed" [class.boost]="boost" #maxSpeedIndicator>
-    {{ boost ? appConfigService.maxRobotSpeed : maxSpeed }}
-  </div>
+  @if (!autoSpeedModeEnabled) {
+    <div class="max-speed" [class.boost]="boost" #maxSpeedIndicator>
+      {{ boost ? appConfigService.maxRobotSpeed : maxSpeed }}
+    </div>
+  }
 </div>
 <div class="throttle-bar">
   <div class="top-bar reverse">
     <div
       class="forward-throttle-force"
-      [class.boost]="boost"
+      [class.boost]="boost && !autoSpeedModeEnabled"
       #forwardThrottleForce
     ></div>
   </div>
   <div class="bottom-bar">
     <div
       class="backward-throttle-force"
-      [class.boost]="boost"
+      [class.boost]="boost && !autoSpeedModeEnabled"
       #backwardThrottleForce
     ></div>
   </div>
