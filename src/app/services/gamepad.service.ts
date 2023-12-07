@@ -4,6 +4,13 @@ import { Injectable } from '@angular/core';
 
 import { AppConfigService } from './app-config.service';
 
+export interface RumbleOptions {
+  startDelay: number; // in ms
+  duration: number; // in ms
+  weakMagnitude: number; // from 0 to 1
+  strongMagnitude: number; // from 0 to 1
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -31,6 +38,8 @@ export class GamepadService {
   public viewButtonChange: Subject<number> = new Subject();
   public menuButtonChange: Subject<number> = new Subject();
 
+  private gamepad!: Gamepad | null;
+
   constructor(private appConfigService: AppConfigService) {}
 
   public initGamepad() {
@@ -50,11 +59,12 @@ export class GamepadService {
     interval(this.appConfigService.gamepadPollingInterval)
       .pipe()
       .subscribe(() => {
-        var gamepads = navigator
+        let gamepads = navigator
           .getGamepads()
           .filter((gamepad) => gamepad !== null);
 
         for (const gamepad of gamepads) {
+          this.gamepad = gamepad;
           this.leftStickXChange.next(this.getAxisValue(gamepad, 0));
           this.leftStickYChange.next(this.getAxisValue(gamepad, 1));
           this.rightStickXChange.next(this.getAxisValue(gamepad, 2));
@@ -88,5 +98,14 @@ export class GamepadService {
 
   private getAxisValue(gamepad: Gamepad | null, axisNumber: number): number {
     return gamepad === null ? 0 : gamepad.axes[axisNumber];
+  }
+
+  public rumble(rumbleOptions: RumbleOptions) {
+    if (this.gamepad) {
+      (this.gamepad as any).vibrationActuator?.playEffect(
+        'dual-rumble',
+        rumbleOptions,
+      );
+    }
   }
 }

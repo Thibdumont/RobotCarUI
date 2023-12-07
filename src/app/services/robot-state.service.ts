@@ -3,6 +3,8 @@ import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 import { RobotState } from '../core/robot-state';
+import { AppConfigService } from './app-config.service';
+import { GamepadService } from './gamepad.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +15,9 @@ export class RobotStateService {
 
   public robotState: RobotState = new RobotState();
 
-  constructor() {}
+  public safeStopDistanceReached: boolean = false;
+
+  constructor(private gamepadService: GamepadService) {}
 
   processEspMessage(json: any) {
     if (json.syncRequest) {
@@ -85,10 +89,31 @@ export class RobotStateService {
         json.wifiStrength ?? this.robotState.wifiStrength;
       this.robotStateChange.next(this.robotState);
     }
+
+    this.reactToStateChange();
   }
 
   updateValue(property: string, value: any) {
     this.robotState[property as keyof typeof this.robotState] = value;
     this.robotStateChange.next(this.robotState);
+  }
+
+  /**
+   * Here, we trigger some stuff relative to state change
+   */
+  reactToStateChange() {
+    if (this.robotState.radarDistance <= this.robotState.safeStopDistance) {
+      if (!this.safeStopDistanceReached) {
+        this.gamepadService.rumble({
+          startDelay: 0,
+          duration: 300,
+          weakMagnitude: 0,
+          strongMagnitude: 1,
+        });
+        this.safeStopDistanceReached = true;
+      }
+    } else {
+      this.safeStopDistanceReached = false;
+    }
   }
 }

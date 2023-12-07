@@ -85,6 +85,14 @@ export class ThrottleWidgetComponent implements AfterViewInit, OnDestroy {
           this.boost = boost;
           this.robotCommunicationService.sendCommand({ boost: boost ? 1 : 0 });
           this.updateMaxSpeedIndicatorPosition();
+          if (this.boost) {
+            this.gamepadService.rumble({
+              startDelay: 0,
+              duration: 300,
+              weakMagnitude: 1,
+              strongMagnitude: 0.2,
+            });
+          }
         }
       });
   }

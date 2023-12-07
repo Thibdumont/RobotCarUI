@@ -45,7 +45,7 @@ Quick video demo : [https://youtu.be/IlVKu30kO0o](https://youtu.be/IlVKu30kO0o)
 ## Key features
 
 - Web UI, working on chrome (not tested on other browsers), on mobile/desktop.
-- Gamepad support (tested with Xbox controller only) to control the car
+- Gamepad support (tested with Xbox controller only) to control the car, vibration support (when boosting or reaching the safe stop distance)
 - Automatically connect/reconnect to ESP32 server if connection is lost
 - Change some car settings (max speed, head speed, safe stop distance, turn factor, etc)
 - Persist the settings made by the user in the ESP32 so they are retrieved at every restart
