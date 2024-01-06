@@ -35,7 +35,7 @@ It works with these 2 other projects that have to be installed on the Uno and ES
 
 ## Demo
 
-Quick video demo : [https://youtu.be/IlVKu30kO0o](https://youtu.be/IlVKu30kO0o)
+Quick video demo : [https://www.youtube.com/watch?v=1oh2mrhPO1c](https://www.youtube.com/watch?v=1oh2mrhPO1c)
 
 ## Requirements
 
