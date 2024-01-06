@@ -1,4 +1,10 @@
-import { distinctUntilChanged, Subject, takeUntil, throttleTime } from 'rxjs';
+import {
+  debounceTime,
+  distinctUntilChanged,
+  Subject,
+  takeUntil,
+  throttleTime,
+} from 'rxjs';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GamepadService } from 'src/app/services/gamepad.service';
 import { PhotoItem, PhotoService } from 'src/app/services/photo.service';
@@ -47,6 +53,8 @@ export class StreamWindowComponent implements OnDestroy {
 
   photo!: PhotoItem | null;
 
+  coverMode: boolean = false;
+
   constructor(
     private appConfigService: AppConfigService,
     private robotCommunicationService: RobotCommunicationService,
@@ -58,6 +66,7 @@ export class StreamWindowComponent implements OnDestroy {
     this.handleActiveState();
     this.handleNavigation();
     this.handlePhotoCapture();
+    this.handleFitMode();
   }
 
   getStreamUrl(): string {
@@ -141,6 +150,16 @@ export class StreamWindowComponent implements OnDestroy {
           setTimeout(() => {
             this.photo = null;
           }, this.appConfigService.delayBetweenPhoto);
+        }
+      });
+  }
+
+  handleFitMode() {
+    this.gamepadService.leftStickButtonChange
+      .pipe(takeUntil(this.destroy$), distinctUntilChanged())
+      .subscribe((leftStickButton) => {
+        if (leftStickButton) {
+          this.coverMode = !this.coverMode;
         }
       });
   }

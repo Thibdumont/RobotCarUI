@@ -16,9 +16,13 @@ robotcarui-main-hud {
 .stream {
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
+  object-fit: contain;
   position: fixed;
+}
+
+.cover {
+  object-fit: cover;
 }
 
 .photo-container {

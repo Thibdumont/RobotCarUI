@@ -66,6 +66,7 @@ export class ControlHelpService {
         { button: 'Left joystick', label: 'Turn' },
         { button: 'Right joystick', label: 'Control head position' },
         { button: 'Right joystick button', label: 'Center head position' },
+        { button: 'Left joystick button', label: 'Toggle stream cover mode' },
         { button: 'X', label: 'Take photo' },
         { button: 'Left Dpad', label: 'Show info HUD visibility panel' },
         { button: 'Right Dpad', label: 'Show photo manager' },

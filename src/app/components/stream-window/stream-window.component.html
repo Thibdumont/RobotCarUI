@@ -1,4 +1,9 @@
-<img class="stream" src="{{ getStreamUrl() }}" #stream />
+<img
+  class="stream"
+  src="{{ getStreamUrl() }}"
+  #stream
+  [class.cover]="coverMode"
+/>
 
 <robotcarui-main-hud [hidden]="!isActive"></robotcarui-main-hud>
 
