@@ -1,0 +1,85 @@
+<mxfile host="65bd71144e">
+    <diagram id="uXWyrIWMhvKCNZpPUKIV" name="Page-1">
+        <mxGraphModel dx="2876" dy="796" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="67" value="HTTP Websocket&lt;br&gt;(JSON)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="480" y="400" width="150" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" value="Serial bus&lt;br&gt;(JSON)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=bottom;labelPosition=center;verticalLabelPosition=top;align=center;" vertex="1" parent="1">
+                    <mxGeometry x="-10" y="400" width="150" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="59" value="HTTP multipart" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;horizontal=1;labelPosition=center;verticalLabelPosition=bottom;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="600" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="Wifi/Bluetooth&amp;nbsp;" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=bottom;horizontal=1;labelPosition=center;verticalLabelPosition=top;align=center;" parent="1" vertex="1">
+                    <mxGeometry x="960" y="380" width="80" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="Send commands/Inputs" style="edgeStyle=none;html=1;startArrow=classic;startFill=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;endArrow=none;endFill=0;" parent="1" source="26" target="28" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="25" value="Transmit commands/Inputs" style="edgeStyle=none;html=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="26" target="30" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="Transmit data &lt;br&gt;(Arduino and ESP)" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;" parent="1" source="26" target="28" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="Send camera feed" style="edgeStyle=none;html=1;entryX=0;entryY=0.888;entryDx=0;entryDy=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;entryPerimeter=0;exitX=0.996;exitY=0.884;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="26" target="28" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="430" y="600" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="26" value="ESP32" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="200" y="360" width="230" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="Mobile phone/computer&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="670" y="360" width="230" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="Send hardware data" style="edgeStyle=none;html=1;startArrow=none;startFill=0;endArrow=classic;endFill=1;" parent="1" source="30" target="26" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="Arduino" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="-400" y="360" width="330" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="Motor&lt;br&gt;(drive the car)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-380" y="610" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="Servo&lt;br&gt;(turn the head)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-220" y="540" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="IR captor&lt;br&gt;(check if on ground)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-380" y="540" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="Ultrasonic sensor&lt;br&gt;(get distance ahead)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="-220" y="610" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="Camera&lt;br&gt;(stream livefeed, take photos)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="540" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="Wifi&lt;br&gt;(connect to LAN or work in Soft AP mode)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="610" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="Inputs" style="edgeStyle=none;html=1;" parent="1" source="39" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="900" y="440" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="39" value="Gamepad" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="1100" y="416" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="Storage&lt;br&gt;(Store robot state)" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="250" y="470" width="130" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="&lt;h1&gt;Client App&lt;/h1&gt;&lt;p&gt;&lt;span style=&quot;text-align: center;&quot;&gt;The app connect to ESP HTTP server and open a websocket to exchange commands and data.&lt;/span&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;text-align: center;&quot;&gt;The web app run on any device with a modern web browser and use the gamepad API to be able to use a&amp;nbsp; game controller.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot;text-align: center;&quot;&gt;Inputs are converted into commands that are then sent to ESP32. Commands are then dispatched to the Arduino and any change in the configuration is saved in the ESP storage.&lt;/span&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="680" y="390" width="210" height="290" as="geometry"/>
+                </mxCell>
+                <mxCell id="74" value="Battery&lt;br&gt;(read voltage to estimate battery life)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="-220" y="470" width="130" height="50" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
